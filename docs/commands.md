@@ -2,14 +2,14 @@
 
 The plugin registers two Composer commands. They walk patch URLs, detect GitLab merge-request links, download the `.diff` to a local file under `./patches/`, and rewrite the JSON entry to the local path.
 
-## `varbase-patches:cleanup:patches`
+## `webship-patches:cleanup:patches`
 
-Alias: `var-ccup`
+Alias: `web-ccup`
 
 Operates on `extra.patches` in the root `composer.json`.
 
 ```bash
-composer varbase-patches:cleanup:patches
+composer webship-patches:cleanup:patches
 ```
 
 ### Options
@@ -18,14 +18,14 @@ composer varbase-patches:cleanup:patches
 |-----------------|-------------------------------------------------|
 | `--project-dir` | Override the project root. Defaults to `getcwd()`. |
 
-## `varbase-patches:cleanup:patches-file`
+## `webship-patches:cleanup:patches-file`
 
-Alias: `var-ccupf`
+Alias: `web-ccupf`
 
 Operates on the JSON file referenced by `extra.patches-file` in the root `composer.json`.
 
 ```bash
-composer varbase-patches:cleanup:patches-file
+composer webship-patches:cleanup:patches-file
 ```
 
 Same `--project-dir` option as above.
@@ -84,7 +84,7 @@ redirect--2026-05-10--2879648--mr-109.patch
 2. When the MR is stable, freeze it locally:
 
    ```bash
-   composer varbase-patches:cleanup:patches
+   composer webship-patches:cleanup:patches
    ```
 
 3. The entry is rewritten to a stable, in-repo file:

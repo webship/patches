@@ -1,12 +1,12 @@
 <?php
 
-namespace Vardot\VarbasePatches\Command;
+namespace Webship\WebshipPatches\Command;
 
 use Composer\Command\BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Vardot\VarbasePatches\Util\MrPatchProcessor;
+use Webship\WebshipPatches\Util\MrPatchProcessor;
 
 /**
  * Same as CleanupPatchesCommand, but operates on the JSON file referenced by
@@ -17,8 +17,8 @@ class CleanupPatchesFileCommand extends BaseCommand
     protected function configure(): void
     {
         $this
-            ->setName('varbase-patches:cleanup:patches-file')
-            ->setAliases(['var-ccupf'])
+            ->setName('webship-patches:cleanup:patches-file')
+            ->setAliases(['web-ccupf'])
             ->setDescription('Detect MR patches in extra.patches-file, download them locally, and rewrite the patches-file JSON.')
             ->addOption('project-dir', null, InputOption::VALUE_REQUIRED, 'Project root (defaults to current working directory).');
     }

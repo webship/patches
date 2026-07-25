@@ -12,7 +12,7 @@
  *     canonical repository (the CDN can serve a stale copy of a deleted file).
  *
  * Usage:
- *   git fetch --depth=1 https://github.com/Vardot/varbase-patches.git patches:refs/remotes/upstream/patches
+ *   git fetch --depth=1 https://github.com/webship/webship-patches.git patches:refs/remotes/upstream/patches
  *   php tests/verify-patch-files.php [patches-branch-ref]
  */
 
@@ -41,7 +41,7 @@ function fetch(string $url): array
             'max_redirects' => 5,
             'timeout' => 60,
             'ignore_errors' => true,
-            'header' => "User-Agent: varbase-patches-ci\r\n",
+            'header' => "User-Agent: webship-patches-ci\r\n",
         ],
     ]);
 
@@ -67,7 +67,7 @@ function looksLikeDiff(string $body): bool
  */
 function selfHostedPath(string $url): ?string
 {
-    $pattern = '#^https://raw\.githubusercontent\.com/[Vv]ardot/varbase-patches/(?:refs/heads/)?patches/(.+)$#';
+    $pattern = '#^https://raw\.githubusercontent\.com/[Vv]ardot/webship-patches/(?:refs/heads/)?patches/(.+)$#';
 
     return preg_match($pattern, $url, $m) === 1 ? $m[1] : null;
 }

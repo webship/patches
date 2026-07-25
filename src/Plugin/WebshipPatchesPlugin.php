@@ -1,6 +1,6 @@
 <?php
 
-namespace Vardot\VarbasePatches\Plugin;
+namespace Webship\WebshipPatches\Plugin;
 
 use Composer\Composer;
 use Composer\DependencyResolver\Operation\InstallOperation;
@@ -29,14 +29,14 @@ use Composer\Script\ScriptEvents;
  *        set. v1's native patches-ignore is left to v1 itself.
  *
  * Always registers the cleanup-patches Composer commands via
- * VarbaseCommandProvider regardless of cweagans version.
+ * WebshipCommandProvider regardless of cweagans version.
  */
-class VarbasePatchesPlugin implements PluginInterface, EventSubscriberInterface, Capable
+class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface, Capable
 {
     /**
      * Packages whose extra.patches are applied by default (no config needed).
      */
-    public const DEFAULT_ALLOWED_DEPENDENCY_PATCHES = ['vardot/varbase-patches', 'vardot/drupal-core-patches'];
+    public const DEFAULT_ALLOWED_DEPENDENCY_PATCHES = ['webship/webship-patches', 'webship/drupal-core-patches'];
 
     private Composer $composer;
     private IOInterface $io;
@@ -62,11 +62,11 @@ class VarbasePatchesPlugin implements PluginInterface, EventSubscriberInterface,
     {
         $caps = [
             \Composer\Plugin\Capability\CommandProvider::class
-                => \Vardot\VarbasePatches\Capability\VarbaseCommandProvider::class,
+                => \Webship\WebshipPatches\Capability\WebshipCommandProvider::class,
         ];
         if ($this->detectVersion() === 2) {
             $caps[\cweagans\Composer\Capability\Resolver\ResolverProvider::class]
-                = \Vardot\VarbasePatches\Capability\VarbaseResolverProvider::class;
+                = \Webship\WebshipPatches\Capability\WebshipResolverProvider::class;
         }
         return $caps;
     }
@@ -155,7 +155,7 @@ class VarbasePatchesPlugin implements PluginInterface, EventSubscriberInterface,
 
         if (!$this->v1Mutated) {
             $this->v1Mutated = true;
-            $this->io->write('<info>varbase-patches: re-gathered patches via v1 (allowed dependency patches).</info>');
+            $this->io->write('<info>webship-patches: re-gathered patches via v1 (allowed dependency patches).</info>');
         }
     }
 
@@ -289,7 +289,7 @@ class VarbasePatchesPlugin implements PluginInterface, EventSubscriberInterface,
             }
             return;
         }
-        if ($op->getPackage()->getName() === 'vardot/varbase-patches') {
+        if ($op->getPackage()->getName() === 'webship/webship-patches') {
             if ($version === 2) {
                 $this->reresolveAndRewriteLockV2();
             } elseif ($version === 1) {
@@ -323,7 +323,7 @@ class VarbasePatchesPlugin implements PluginInterface, EventSubscriberInterface,
         }
         $this->reresolved = true;
 
-        $this->io->write('<info>varbase-patches: re-resolving patches with filter (allowed dependency patches).</info>');
+        $this->io->write('<info>webship-patches: re-resolving patches with filter (allowed dependency patches).</info>');
         $newCollection = $cweagans->resolvePatches();
 
         $r = new \ReflectionClass($cweagans);
