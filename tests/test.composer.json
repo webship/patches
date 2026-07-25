@@ -1,18 +1,18 @@
 {
-    "name": "webship/webship-patches-test",
-    "description": "Test project for webship/webship-patches (11.0.x): installs Drupal core and every package this branch patches, then checks that cweagans/composer-patches applies all of the Webship patches.",
+    "name": "webship/patches-test",
+    "description": "Test project for webship/patches (11.0.x): installs Drupal core and every package this branch patches, then checks that cweagans/composer-patches applies all of the Webship patches.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": {
-        "webship-patches": {
+        "patches": {
             "type": "path",
             "url": "../../",
             "options": {
                 "symlink": false,
                 "versions": {
-                    "webship/webship-patches": "11.0.x-dev"
+                    "webship/patches": "11.0.x-dev"
                 }
             }
         },
@@ -63,7 +63,7 @@
         "neilime/php-css-lint": "~3.2",
         "oomphinc/composer-installers-extender": "~2",
         "openai-php/client": "~0.20",
-        "webship/webship-patches": "11.0.x-dev"
+        "webship/patches": "11.0.x-dev"
     },
     "config": {
         "sort-packages": true,
@@ -77,7 +77,7 @@
             "phpstan/extension-installer": true,
             "symfony/runtime": true,
             "tbachert/spi": true,
-            "webship/webship-patches": true
+            "webship/patches": true
         }
     },
     "extra": {
@@ -89,8 +89,8 @@
         "composer-patches": {
             "exit-on-patch-failure": true,
             "allowed-dependency-patches": [
-                "webship/webship-patches",
-                "webship/drupal-core-patches"
+                "webship/patches",
+                "webship/drupal-patches"
             ]
         },
         "drupal-scaffold": {

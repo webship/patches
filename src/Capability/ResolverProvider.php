@@ -1,14 +1,14 @@
 <?php
 
-namespace Webship\WebshipPatches\Capability;
+namespace Webship\Patches\Capability;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Plugin\Capability\Capability;
-use cweagans\Composer\Capability\Resolver\ResolverProvider;
-use Webship\WebshipPatches\Resolver\FilteredDependencies;
+use cweagans\Composer\Capability\Resolver\ResolverProvider as ResolverProviderInterface;
+use Webship\Patches\Resolver\FilteredDependencies;
 
-class WebshipResolverProvider implements ResolverProvider
+class ResolverProvider implements ResolverProviderInterface
 {
     private Composer $composer;
     private IOInterface $io;

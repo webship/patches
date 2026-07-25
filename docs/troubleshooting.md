@@ -9,7 +9,7 @@ A dependency has declared a patch in its own `extra.patches` that no longer appl
 ```json
 "extra": {
   "composer-patches": {
-    "allowed-dependency-patches": ["webship/webship-patches"]
+    "allowed-dependency-patches": ["webship/patches"]
   }
 }
 ```
@@ -21,12 +21,12 @@ rm -rf composer.lock patches.lock.json vendor/
 composer install
 ```
 
-If the failing patch is from `webship/webship-patches` itself, drop it explicitly via `patches-ignore`:
+If the failing patch is from `webship/patches` itself, drop it explicitly via `patches-ignore`:
 
 ```json
 "extra": {
   "patches-ignore": {
-    "webship/webship-patches": {
+    "webship/patches": {
       "drupal/<target>": ["<full url>"]
     }
   }
@@ -38,22 +38,22 @@ If the failing patch is from `webship/webship-patches` itself, drop it explicitl
 Symptoms: install runs, but log does not show
 
 ```
-webship-patches: re-resolving patches with filter (allowed: webship/webship-patches).
+patches: re-resolving patches with filter (allowed: webship/patches).
 ```
 
 Checklist:
 
-1. `webship/webship-patches` is in `config.allow-plugins` with value `true`.
+1. `webship/patches` is in `config.allow-plugins` with value `true`.
 2. `cweagans/composer-patches` is `~2.0` (the plugin requires v2 API). Run `composer show cweagans/composer-patches` to verify.
-3. Re-run with verbosity: `composer install -vvv 2>&1 | grep -E "Loading plugin (Webship|cweagans)"`. You should see both. If only cweagans loads, the package itself never installed — check `composer show webship/webship-patches`.
+3. Re-run with verbosity: `composer install -vvv 2>&1 | grep -E "Loading plugin (Webship|cweagans)"`. You should see both. If only cweagans loads, the package itself never installed — check `composer show webship/patches`.
 
 ## Wildcard in `ignore-dependency-patches` does nothing
 
-Confirm you're on a v2-plugin release of `webship/webship-patches` (any current `11.0.x` / `10.x` / `9.x` HEAD or `no-patches`). The metapackage releases do not provide the wildcard support — it requires this plugin code path.
+Confirm you're on a v2-plugin release of `webship/patches` (any current `11.0.x` / `10.x` / `9.x` HEAD or `no-patches`). The metapackage releases do not provide the wildcard support — it requires this plugin code path.
 
 ## Cleanup command writes HTML instead of a diff
 
-Some hosts gate `.diff` URLs behind a login/JS check when called with browser-style user agents. The plugin uses `webship-patches/1.0` + `Accept: text/plain, text/x-diff, */*` which works for `git.drupalcode.org`. If you hit a host that still returns HTML, fetch the raw patch yourself and store it under `./patches/` directly — the cleanup commands are a convenience, not a requirement.
+Some hosts gate `.diff` URLs behind a login/JS check when called with browser-style user agents. The plugin uses `patches/1.0` + `Accept: text/plain, text/x-diff, */*` which works for `git.drupalcode.org`. If you hit a host that still returns HTML, fetch the raw patch yourself and store it under `./patches/` directly — the cleanup commands are a convenience, not a requirement.
 
 ## Patches still apply after I removed an entry from `composer.json`
 
