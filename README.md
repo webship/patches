@@ -229,11 +229,12 @@ External: <https://github.com/webship/webship-patches/blob/11.0.x/docs/README.md
 
 ## AI assistant context
 
-This repository ships its own AI-assistant context so contributors get the same project conventions as core maintainers:
+The AI-assistant context for this package lives in [`webship/ai-agents`](https://github.com/webship/ai-agents), shared across every Webship repository rather than duplicated in each one. Merge its `.claude/` folder into your `~/.claude/` to make the agents and skills available:
 
-- [`AGENTS.md`](AGENTS.md) — vendor-neutral entry point. Works with any AI coding assistant (Claude Code, Cursor, Codex, Aider, Continue.dev, Copilot Workspace, …).
-- [`CLAUDE.md`](CLAUDE.md) — Claude Code-specific entry point.
-- [`webship/ai-agents`](https://github.com/webship/ai-agents) — the Claude Code agents and skills for this package (`webship-patches`, `webship-patches-release-manager`, `composer-patches`, `patch-management`, …). Merge its `.claude/` folder into your `~/.claude/` to make them available.
+- `webship-patches` — installing, configuring, and troubleshooting `webship/webship-patches`.
+- `webship-patches-release-manager` — cutting and publishing releases.
+- `composer-patches` — `cweagans/composer-patches` v1 / v2 + this plugin's allowlist, wildcard ignore, and `patches-ignore` extensions.
+- `patch-management` — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
 
 ## Requirements
 
