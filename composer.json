@@ -35,10 +35,6 @@
     "extra": {
         "class": "Webship\\Patches\\Plugin\\PatchesPlugin",
         "patches": {
-            "drupal/ctools": {
-                "fix: #3492432 PHP 8.4 nullable types in MaskContentEntityStorage::doLoadMultiple()": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ctools--2026-07-26--3492432--5a323c6e.patch",
-                "fix: #3572317 ctools_views schema alter missing requiredKey for views_block mapping keys causes validation errors in Drupal Canvas": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ctools--2026-02-09--3572317--mr-85.patch"
-            },
             "drupal/embed": {
                 "Issue #3517882: The namespace of EmbedCKEditor5PluginBase does not respect PSR4": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-07-26--3517882--mr-26.patch"
             },
