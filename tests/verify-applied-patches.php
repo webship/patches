@@ -7,8 +7,7 @@
  * Run after `composer install` inside the test project (tests/build). For every
  * entry in this branch's composer.json extra.patches it asserts that:
  *   - the patch was applied to the installed package — evidenced by
- *     patches.lock.json (cweagans/composer-patches v2) or by the patch URL in
- *     the install log (v1 and v2 both print the URL of each applied patch).
+ *     patches.lock.json, or by the patch URL in the install log.
  *
  * Patched packages that the test project does not install (a module that has
  * no release for this branch's Drupal core, for example) are reported as

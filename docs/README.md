@@ -34,9 +34,9 @@ Drupal contrib modules sometimes ship `extra.patches` entries pointing at stale 
 
 The AI-assistant context for this package lives in [`webship/ai-agents`](https://github.com/webship/ai-agents), shared across every Webship repository rather than duplicated in each one. Merge its `.claude/` folder into your `~/.claude/`:
 
-- `webship-patches` — installing, configuring, and troubleshooting `webship/webship-patches`. Captures the non-obvious constraints (late-activation rule, dual v1/v2 support, default-deny allowlist, filename convention).
+- `webship-patches` — installing, configuring, and troubleshooting `webship/webship-patches`. Captures the non-obvious constraints (late-activation rule, default-deny allowlist, filename convention).
 - `webship-patches-release-manager` — cutting and publishing releases.
-- `composer-patches` — `cweagans/composer-patches` v1 / v2 + this plugin's allowlist / wildcard ignore / `patches-ignore` extensions.
+- `composer-patches` — `cweagans/composer-patches` v2 + this plugin's allowlist / wildcard ignore / `patches-ignore` extensions.
 - `patch-management` — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
 
 ## Patch filename convention

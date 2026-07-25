@@ -28,8 +28,8 @@ php tests/verify-applied-patches.php tests/build tests/build/install.log
 
 [`test.composer.json`](test.composer.json) is an ordinary Drupal project: it requires `drupal/core-recommended`, the modules this branch declares patches for (at the constraints Webship uses), and `webship/webship-patches` itself from the checkout through a `path` repository. `composer install` therefore exercises the real plugin — allowlist, late activation, `cweagans/composer-patches` — against real packages.
 
-The install runs with `exit-on-patch-failure`, so a patch that no longer applies already fails the build. On top of that, `verify-applied-patches.php` asserts that **every** patch declared for an installed package was actually applied (evidence: `patches.lock.json` for Composer Patches v2, the patch URL in the install log for v1), so a patch that is silently skipped — filtered out by the allowlist, dropped by a resolver bug — fails too.
+The install runs with `exit-on-patch-failure`, so a patch that no longer applies already fails the build. On top of that, `verify-applied-patches.php` asserts that **every** patch declared for an installed package was actually applied (evidence: `patches.lock.json`, or the patch URL in the install log), so a patch that is silently skipped — filtered out by the allowlist, dropped by a resolver bug — fails too.
 
 Every package this branch patches is installed by the test project.
 
-CI runs the install twice, once against `cweagans/composer-patches` `~2.0` and once against `~1.7.0`, because the plugin must keep working with both.
+CI runs the install against `cweagans/composer-patches` `~2.0`, the only supported version.

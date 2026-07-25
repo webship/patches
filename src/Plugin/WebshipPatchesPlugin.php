@@ -4,32 +4,24 @@ namespace Webship\WebshipPatches\Plugin;
 
 use Composer\Composer;
 use Composer\DependencyResolver\Operation\InstallOperation;
-use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer\PackageEvent;
 use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
-use Composer\Script\Event as ScriptEvent;
-use Composer\Script\ScriptEvents;
 
 /**
  * Adds wildcard ignore-dependency-patches, an allowed-dependency-patches
  * allowlist, and v1-style patches-ignore on top of cweagans/composer-patches.
  *
- * Supports cweagans/composer-patches "~1.7.0 || ~2.0":
- *
- *  - v2: replaces the default Dependencies resolver with FilteredDependencies
- *        (via Capability + POST_DISCOVER_RESOLVERS) and force-rewrites
- *        patches.lock.json once our own package is installed.
- *  - v1: mutates each package's extra.patches in place at PRE_INSTALL_CMD,
- *        PRE_UPDATE_CMD, PRE_PACKAGE_INSTALL and PRE_PACKAGE_UPDATE at higher
- *        priority than cweagans v1, so v1's gatherPatches() sees the filtered
- *        set. v1's native patches-ignore is left to v1 itself.
+ * Requires cweagans/composer-patches "~2.0". The default Dependencies resolver
+ * is replaced with FilteredDependencies (via Capability +
+ * POST_DISCOVER_RESOLVERS), and patches.lock.json is force-rewritten once our
+ * own package is installed.
  *
  * Always registers the cleanup-patches Composer commands via
- * WebshipCommandProvider regardless of cweagans version.
+ * WebshipCommandProvider.
  */
 class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface, Capable
 {
@@ -41,8 +33,6 @@ class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface,
     private Composer $composer;
     private IOInterface $io;
     private bool $reresolved = false;
-    private bool $v1Mutated = false;
-    private ?int $cweagansVersion = null;
 
     public function activate(Composer $composer, IOInterface $io): void
     {
@@ -64,7 +54,7 @@ class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface,
             \Composer\Plugin\Capability\CommandProvider::class
                 => \Webship\WebshipPatches\Capability\WebshipCommandProvider::class,
         ];
-        if ($this->detectVersion() === 2) {
+        if ($this->cweagansAvailable()) {
             $caps[\cweagans\Composer\Capability\Resolver\ResolverProvider::class]
                 = \Webship\WebshipPatches\Capability\WebshipResolverProvider::class;
         }
@@ -74,40 +64,30 @@ class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface,
     public static function getSubscribedEvents(): array
     {
         return [
-            ScriptEvents::PRE_INSTALL_CMD => [['onPreCmdV1', 9999]],
-            ScriptEvents::PRE_UPDATE_CMD => [['onPreCmdV1', 9999]],
-            ScriptEvents::POST_INSTALL_CMD => [['onPreCmd', 9999]],
-            ScriptEvents::POST_UPDATE_CMD => [['onPreCmd', 9999]],
             PackageEvents::PRE_PACKAGE_INSTALL => [['onPrePackage', 9999]],
             PackageEvents::PRE_PACKAGE_UPDATE => [['onPrePackage', 9999]],
             PackageEvents::POST_PACKAGE_INSTALL => [['onPostPackage', 9999]],
-            'post-discover-resolvers' => [['filterResolversV2', 100]],
+            'post-discover-resolvers' => [['filterResolvers', 100]],
         ];
     }
 
-    private function detectVersion(): int
+    /**
+     * Whether the cweagans/composer-patches v2 plugin class is autoloadable.
+     *
+     * Deliberately not cached: within a single Composer process the cweagans
+     * classes can become autoloadable mid-run (for example when
+     * cweagans/composer-patches is installed by the same `composer require`
+     * that installs this plugin), so a cached "not found" would short-circuit
+     * the resolver filter and the capability wiring for the rest of the run.
+     */
+    private function cweagansAvailable(): bool
     {
-        // Cache only a positive detection. Within a single Composer process the
-        // cweagans classes can become autoloadable mid-run (for example when
-        // cweagans/composer-patches is installed by the same `composer require`
-        // that installs other plugins), so a cached "not found" must be probed
-        // again on the next call instead of short-circuiting the v2 resolver
-        // filter and the capability wiring for the rest of the process.
-        if ($this->cweagansVersion !== null && $this->cweagansVersion > 0) {
-            return $this->cweagansVersion;
-        }
-        if (class_exists(\cweagans\Composer\Plugin\Patches::class)) {
-            return $this->cweagansVersion = 2;
-        }
-        if (class_exists(\cweagans\Composer\Patches::class)) {
-            return $this->cweagansVersion = 1;
-        }
-        return $this->cweagansVersion = 0;
+        return class_exists(\cweagans\Composer\Plugin\Patches::class);
     }
 
-    public function filterResolversV2($event): void
+    public function filterResolvers($event): void
     {
-        if ($this->detectVersion() !== 2) {
+        if (!$this->cweagansAvailable()) {
             return;
         }
         $resolvers = $event->getCapabilities();
@@ -121,203 +101,30 @@ class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface,
         $event->setCapabilities($kept);
     }
 
-    public function onPreCmdV1(ScriptEvent $event): void
-    {
-        if ($this->detectVersion() === 1) {
-            $this->rewriteV1Patches();
-        }
-    }
-
-    /**
-     * Rewrite cweagans v1's $this->patches map from the lock file, applying
-     * allowed/ignore wildcards + patches-ignore. Idempotent across calls.
-     */
-    private function rewriteV1Patches(): void
-    {
-        if ($this->detectVersion() !== 1) {
-            return;
-        }
-        $cw = $this->findCweagansV1Plugin();
-        if ($cw === null) {
-            return;
-        }
-
-        $newPatches = $this->buildV1PatchesMap();
-        $newPatches['_patchesGathered'] = true;
-
-        $rc = new \ReflectionClass($cw);
-        if (!$rc->hasProperty('patches')) {
-            return;
-        }
-        $prop = $rc->getProperty('patches');
-        $prop->setAccessible(true);
-        $prop->setValue($cw, $newPatches);
-
-        if (!$this->v1Mutated) {
-            $this->v1Mutated = true;
-            $this->io->write('<info>webship-patches: re-gathered patches via v1 (allowed dependency patches).</info>');
-        }
-    }
-
-    private function buildV1PatchesMap(): array
-    {
-        $patches = [];
-        $rootExtra = $this->composer->getPackage()->getExtra();
-
-        if (!empty($rootExtra['patches']) && is_array($rootExtra['patches'])) {
-            $patches = $this->mergePatchesRecursive($patches, $rootExtra['patches']);
-        }
-
-        if (!empty($rootExtra['patches-file'])) {
-            $patchesFile = $rootExtra['patches-file'];
-            if ($patchesFile[0] !== '/') {
-                $patchesFile = getcwd() . '/' . $patchesFile;
-            }
-            if (is_file($patchesFile)) {
-                $data = json_decode((string) file_get_contents($patchesFile), true);
-                if (is_array($data) && !empty($data['patches'])) {
-                    $patches = $this->mergePatchesRecursive($patches, $data['patches']);
-                }
-            }
-        }
-
-        $cp = $rootExtra['composer-patches'] ?? [];
-        $allowed = (array) ($cp['allowed-dependency-patches'] ?? self::DEFAULT_ALLOWED_DEPENDENCY_PATCHES);
-        $ignored = (array) ($cp['ignore-dependency-patches'] ?? []);
-        $patchesIgnore = (array) ($rootExtra['patches-ignore'] ?? []);
-
-        $locker = $this->composer->getLocker();
-        if (!$locker->isLocked()) {
-            return $patches;
-        }
-        $lockData = $locker->getLockData();
-        $lockedPackages = $lockData['packages'] ?? [];
-
-        foreach ($lockedPackages as $p) {
-            $name = $p['name'] ?? null;
-            if ($name === null || empty($p['extra']['patches'])) {
-                continue;
-            }
-            if (!$this->matchesAny($name, $allowed)) {
-                continue;
-            }
-            if ($this->matchesAny($name, $ignored)) {
-                continue;
-            }
-            $depPatches = $p['extra']['patches'];
-            if (isset($patchesIgnore[$name])) {
-                foreach ($patchesIgnore[$name] as $targetPkg => $urls) {
-                    if (!isset($depPatches[$targetPkg])) {
-                        continue;
-                    }
-                    $urlList = is_array($urls) ? array_values($urls) : [(string) $urls];
-                    $depPatches[$targetPkg] = array_filter(
-                        $depPatches[$targetPkg],
-                        fn($u) => !in_array($u, $urlList, true)
-                    );
-                    if (empty($depPatches[$targetPkg])) {
-                        unset($depPatches[$targetPkg]);
-                    }
-                }
-            }
-            $patches = $this->mergePatchesRecursive($patches, $depPatches);
-        }
-        return $patches;
-    }
-
-    private function matchesAny(string $name, array $patterns): bool
-    {
-        foreach ($patterns as $pattern) {
-            if (fnmatch((string) $pattern, $name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function mergePatchesRecursive(array $a, array $b): array
-    {
-        foreach ($b as $package => $patches) {
-            if (!isset($a[$package])) {
-                $a[$package] = $patches;
-            } elseif (is_array($patches) && is_array($a[$package])) {
-                $a[$package] = array_merge($a[$package], $patches);
-            }
-        }
-        return $a;
-    }
-
-    private function findCweagansV1Plugin()
-    {
-        foreach ($this->composer->getPluginManager()->getPlugins() as $plugin) {
-            if (class_exists(\cweagans\Composer\Patches::class)
-                && $plugin instanceof \cweagans\Composer\Patches) {
-                return $plugin;
-            }
-        }
-        return null;
-    }
-
     public function onPrePackage(PackageEvent $event): void
     {
-        $version = $this->detectVersion();
-        $op = $event->getOperation();
-        $pkg = null;
-        if ($op instanceof InstallOperation) {
-            $pkg = $op->getPackage();
-        } elseif ($op instanceof UpdateOperation) {
-            $pkg = $op->getTargetPackage();
-        }
-
-        if ($version === 1) {
-            $this->rewriteV1Patches();
-            return;
-        }
-
-        if ($version === 2 && !$this->reresolved) {
-            $this->reresolveAndRewriteLockV2();
+        if (!$this->reresolved) {
+            $this->reresolveAndRewriteLock();
         }
     }
 
     public function onPostPackage(PackageEvent $event): void
     {
-        $version = $this->detectVersion();
         $op = $event->getOperation();
         if (!$op instanceof InstallOperation) {
-            if ($version === 1) {
-                $this->rewriteV1Patches();
-            }
             return;
         }
         if ($op->getPackage()->getName() === 'webship/webship-patches') {
-            if ($version === 2) {
-                $this->reresolveAndRewriteLockV2();
-            } elseif ($version === 1) {
-                $this->rewriteV1Patches();
-            }
-            return;
-        }
-        if ($version === 1) {
-            $this->rewriteV1Patches();
+            $this->reresolveAndRewriteLock();
         }
     }
 
-    public function onPreCmd(ScriptEvent $event): void
-    {
-        if ($this->detectVersion() === 1) {
-            $this->rewriteV1Patches();
-        }
-    }
-
-    private function reresolveAndRewriteLockV2(): void
+    private function reresolveAndRewriteLock(): void
     {
         if ($this->reresolved) {
             return;
         }
-        if ($this->detectVersion() !== 2) {
-            return;
-        }
-        $cweagans = $this->findCweagansV2Plugin();
+        $cweagans = $this->findCweagansPlugin();
         if ($cweagans === null) {
             return;
         }
@@ -339,8 +146,11 @@ class WebshipPatchesPlugin implements PluginInterface, EventSubscriberInterface,
         }
     }
 
-    private function findCweagansV2Plugin()
+    private function findCweagansPlugin()
     {
+        if (!$this->cweagansAvailable()) {
+            return null;
+        }
         foreach ($this->composer->getPluginManager()->getPlugins() as $plugin) {
             if ($plugin instanceof \cweagans\Composer\Plugin\Patches) {
                 return $plugin;

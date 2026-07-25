@@ -60,4 +60,4 @@ With this config:
 - `composer-plugin-api ^2.0`
 - `cweagans/composer-patches ~2.0`
 
-`cweagans/composer-patches ~1` is no longer supported by the plugin code — stay on the previous metapackage release of `webship/webship-patches` if you need v1.
+`cweagans/composer-patches ~1` is not supported. The plugin requires `~2.0`.

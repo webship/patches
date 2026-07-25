@@ -233,7 +233,7 @@ The AI-assistant context for this package lives in [`webship/ai-agents`](https:/
 
 - `webship-patches` — installing, configuring, and troubleshooting `webship/webship-patches`.
 - `webship-patches-release-manager` — cutting and publishing releases.
-- `composer-patches` — `cweagans/composer-patches` v1 / v2 + this plugin's allowlist, wildcard ignore, and `patches-ignore` extensions.
+- `composer-patches` — `cweagans/composer-patches` v2 + this plugin's allowlist, wildcard ignore, and `patches-ignore` extensions.
 - `patch-management` — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
 
 ## Requirements
