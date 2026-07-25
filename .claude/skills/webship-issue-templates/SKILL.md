@@ -1,11 +1,11 @@
 ---
-name: vardot-issue-templates
-description: Canonical Vardot templates for issues and MRs/PRs — the drupal.org default issue summary template (HTML with ✅/❌/➖ Remaining tasks), the GitHub issue template (markdown adaptation), and the Checkpoints checklist every MR/PR description must end with. Use when creating or updating an issue on drupal.org or GitHub, opening an MR on git.drupalcode.org or a PR on GitHub, or flipping ✅/❌/➖ marks as work progresses.
+name: webship-issue-templates
+description: Canonical Webship templates for issues and MRs/PRs — the drupal.org default issue summary template (HTML with ✅/❌/➖ Remaining tasks), the GitHub issue template (markdown adaptation), and the Checkpoints checklist every MR/PR description must end with. Use when creating or updating an issue on drupal.org or GitHub, opening an MR on git.drupalcode.org or a PR on GitHub, or flipping ✅/❌/➖ marks as work progresses.
 ---
 
-# Vardot Issue & MR/PR Templates
+# Webship Issue & MR/PR Templates
 
-Single source of truth for the templates used by every Vardot agent when filing issues and opening MRs/PRs. Copy these verbatim — never improvise the structure; only fill in the content.
+Single source of truth for the templates used by every Webship agent when filing issues and opening MRs/PRs. Copy these verbatim — never improvise the structure; only fill in the content.
 
 ## Progress marks
 
@@ -145,7 +145,7 @@ None.
 
 `Reviewed by a human` and `Code review by maintainers` stay unticked — the AI never ticks them.
 
-## 3. GitHub issues — Vardot template (markdown)
+## 3. GitHub issues — Webship template (markdown)
 
 On **GitHub**, do NOT reproduce the drupal.org summary template. No `### Remaining tasks` with ✅/❌ prose, and no `User interface changes` / `API changes` / `Data model changes` / `Release notes snippet` trailing sections. A GitHub issue is Problem/Motivation → Proposed resolution → the **Checkpoints** checklist (GitHub markdown checkboxes), the same checklist a PR ends with:
 
@@ -185,7 +185,7 @@ Tick only what is genuinely done (`- [x]`), leave the rest `- [ ]`; never tick `
 5. **AI disclosure** — per the [Drupal AI policy](https://www.drupal.org/docs/develop/issues/issue-procedures-and-etiquette/policy-on-the-use-of-ai-when-contributing-to-drupal), add `AI-Generated: Yes (<what>; reviewed by <contributor>.)` to commits and MR/PR descriptions.
 6. **Contributor identity** — ask the user for the name/email to commit and file as (default `git config user.name` / `user.email`).
 7. **Keep the format** — free-form content from a user or calling agent gets merged INTO these templates, never used instead of them; dropping the template requires the user's explicit confirmation.
-8. **Worked examples** — for patch work on varbase-patches / drupal-core-patches, follow [`references/varbase-patches-examples.md`](references/varbase-patches-examples.md): the Add/Remove/Change title grammar, the patch-file vs composer.json PR split, and the immutable-patch re-roll rule, all with real issue/PR numbers.
+8. **Worked examples** — for patch work on webship-patches / drupal-core-patches, follow [`references/webship-patches-examples.md`](references/webship-patches-examples.md): the Add/Remove/Change title grammar, the patch-file vs composer.json PR split, and the immutable-patch re-roll rule, all with real issue/PR numbers.
 9. **One issue + one PR per fix** — never bundle multiple patches/fixes into one issue or one PR; each change gets its own dedicated issue and its own PR/MR so every review thread tells one clean story. If an issue/PR ends up mixing several, close it and re-create separate single-purpose ones.
 10. **Reuse vs. new MR** — if a drupal.org / git.drupalcode.org issue already has an MR we can push to: a **small** change (minor edit, reroll, tweak) → commit to that existing MR; a **big** change (substantially different approach/diff) → open a **new** MR. No accessible MR (or the existing one is another contributor's fork we can't push to) → open our own issue-fork MR. Never hijack someone else's MR.
 11. **Never tick the human-review flags** — the AI must never check `Reviewed by a human` or `Code review by maintainers`; they stay `- [ ]` / ❌ until the human reviewer sets them.

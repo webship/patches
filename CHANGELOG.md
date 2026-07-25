@@ -1,6 +1,6 @@
-# Changelog — Vardot/varbase-patches (`11.0.x`)
+# Changelog — webship/webship-patches (`11.0.x`)
 
-All notable changes on the `11.0.x` branch of [`Vardot/varbase-patches`](https://github.com/Vardot/varbase-patches), newest first.
+All notable changes on the `11.0.x` branch of [`webship/webship-patches`](https://github.com/webship/webship-patches), newest first.
 Each release lists the commits — merged pull requests and the drupal.org issues they reference — since the previous release.
 `#N` links to the pull request; 7-digit `#NNNNNNN` refs are drupal.org issues. Generated from git history.
 
@@ -34,7 +34,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 ## [11.0.23] - 2026-07-13
 
 - Add a patch for the AI Provider amazee.ai module on fix: #3586236 Do not abort recipe apply when amazee.ai trial provisioning fails (#499)
-- ci: Add a GitHub Actions patches test — installs Drupal and the modules this branch patches from `tests/test.composer.json`, asserts Composer Patches (v1 and v2) applies every Varbase patch, and checks that every patch file still exists
+- ci: Add a GitHub Actions patches test — installs Drupal and the modules this branch patches from `tests/test.composer.json`, asserts Composer Patches (v1 and v2) applies every Webship patch, and checks that every patch file still exists
 
 ## [11.0.21] - 2026-07-10
 
@@ -45,14 +45,14 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 ## [11.0.20] - 2026-07-06
 
 - Add a patch for the Redirect module on Drupal 11.4 compatibility for RedirectPathProcessorManager (#3607821) (#420)
-- docs: Add the contribution workflow to the varbase-patches agent (#422)
+- docs: Add the contribution workflow to the webship-patches agent (#422)
 - Revert "Add a patch for the Redirect module on Drupal 11.4 compat: PathProcessorManager::addInbound() removed (constructor-injected autowired path processors), applied after Issue #2879648 mr-109"
 - Add a patch for the Redirect module on Drupal 11.4 compat: PathProcessorManager::addInbound() removed (constructor-injected autowired path processors), applied after Issue #2879648 mr-109
 - docs: Add CHANGELOG.md for the 11.0.x branch (#432)
 - fix: #446 Remove the openapi_jsonapi #3539722 patch on 11.0.x (fixed upstream in 3.x) (#447)
 - fix: add the eca_helper #3608313 patch on the 11.0.x branch (same patch file as 10.1.x) (#454)
 - fix: Point the redirect patch at #2879648 MR!202 and drop the superseded #3607821 patch (Drupal 11.4 RedirectPathProcessorManager)
-- Change a patch for the Rabbit Hole module for Fix Return value must be of type bool fatal error (#3419073) — for Varbase 11.0.x (#465)
+- Change a patch for the Rabbit Hole module for Fix Return value must be of type bool fatal error (#3419073) — for Webship 11.0.x (#465)
 
 ## [11.0.19] - 2026-06-30
 
@@ -70,8 +70,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 ## [11.0.17] - 2026-06-28
 
 - docs: PR/MR template with Checkpoints (no UX/UI line)
-- fix: [11.0.x] apply vardot/drupal-core-patches by default (allowed-dependency-patches) (#394)
-- task: require vardot/drupal-core-patches (~11 || ~12); move drupal/core patches out (#387)
+- fix: [11.0.x] apply webship/drupal-core-patches by default (allowed-dependency-patches) (#394)
+- task: require webship/drupal-core-patches (~11 || ~12); move drupal/core patches out (#387)
 
 ## [11.0.16] - 2026-06-25
 
@@ -123,7 +123,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [11.0.6] - 2026-05-14
 
-- Issue #366: Ship in-repo AI agent + skills for varbase-patches (Claude / AGENTS.md / CLAUDE.md)
+- Issue #366: Ship in-repo AI agent + skills for webship-patches (Claude / AGENTS.md / CLAUDE.md)
 - Issue #365: Rename docs/index.md to docs/README.md and refresh docs landing for branch 11.0.x
 
 ## [11.0.5] - 2026-05-13
@@ -132,15 +132,15 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [11.0.4] - 2026-05-11
 
-- Issue #363: Drop the extra.plugin-modifies-downloads and extra.plugin-modifies-install-path flags from composer.json. Those promote the plugin to early activation, which makes Composer's autoloader require() drupal/core's includes/bootstrap.inc before drupal/core has been extracted on a fresh composer create-project, causing "Plugin initialization failed ... Failed to open stream" and "Install of vardot/varbase-patches failed". The plugin's late-activation path (POST_PACKAGE_INSTALL of self, with reflection-driven lock rewrite for v2 and patch-map rebuild for v1) already covers the in-flight re-resolve, so the early-load flags are unnecessary.
-- add missing Composer dependencies required for Varbase project installation #363
+- Issue #363: Drop the extra.plugin-modifies-downloads and extra.plugin-modifies-install-path flags from composer.json. Those promote the plugin to early activation, which makes Composer's autoloader require() drupal/core's includes/bootstrap.inc before drupal/core has been extracted on a fresh composer create-project, causing "Plugin initialization failed ... Failed to open stream" and "Install of webship/webship-patches failed". The plugin's late-activation path (POST_PACKAGE_INSTALL of self, with reflection-driven lock rewrite for v2 and patch-map rebuild for v1) already covers the in-flight re-resolve, so the early-load flags are unnecessary.
+- add missing Composer dependencies required for Webship project installation #363
 - Issue #363: Move the autoload block in composer.json so it sits immediately after the require block, before extra. JSON-equivalent change; the file still parses identically.
 - Issue #363: Reformat composer.json patch entries to two indented lines (description on its own line, URL on the next) for readability, matching the long-standing layout used in older releases. JSON-equivalent change; the file still parses identically.
-- Issue #363: Support cweagans/composer-patches ~1.7.0 || ~2.0 and drop the static version field from composer.json. The plugin now detects the installed cweagans version at runtime: on v2 it keeps the existing FilteredDependencies + patches.lock.json rewrite path; on v1 it rebuilds cweagans v1's in-memory patches map from composer.lock (applying allowed-dependency-patches, ignore-dependency-patches wildcards, and patches-ignore) and sets it via reflection before postInstall runs. Composer commands varbase-patches:cleanup:patches and :cleanup:patches-file work on both versions. The static "version" field is removed; the package version is now derived from the git branch/tag.
-- Issue #363: Document the patches-ignore handling for Varbase Patches in README.md and docs/configuration.md. Mirrors the upstream Varbase docs layout (https://docs.varbase.vardot.com/developers/varbase-patches), shows the v1-style description-keyed schema and the equivalent flat-array schema. URL string is what matches; description is informational.
-- Issue #363: Clean up README.md commands section. Restore the "List of needed patches for Varbase used packages with Composer Patches." tagline. Replace the cramped commands table with a readable, default-markdown layout (Name / Aliases / Description bullet lists plus invocation code blocks). Add a Filename convention example. No GitBook syntax.
-- Issue #363: Add Composer commands varbase-patches:cleanup:patches and varbase-patches:cleanup:patches-file (aliases var-ccup and var-ccupf) to convert merge-request URLs to local timestamped patch files. Replaces the equivalent Drush commands previously shipped in varbase_core. Adds docs/ and rewrites README.md.
-- Issue #362: Convert varbase-patches into a Composer plugin to add wildcard ignore-dependency-patches, allowed-dependency-patches allowlist, and patches-ignore (v1-style) support over cweagans/composer-patches v2.
+- Issue #363: Support cweagans/composer-patches ~1.7.0 || ~2.0 and drop the static version field from composer.json. The plugin now detects the installed cweagans version at runtime: on v2 it keeps the existing FilteredDependencies + patches.lock.json rewrite path; on v1 it rebuilds cweagans v1's in-memory patches map from composer.lock (applying allowed-dependency-patches, ignore-dependency-patches wildcards, and patches-ignore) and sets it via reflection before postInstall runs. Composer commands webship-patches:cleanup:patches and :cleanup:patches-file work on both versions. The static "version" field is removed; the package version is now derived from the git branch/tag.
+- Issue #363: Document the patches-ignore handling for Webship Patches in README.md and docs/configuration.md. Mirrors the upstream Webship docs layout (https://github.com/webship/webship-patches/blob/11.0.x/docs/README.md), shows the v1-style description-keyed schema and the equivalent flat-array schema. URL string is what matches; description is informational.
+- Issue #363: Clean up README.md commands section. Restore the "List of needed patches for Webship used packages with Composer Patches." tagline. Replace the cramped commands table with a readable, default-markdown layout (Name / Aliases / Description bullet lists plus invocation code blocks). Add a Filename convention example. No GitBook syntax.
+- Issue #363: Add Composer commands webship-patches:cleanup:patches and webship-patches:cleanup:patches-file (aliases web-ccup and web-ccupf) to convert merge-request URLs to local timestamped patch files. Replaces the equivalent Drush commands previously shipped in webship_core. Adds docs/ and rewrites README.md.
+- Issue #362: Convert webship-patches into a Composer plugin to add wildcard ignore-dependency-patches, allowed-dependency-patches allowlist, and patches-ignore (v1-style) support over cweagans/composer-patches v2.
 
 ## [11.0.3] - 2026-05-07
 

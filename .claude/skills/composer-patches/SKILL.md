@@ -1,11 +1,11 @@
 ---
 name: composer-patches
-description: Apply and manage patches using cweagans/composer-patches (v1 / v2) for Drupal projects, and use the vardot/varbase-patches Composer plugin's allowlist, wildcard ignore, and patches-ignore extensions on top of v2. Use when applying patches to Drupal core or contrib, configuring composer.json patch blocks, handling patch failures, or integrating with Varbase patches.
+description: Apply and manage patches using cweagans/composer-patches (v1 / v2) for Drupal projects, and use the webship/webship-patches Composer plugin's allowlist, wildcard ignore, and patches-ignore extensions on top of v2. Use when applying patches to Drupal core or contrib, configuring composer.json patch blocks, handling patch failures, or integrating with Webship patches.
 ---
 
 # Composer Patches
 
-Apply and manage patches using `cweagans/composer-patches` for Drupal projects. Covers v1, v2, and the `vardot/varbase-patches` plugin that wraps v2 with extra controls.
+Apply and manage patches using `cweagans/composer-patches` for Drupal projects. Covers v1, v2, and the `webship/webship-patches` plugin that wraps v2 with extra controls.
 
 ## Prerequisites
 
@@ -67,7 +67,7 @@ Apply and manage patches using `cweagans/composer-patches` for Drupal projects. 
 
 Prefer **local, timestamped files** for production. Raw MR URLs change as commits are pushed to the MR and break Composer checksums mid-install.
 
-## Filename convention (Varbase)
+## Filename convention (Webship)
 
 ```
 [package]--[YYYY-MM-DD]--[issue number]--[mr number].patch
@@ -109,9 +109,9 @@ Upstream v2 only matches by exact package name.
 }
 ```
 
-## Extra controls from `vardot/varbase-patches`
+## Extra controls from `webship/webship-patches`
 
-`vardot/varbase-patches` is a Composer plugin (`type: composer-plugin`) layered on top of v2. It restores v1-style behaviors and adds wildcards.
+`webship/webship-patches` is a Composer plugin (`type: composer-plugin`) layered on top of v2. It restores v1-style behaviors and adds wildcards.
 
 ### `allowed-dependency-patches` (allowlist, default-deny)
 
@@ -119,13 +119,13 @@ Upstream v2 only matches by exact package name.
 {
   "extra": {
     "composer-patches": {
-      "allowed-dependency-patches": ["vardot/varbase-patches"]
+      "allowed-dependency-patches": ["webship/webship-patches"]
     }
   }
 }
 ```
 
-Only listed packages may contribute dependency-declared patches. Default: `["vardot/varbase-patches"]`. Net effect: only Vardot-curated patches and your project's own `extra.patches` apply — stale third-party `.patch` URLs in unrelated contrib modules are skipped.
+Only listed packages may contribute dependency-declared patches. Default: `["webship/webship-patches"]`. Net effect: only Webship-curated patches and your project's own `extra.patches` apply — stale third-party `.patch` URLs in unrelated contrib modules are skipped.
 
 ### Wildcard `ignore-dependency-patches`
 
@@ -149,7 +149,7 @@ Exclude one specific patch URL declared by a given dependency:
 {
   "extra": {
     "patches-ignore": {
-      "vardot/varbase-patches": {
+      "webship/webship-patches": {
         "drupal/core": {
           "Issue description": "https://patch-url.patch"
         }
@@ -163,14 +163,14 @@ Schema: `{ "<source-pkg>": { "<target-pkg>": { "<description>": "<url>" } } }`. 
 
 ## Plugin Composer commands
 
-Provided by `vardot/varbase-patches`. They replace the older Drush commands previously shipped in `varbase_core`.
+Provided by `webship/webship-patches`. They replace the older Drush commands previously shipped in `webship_core`.
 
 ```bash
 # Rewrite remote MR URLs in root composer.json to local timestamped files under ./patches/
-composer varbase-patches:cleanup:patches      # alias: composer var-ccup
+composer webship-patches:cleanup:patches      # alias: composer web-ccup
 
 # Same, but for the JSON file referenced by extra.patches-file
-composer varbase-patches:cleanup:patches-file # alias: composer var-ccupf
+composer webship-patches:cleanup:patches-file # alias: composer web-ccupf
 ```
 
 ## Examples
@@ -210,13 +210,13 @@ git apply --check patches/<file>.patch
 
 ## Handling patch failures
 
-- **Already applied** (upstream merged the fix): remove from `extra.patches`, or — for a patch declared by `vardot/varbase-patches` — add to `patches-ignore`.
+- **Already applied** (upstream merged the fix): remove from `extra.patches`, or — for a patch declared by `webship/webship-patches` — add to `patches-ignore`.
 - **Patch conflicts**: re-roll against the new module version, rename the file with a fresh `YYYY-MM-DD`, update the entry in `extra.patches`.
-- **Stale third-party URL aborts install**: rely on the default allowlist (`["vardot/varbase-patches"]`) or add a wildcard `ignore-dependency-patches` (e.g. `drupal/*`).
-- **`Failed to open stream` on fresh `composer create-project`**: a downstream plugin set `extra.plugin-modifies-downloads` or `extra.plugin-modifies-install-path` and got promoted to early activation before `drupal/core` was extracted. Drop those flags — `vardot/varbase-patches` uses late activation (POST_PACKAGE_INSTALL of itself) on purpose.
+- **Stale third-party URL aborts install**: rely on the default allowlist (`["webship/webship-patches"]`) or add a wildcard `ignore-dependency-patches` (e.g. `drupal/*`).
+- **`Failed to open stream` on fresh `composer create-project`**: a downstream plugin set `extra.plugin-modifies-downloads` or `extra.plugin-modifies-install-path` and got promoted to early activation before `drupal/core` was extracted. Drop those flags — `webship/webship-patches` uses late activation (POST_PACKAGE_INSTALL of itself) on purpose.
 
 ## See also
 
-- Agent: `varbase-patches` — end-to-end Varbase patches workflows by version.
-- [Varbase Patches repo](https://github.com/Vardot/varbase-patches)
+- Agent: `webship-patches` — end-to-end Webship patches workflows by version.
+- [Webship Patches repo](https://github.com/webship/webship-patches)
 - [cweagans/composer-patches](https://github.com/cweagans/composer-patches)

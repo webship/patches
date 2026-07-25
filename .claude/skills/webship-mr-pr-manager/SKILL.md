@@ -1,18 +1,18 @@
 ---
-name: vardot-mr-pr-manager
-description: The Vardot way to open and maintain merge/pull requests on ANY platform — GitHub PRs (gh CLI) and GitLab / git.drupalcode.org MRs (issue forks / glab / API). Covers platform detection, description shape (issue link → notes → Checkpoints last), commit-type titles for drupal.org (drupal.org/node/3586390), AI-policy disclosure, honest checkbox flips, one-issue-one-PR, reuse-vs-new-MR, and the never-tick human-review rule. Use when opening an MR/PR, updating its Checkpoints, syncing a PR description, or getting a branch reviewed.
+name: webship-mr-pr-manager
+description: The Webship way to open and maintain merge/pull requests on ANY platform — GitHub PRs (gh CLI) and GitLab / git.drupalcode.org MRs (issue forks / glab / API). Covers platform detection, description shape (issue link → notes → Checkpoints last), commit-type titles for drupal.org (drupal.org/node/3586390), AI-policy disclosure, honest checkbox flips, one-issue-one-PR, reuse-vs-new-MR, and the never-tick human-review rule. Use when opening an MR/PR, updating its Checkpoints, syncing a PR description, or getting a branch reviewed.
 ---
 
-# Vardot MR/PR Manager
+# Webship MR/PR Manager
 
-The single gateway for merge requests and pull requests across GitHub and GitLab (git.drupalcode.org). This skill owns the MR/PR lifecycle — the fix itself belongs to the caller. Issue templates come from the **vardot-issue-templates** skill; issue creation is delegated to the `drupal-issue-manager` / `github-issue-manager` agents.
+The single gateway for merge requests and pull requests across GitHub and GitLab (git.drupalcode.org). This skill owns the MR/PR lifecycle — the fix itself belongs to the caller. Issue templates come from the **webship-issue-templates** skill; issue creation is delegated to the `drupal-issue-manager` / `github-issue-manager` agents.
 
 ## Golden rules
 
 1. **Issue first, always.** Never open an MR/PR without an issue to reference. No issue yet → create it (or delegate to the issue-manager agent) and wait for the id.
 2. **Search before creating.** Search the repo's open/merged MRs/PRs and the issue queue for the same change + target branch before opening anything. Same change + same branch → reuse. Issue exists but only for OTHER branches → keep the issue, open a NEW MR/PR for the current branch. Never duplicate.
 3. **One issue + one PR per fix.** Never bundle multiple patches/fixes into one issue or PR. If one mixes several, close it and split into single-purpose ones.
-4. **Checkpoints end every description.** The Checkpoints checklist (from `vardot-issue-templates`) is the FINAL section of every MR/PR body, ticking only what is actually done.
+4. **Checkpoints end every description.** The Checkpoints checklist (from `webship-issue-templates`) is the FINAL section of every MR/PR body, ticking only what is actually done.
 5. **Never tick the human-review flags.** The AI must never check `Reviewed by a human` or `Code review by maintainers` (nor `Full testing and approval`). They stay `- [ ]` until a human sets them.
 6. **Always link the issue and the MR/PR** — never a bare number. Report both URLs.
 
@@ -36,7 +36,7 @@ By: <drupal.org username>
 AI-Generated: Yes (<what the AI did>)
 ```
 
-Types: `fix` `feat` `ci` `docs` `perf` `refactor` `test` `task` `revert` (no `chore`). The MR title is the same `{type}: #{issue-id} Summary` string. Titles use the project's **human-readable** name (e.g. "Varbase Landing Page (Paragraphs)"), never the machine name (`varbase_landing`) — machine names stay inside code/config/paths.
+Types: `fix` `feat` `ci` `docs` `perf` `refactor` `test` `task` `revert` (no `chore`). The MR title is the same `{type}: #{issue-id} Summary` string. Titles use the project's **human-readable** name (e.g. "Webship Landing Page (Paragraphs)"), never the machine name (`webship_landing`) — machine names stay inside code/config/paths.
 
 ## Description shape
 
@@ -67,7 +67,7 @@ Does not merge, approve, or dismiss reviews — human/maintainer actions. GitHub
 
 ## Related skills & agents
 
-- Paired agent: **vardot-mr-pr-manager** — the full sub-agent form of this skill.
-- **vardot-issue-templates** skill — the issue summary + Checkpoints templates this skill references; issue creation via the `drupal-issue-manager` / `github-issue-manager` agents.
-- **varbase-patches** skill + agent — for `vardot/varbase-patches` patch PRs (see the patch-title grammar and shared-file / multi-version rules).
-- **drupal-core-patches** skill + agent — for `vardot/drupal-core-patches` core-patch PRs and Packagist-safe 4-segment never-move release tags.
+- Paired agent: **webship-mr-pr-manager** — the full sub-agent form of this skill.
+- **webship-issue-templates** skill — the issue summary + Checkpoints templates this skill references; issue creation via the `drupal-issue-manager` / `github-issue-manager` agents.
+- **webship-patches** skill + agent — for `webship/webship-patches` patch PRs (see the patch-title grammar and shared-file / multi-version rules).
+- **drupal-core-patches** skill + agent — for `webship/drupal-core-patches` core-patch PRs and Packagist-safe 4-segment never-move release tags.

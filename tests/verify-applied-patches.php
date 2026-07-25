@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Verifies that composer-patches applied every Varbase patch it could.
+ * Verifies that composer-patches applied every Webship patch it could.
  *
  * Run after `composer install` inside the test project (tests/build). For every
  * entry in this branch's composer.json extra.patches it asserts that:
@@ -89,4 +89,4 @@ if ($applied === 0) {
     exit(1);
 }
 
-echo "\nPASS — composer-patches applied every Varbase patch on every installed package.\n";
+echo "\nPASS — composer-patches applied every Webship patch on every installed package.\n";

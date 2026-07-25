@@ -87,14 +87,14 @@ git diff HEAD > ../../../patches/module--$(date +%Y-%m-%d)--issue-reroll.patch
 
 ### Composer commands for patch cleanup
 
-`vardot/varbase-patches` registers Composer-native commands (these replace the older Drush commands previously shipped in `varbase_core`):
+`webship/webship-patches` registers Composer-native commands (these replace the older Drush commands previously shipped in `webship_core`):
 
 ```bash
 # Rewrite MR URLs in root composer.json to local timestamped files under ./patches/
-composer varbase-patches:cleanup:patches      # alias: composer var-ccup
+composer webship-patches:cleanup:patches      # alias: composer web-ccup
 
 # Same operation, applied to the JSON file referenced by extra.patches-file
-composer varbase-patches:cleanup:patches-file # alias: composer var-ccupf
+composer webship-patches:cleanup:patches-file # alias: composer web-ccupf
 ```
 
 ### Patch Storage Best Practices

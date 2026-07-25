@@ -1,12 +1,12 @@
 <?php
 
-namespace Vardot\VarbasePatches\Capability;
+namespace Webship\WebshipPatches\Capability;
 
 use Composer\Plugin\Capability\CommandProvider;
-use Vardot\VarbasePatches\Command\CleanupPatchesCommand;
-use Vardot\VarbasePatches\Command\CleanupPatchesFileCommand;
+use Webship\WebshipPatches\Command\CleanupPatchesCommand;
+use Webship\WebshipPatches\Command\CleanupPatchesFileCommand;
 
-class VarbaseCommandProvider implements CommandProvider
+class WebshipCommandProvider implements CommandProvider
 {
     public function getCommands(): array
     {

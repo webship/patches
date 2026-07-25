@@ -1,6 +1,6 @@
 <?php
 
-namespace Vardot\VarbasePatches\Util;
+namespace Webship\WebshipPatches\Util;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -83,7 +83,7 @@ class MrPatchProcessor
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'varbase-patches/1.0');
+            curl_setopt($ch, CURLOPT_USERAGENT, 'webship-patches/1.0');
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: text/plain, text/x-diff, */*']);
             $body = curl_exec($ch);
             $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -94,7 +94,7 @@ class MrPatchProcessor
             return $body;
         }
         $ctx = stream_context_create([
-            'http' => ['follow_location' => 1, 'user_agent' => 'varbase-patches/1.0'],
+            'http' => ['follow_location' => 1, 'user_agent' => 'webship-patches/1.0'],
         ]);
         $body = @file_get_contents($url, false, $ctx);
         return $body === false ? null : $body;

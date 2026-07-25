@@ -1,11 +1,11 @@
-# Tests — `vardot/varbase-patches` (11.0.x)
+# Tests — `webship/webship-patches` (11.0.x)
 
 Two checks, run by [`.github/workflows/test-patches.yml`](../.github/workflows/test-patches.yml) on every push and pull request to this branch, and weekly on a schedule.
 
 ## 1. The patch files still physically exist
 
 ```bash
-git fetch --depth=1 https://github.com/Vardot/varbase-patches.git patches:refs/remotes/upstream/patches
+git fetch --depth=1 https://github.com/webship/webship-patches.git patches:refs/remotes/upstream/patches
 php tests/verify-patch-files.php upstream/patches
 ```
 
@@ -17,7 +17,7 @@ For every URL in this branch's `composer.json` → `extra.patches`:
 
 This is what catches a patch file that vanished from Drupal.org or was removed from the `patches` branch.
 
-## 2. Composer Patches applies every Varbase patch
+## 2. Composer Patches applies every Webship patch
 
 ```bash
 mkdir -p tests/build
@@ -26,7 +26,7 @@ composer --working-dir=tests/build install 2>&1 | tee tests/build/install.log
 php tests/verify-applied-patches.php tests/build tests/build/install.log
 ```
 
-[`test.composer.json`](test.composer.json) is an ordinary Drupal project: it requires `drupal/core-recommended`, the modules this branch declares patches for (at the constraints Varbase uses), and `vardot/varbase-patches` itself from the checkout through a `path` repository. `composer install` therefore exercises the real plugin — allowlist, late activation, `cweagans/composer-patches` — against real packages.
+[`test.composer.json`](test.composer.json) is an ordinary Drupal project: it requires `drupal/core-recommended`, the modules this branch declares patches for (at the constraints Webship uses), and `webship/webship-patches` itself from the checkout through a `path` repository. `composer install` therefore exercises the real plugin — allowlist, late activation, `cweagans/composer-patches` — against real packages.
 
 The install runs with `exit-on-patch-failure`, so a patch that no longer applies already fails the build. On top of that, `verify-applied-patches.php` asserts that **every** patch declared for an installed package was actually applied (evidence: `patches.lock.json` for Composer Patches v2, the patch URL in the install log for v1), so a patch that is silently skipped — filtered out by the allowlist, dropped by a resolver bug — fails too.
 

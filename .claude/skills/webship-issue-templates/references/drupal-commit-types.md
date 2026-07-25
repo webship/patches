@@ -30,7 +30,7 @@ By: user2
 
 ## Commit types — non-drupal.org repos (full Conventional Commits list)
 
-For Vardot GitHub repos and other projects that follow plain [Conventional Commits](https://www.conventionalcommits.org/):
+For Webship GitHub repos and other projects that follow plain [Conventional Commits](https://www.conventionalcommits.org/):
 
 | Type | Meaning |
 |------|---------|
@@ -55,7 +55,7 @@ On drupal.org, the Drupal list wins: use `task` instead of `chore`/`build`/`styl
 - `By:` lines do not determine issue credit (credit is set on the issue).
 - Maintainers may also use `Co-authored-by:`, `Reported-by:`, `Reviewed-by:` trailers.
 
-## Vardot addition
+## Webship addition
 
 Follow with the AI-disclosure line per the [AI policy](drupal-ai-policy.md) when AI assistance was significant:
 

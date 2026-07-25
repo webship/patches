@@ -7,16 +7,16 @@ All keys live under `extra` in your project's root `composer.json`.
 List of package-name patterns. Only packages matching this list contribute patches via the dependency resolver.
 
 - Type: array of strings
-- Pattern: `fnmatch` (so `drupal/*`, `vardot/*`, `*-patches` all work)
-- Default: `["vardot/varbase-patches"]`
+- Pattern: `fnmatch` (so `drupal/*`, `webship/*`, `*-patches` all work)
+- Default: `["webship/webship-patches"]`
 
 ```json
 {
   "extra": {
     "composer-patches": {
       "allowed-dependency-patches": [
-        "vardot/varbase-patches",
-        "vardot/drupal-core-patches"
+        "webship/webship-patches",
+        "webship/drupal-core-patches"
       ]
     }
   }
@@ -30,7 +30,7 @@ If you want to also accept patches from another vendor:
   "extra": {
     "composer-patches": {
       "allowed-dependency-patches": [
-        "vardot/varbase-patches",
+        "webship/webship-patches",
         "myorg/myorg-patches"
       ]
     }
@@ -50,14 +50,14 @@ List of package-name patterns to exclude **after** the allowlist is applied. Use
 {
   "extra": {
     "composer-patches": {
-      "allowed-dependency-patches": ["drupal/*", "vardot/*"],
+      "allowed-dependency-patches": ["drupal/*", "webship/*"],
       "ignore-dependency-patches": ["drupal/ai_context"]
     }
   }
 }
 ```
 
-When `allowed-dependency-patches` is set to the default `["vardot/varbase-patches"]`, `ignore-dependency-patches` is redundant — nothing else passes the allowlist.
+When `allowed-dependency-patches` is set to the default `["webship/webship-patches"]`, `ignore-dependency-patches` is redundant — nothing else passes the allowlist.
 
 ## `patches-ignore`
 
@@ -66,13 +66,13 @@ Drop specific patch URLs declared by a given dependency against a given target p
 - Type: nested object
 - Default: `{}`
 
-Two equivalent schemas are accepted. The v1-style description-keyed map (matches the format used in the upstream Varbase docs):
+Two equivalent schemas are accepted. The v1-style description-keyed map (matches the format used in the upstream Webship docs):
 
 ```json
 {
   "extra": {
     "patches-ignore": {
-      "vardot/varbase-patches": {
+      "webship/webship-patches": {
         "drupal/recaptcha": {
           "fix: #3588269 Make Drupal8Post::submit() compatible with parent":
           "https://git.drupalcode.org/project/recaptcha/-/commit/68b0f86d1e930ed78f795a97a2fc207be35b3260.diff"
@@ -89,7 +89,7 @@ Or a flat array of URLs:
 {
   "extra": {
     "patches-ignore": {
-      "vardot/varbase-patches": {
+      "webship/webship-patches": {
         "drupal/some_module": [
           "https://www.drupal.org/files/issues/.../some.patch"
         ]
@@ -99,17 +99,17 @@ Or a flat array of URLs:
 }
 ```
 
-Matching is done by URL string. The description (if you use the dict form) is informational only — `vardot/varbase-patches` and the consumer can disagree on the description and the URL still matches.
+Matching is done by URL string. The description (if you use the dict form) is informational only — `webship/webship-patches` and the consumer can disagree on the description and the URL still matches.
 
 ### Ignoring Drupal Core Patches
 
-`vardot/drupal-core-patches` is an ordinary dependency that contributes patches through the dependency resolver, so the same `extra` keys control it — use `vardot/drupal-core-patches` as the **source** package and `drupal/core` as the **target**:
+`webship/drupal-core-patches` is an ordinary dependency that contributes patches through the dependency resolver, so the same `extra` keys control it — use `webship/drupal-core-patches` as the **source** package and `drupal/core` as the **target**:
 
 ```json
 {
   "extra": {
     "patches-ignore": {
-      "vardot/drupal-core-patches": {
+      "webship/drupal-core-patches": {
         "drupal/core": {
           "Issue #3606822: ContainerBuilder synthetic kernel on install": "https://git.drupalcode.org/project/drupal/-/merge_requests/16159.patch"
         }
@@ -119,7 +119,7 @@ Matching is done by URL string. The description (if you use the dict form) is in
 }
 ```
 
-Matching is by URL string, the same as for `vardot/varbase-patches`.
+Matching is by URL string, the same as for `webship/webship-patches`.
 
 ## Standard `cweagans/composer-patches` keys (still honored)
 

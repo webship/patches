@@ -1,14 +1,14 @@
 <?php
 
-namespace Vardot\VarbasePatches\Capability;
+namespace Webship\WebshipPatches\Capability;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Plugin\Capability\Capability;
 use cweagans\Composer\Capability\Resolver\ResolverProvider;
-use Vardot\VarbasePatches\Resolver\FilteredDependencies;
+use Webship\WebshipPatches\Resolver\FilteredDependencies;
 
-class VarbaseResolverProvider implements ResolverProvider
+class WebshipResolverProvider implements ResolverProvider
 {
     private Composer $composer;
     private IOInterface $io;
