@@ -1,0 +1,13 @@
+diff --git a/modules/ctools_entity_mask/src/MaskContentEntityStorage.php b/modules/ctools_entity_mask/src/MaskContentEntityStorage.php
+index 4ef2999e8afd047692ad25631216832dd7f42038..63c54445b93b77ae6a9db7e63591e3999ca225de 100644
+--- a/modules/ctools_entity_mask/src/MaskContentEntityStorage.php
++++ b/modules/ctools_entity_mask/src/MaskContentEntityStorage.php
+@@ -53,7 +53,7 @@ class MaskContentEntityStorage extends ContentEntityStorageBase {
+   /**
+    * {@inheritdoc}
+    */
+-  protected function doLoadMultiple(array $ids = NULL) {
++  protected function doLoadMultiple(?array $ids = NULL) {
+     return [];
+   }
+ 
