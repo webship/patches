@@ -36,9 +36,11 @@ This repository ships its own AI-assistant context so contributors get the same 
 
 - [`../AGENTS.md`](../AGENTS.md) — vendor-neutral entry point. Read this first regardless of which AI coding tool you use (Claude Code, Cursor, Codex, Aider, Continue.dev, Copilot Workspace, …). Captures the non-obvious constraints (late-activation rule, dual v1/v2 support, default-deny allowlist, filename convention).
 - [`../CLAUDE.md`](../CLAUDE.md) — Claude Code-specific entry point. Points at the sub-agent and skills below.
-- [`../.claude/agents/webship-patches.md`](../.claude/agents/webship-patches.md) — Claude sub-agent for installing, configuring, and troubleshooting `webship/webship-patches`.
-- [`../.claude/skills/composer-patches/SKILL.md`](../.claude/skills/composer-patches/SKILL.md) — `cweagans/composer-patches` v1 / v2 + this plugin's allowlist / wildcard ignore / `patches-ignore` extensions.
-- [`../.claude/skills/patch-management/SKILL.md`](../.claude/skills/patch-management/SKILL.md) — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
+- [`webship/ai-agents`](https://github.com/webship/ai-agents) — the Claude Code agents and skills for this package, published separately so they can be shared across every Webship repository. Merge its `.claude/` folder into your `~/.claude/`:
+  - `webship-patches` — installing, configuring, and troubleshooting `webship/webship-patches`.
+  - `webship-patches-release-manager` — cutting and publishing releases.
+  - `composer-patches` — `cweagans/composer-patches` v1 / v2 + this plugin's allowlist / wildcard ignore / `patches-ignore` extensions.
+  - `patch-management` — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
 
 ## Patch filename convention
 

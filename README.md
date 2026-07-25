@@ -233,8 +233,7 @@ This repository ships its own AI-assistant context so contributors get the same 
 
 - [`AGENTS.md`](AGENTS.md) — vendor-neutral entry point. Works with any AI coding assistant (Claude Code, Cursor, Codex, Aider, Continue.dev, Copilot Workspace, …).
 - [`CLAUDE.md`](CLAUDE.md) — Claude Code-specific entry point.
-- [`.claude/agents/webship-patches.md`](.claude/agents/webship-patches.md) — Claude sub-agent.
-- [`.claude/skills/composer-patches/SKILL.md`](.claude/skills/composer-patches/SKILL.md), [`.claude/skills/patch-management/SKILL.md`](.claude/skills/patch-management/SKILL.md) — Claude skills.
+- [`webship/ai-agents`](https://github.com/webship/ai-agents) — the Claude Code agents and skills for this package (`webship-patches`, `webship-patches-release-manager`, `composer-patches`, `patch-management`, …). Merge its `.claude/` folder into your `~/.claude/` to make them available.
 
 ## Requirements
 

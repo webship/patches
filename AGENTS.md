@@ -44,11 +44,6 @@ docs/
 ├── architecture.md
 ├── migration-from-drush.md
 └── troubleshooting.md
-.claude/
-├── agents/webship-patches.md
-└── skills/
-    ├── composer-patches/SKILL.md
-    └── patch-management/SKILL.md
 composer.json               # extra.patches block + plugin metadata
 README.md                   # User-facing entry point
 ```
@@ -192,7 +187,7 @@ Rules:
 
 ## AI-tool-specific entry points
 
-- **Claude Code**: `CLAUDE.md` + `.claude/agents/webship-patches.md` + `.claude/skills/`.
+- **Claude Code**: `CLAUDE.md` in this repo, plus the agents and skills published in [`webship/ai-agents`](https://github.com/webship/ai-agents).
 - **Other tools that auto-load `AGENTS.md`**: this file is your authoritative reference.
 
 ## Resources

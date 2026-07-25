@@ -2,15 +2,16 @@
 
 Project-specific guidance for Claude Code (and any Anthropic-API agent reading this file) when working in this repository. For a vendor-neutral overview that applies to every AI tool, read [`AGENTS.md`](AGENTS.md) first.
 
-## Sub-agent and skills shipped in this repo
+## Sub-agent and skills for this package
 
-Local to this repository (loaded automatically by Claude Code when invoked from the repo root):
+The agents and skills for this package are published in [`webship/ai-agents`](https://github.com/webship/ai-agents), not in this repository. Merge its `.claude/` folder into your `~/.claude/` to install them:
 
-- **Sub-agent:** [`.claude/agents/webship-patches.md`](.claude/agents/webship-patches.md) — full-coverage agent for installing, configuring, and troubleshooting `webship/webship-patches`.
-- **Skill:** [`.claude/skills/composer-patches/SKILL.md`](.claude/skills/composer-patches/SKILL.md) — `cweagans/composer-patches` v1/v2 + this plugin's allowlist, wildcard ignore, and `patches-ignore` extensions.
-- **Skill:** [`.claude/skills/patch-management/SKILL.md`](.claude/skills/patch-management/SKILL.md) — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
+- **Sub-agent:** `webship-patches` — full-coverage agent for installing, configuring, and troubleshooting `webship/webship-patches`.
+- **Sub-agent:** `webship-patches-release-manager` — cutting and publishing releases.
+- **Skill:** `composer-patches` — `cweagans/composer-patches` v1/v2 + this plugin's allowlist, wildcard ignore, and `patches-ignore` extensions.
+- **Skill:** `patch-management` — authoring, re-rolling, filename convention, and the Composer-native cleanup commands (`web-ccup` / `web-ccupf`).
 
-When the task is about anything in this repo, prefer invoking the local sub-agent rather than answering from scratch. The agent file encodes the version matrix, plugin knobs, and the late-activation rule.
+When the task is about anything in this repo, prefer invoking the `webship-patches` sub-agent rather than answering from scratch. The agent file encodes the version matrix, plugin knobs, and the late-activation rule.
 
 ## How to read this codebase efficiently
 
