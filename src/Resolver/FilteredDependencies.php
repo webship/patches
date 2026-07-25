@@ -1,6 +1,6 @@
 <?php
 
-namespace Webship\WebshipPatches\Resolver;
+namespace Webship\Patches\Resolver;
 
 use cweagans\Composer\Patch;
 use cweagans\Composer\PatchCollection;
@@ -9,12 +9,12 @@ use cweagans\Composer\Resolver\ResolverBase;
 /**
  * Replacement Dependencies resolver with:
  *  - Wildcard support in ignore-dependency-patches (fnmatch).
- *  - Allowlist via allowed-dependency-patches (default: webship/webship-patches + webship/drupal-core-patches).
+ *  - Allowlist via allowed-dependency-patches (default: webship/patches + webship/drupal-patches).
  *  - patches-ignore semantics from composer-patches v1.
  *
  * Config (root composer.json):
  *   extra.composer-patches.ignore-dependency-patches: ["drupal/*", ...]
- *   extra.composer-patches.allowed-dependency-patches: ["webship/webship-patches", "webship/drupal-core-patches"]
+ *   extra.composer-patches.allowed-dependency-patches: ["webship/patches", "webship/drupal-patches"]
  *   extra.patches-ignore: { "<source-pkg>": { "<target-pkg>": ["<url>", ...] } }
  */
 class FilteredDependencies extends ResolverBase
@@ -28,12 +28,12 @@ class FilteredDependencies extends ResolverBase
             return;
         }
 
-        $this->io->write('  - <info>Resolving patches from dependencies (webship-patches filter).</info>');
+        $this->io->write('  - <info>Resolving patches from dependencies (patches filter).</info>');
 
         $rootExtra = $this->composer->getPackage()->getExtra();
         $cp = $rootExtra['composer-patches'] ?? [];
         $ignored = (array) ($cp['ignore-dependency-patches'] ?? []);
-        $allowed = (array) ($cp['allowed-dependency-patches'] ?? \Webship\WebshipPatches\Plugin\WebshipPatchesPlugin::DEFAULT_ALLOWED_DEPENDENCY_PATCHES);
+        $allowed = (array) ($cp['allowed-dependency-patches'] ?? \Webship\Patches\Plugin\PatchesPlugin::DEFAULT_ALLOWED_DEPENDENCY_PATCHES);
         $patchesIgnore = (array) ($rootExtra['patches-ignore'] ?? []);
 
         $lockdata = $locker->getLockData();

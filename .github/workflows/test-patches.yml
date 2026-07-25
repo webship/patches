@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fetch the canonical patches branch
-        run: git fetch --depth=1 https://github.com/webship/webship-patches.git patches:refs/remotes/upstream/patches
+        run: git fetch --depth=1 https://github.com/webship/patches.git patches:refs/remotes/upstream/patches
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -44,7 +44,6 @@ jobs:
       matrix:
         composer-patches:
           - '~2.0'
-          - '~1.7.0'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
