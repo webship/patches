@@ -1,0 +1,36 @@
+diff --git a/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php b/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
+index bd176e0b2387a26fcf020379bbdef0a104a83b4d..ef1041cf76c0b868f0ae4761e4c69832a643b80f 100644
+--- a/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
++++ b/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
+@@ -4,6 +4,7 @@ namespace Drupal\inline_entity_form\Plugin\Field\FieldWidget;
+ 
+ use Drupal\Component\Utility\NestedArray;
+ use Drupal\Component\Utility\Tags;
++use Drupal\Component\Utility\Crypt;
+ use Drupal\Core\Entity\Element\EntityAutocomplete;
+ use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+ use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
+@@ -707,6 +708,23 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
+     }
+     $triggering_element = $form_state->getTriggeringElement();
+     if (empty($triggering_element['#ief_submit_trigger'])) {
++      $field_name = $this->fieldDefinition->getName();
++      $parents = array_merge($form['#parents'], [$field_name, 'form']);
++      // Build IEF ID form inline field
++      $ief_id = Crypt::hashBase64(implode('-', $parents));
++      $this->setIefId($ief_id);
++      // Get values entities by IEF ID in inline_entity_form
++      $widget_state = &$form_state->get(['inline_entity_form', $ief_id]);
++      // Sort items items base on weights.
++      if(isset($widget_state['entities']) && !empty($widget_state['entities'])){
++        $values = $widget_state['entities'];
++        uasort($values, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
++        // Let the widget massage the submitted values.
++        $values = $this->massageFormValues($values, $form, $form_state);
++        // Assign the values and remove the empty ones.
++        $items->setValue($values);
++        $items->filterEmptyItems();
++      }
+       return;
+     }
+ 
