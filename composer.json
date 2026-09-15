@@ -33,6 +33,9 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-12.0.x": "12.0.x-dev"
+        },
         "class": "Webship\\Patches\\Plugin\\PatchesPlugin",
         "patches": {
             "drupal/display_builder": {

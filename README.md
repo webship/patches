@@ -1,12 +1,12 @@
 # Webship Patches
 
-[![Test patches (11.0.x)](https://github.com/webship/patches/actions/workflows/test-patches.yml/badge.svg?branch=11.0.x)](https://github.com/webship/patches/actions/workflows/test-patches.yml?query=branch%3A11.0.x)
+[![Test patches (12.0.x)](https://github.com/webship/patches/actions/workflows/test-patches.yml/badge.svg?branch=12.0.x)](https://github.com/webship/patches/actions/workflows/test-patches.yml?query=branch%3A12.0.x)
 [![Total Downloads](https://img.shields.io/packagist/dt/webship/patches.svg)](https://packagist.org/packages/webship/patches)
 [![License](https://img.shields.io/packagist/l/webship/patches.svg)](LICENSE)
 
 List of needed patches for Webship used packages with Composer Patches.
 
-The `11.0.x` branch tests itself: it installs Drupal plus the modules it patches, asserts that Composer Patches applies all of them, and checks that every patch file still exists ([`tests/`](tests/)).
+The `12.0.x` branch tests itself: it installs Drupal plus the modules it patches, asserts that Composer Patches applies all of them, and checks that every patch file still exists ([`tests/`](tests/)).
 
 Composer plugin and curated patch list for [Webship](https://www.drupal.org/project/webship). Built on top of [`cweagans/composer-patches`](https://github.com/cweagans/composer-patches) v2 with three additions that v2 dropped or never had:
 
@@ -19,7 +19,7 @@ Plus two Composer commands to convert remote merge-request URLs into local times
 ## Quick start
 
 ```bash
-composer require webship/patches:~11.0.0
+composer require webship/patches:12.0.x-dev
 ```
 
 ```json
@@ -54,7 +54,8 @@ Result: only patches declared by `webship/patches` (and your project's own `extr
 
 | Branch       | Drupal core | Use with                     |
 |--------------|-------------|------------------------------|
-| `11.0.x`     | `~11.3.0`   | Webship `~11.0.0`, Drupal 11 |
+| `12.0.x`     | `~11.4.0`   | Webship `12.0.x` and the website project |
+| `11.0.x`     | `~11.4.0`   | Webship `~11.0.0`, Drupal 11 |
 | `10.1.x`     | `~11.3.0`   | Webship `~10.1.0`            |
 | `10.0.x`     | `~10.6.0`   | Webship `~10.0.0`            |
 | `9.2.x`      | `~10.6.0`   | Webship `~9.2.0`             |
