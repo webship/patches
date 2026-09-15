@@ -1,0 +1,244 @@
+diff --git a/src/Plugin/UiPatterns/Source/BlockSource.php b/src/Plugin/UiPatterns/Source/BlockSource.php
+index 6ff249b6b8b22caf497c6f3f3fe30a88e647d547..349b6f5f2fe887c995bc0fb0ee7c30323880e249 100644
+--- a/src/Plugin/UiPatterns/Source/BlockSource.php
++++ b/src/Plugin/UiPatterns/Source/BlockSource.php
+@@ -4,7 +4,10 @@ declare(strict_types=1);
+ 
+ namespace Drupal\display_builder\Plugin\UiPatterns\Source;
+ 
++use Drupal\Component\Render\MarkupInterface;
++use Drupal\Core\Block\BlockPluginInterface;
+ use Drupal\Core\Plugin\PreviewAwarePluginInterface;
++use Drupal\Core\Render\Element;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\display_builder\RegionPlaceholderSourceTrait;
+ use Drupal\ui_patterns\Plugin\UiPatterns\Source\BlockSource as UiPatternsBlockSource;
+@@ -78,7 +81,7 @@ class BlockSource extends UiPatternsBlockSource implements PreviewAwarePluginInt
+     // A prop expecting a scalar has nowhere to put a region, so it keeps the
+     // block it asked for.
+     if (!\is_string($plugin_id) || !\in_array($plugin_id, self::FORCE_PLACEHOLDER, TRUE) || !$this->isSlotProp()) {
+-      return parent::getPropValue();
++      return $this->addBlockLabel(parent::getPropValue());
+     }
+ 
+     // Outside a builder this is an ordinary page, where these blocks are
+@@ -86,7 +89,7 @@ class BlockSource extends UiPatternsBlockSource implements PreviewAwarePluginInt
+     // on its own page: the sub-request runs the real page pipeline, and its
+     // real messages and tabs are the point of previewing it that way.
+     if (!$this->inPreview) {
+-      return parent::getPropValue();
++      return $this->addBlockLabel(parent::getPropValue());
+     }
+ 
+     return $this->buildBlockRegion($plugin_id) ?? parent::getPropValue();
+@@ -99,6 +102,63 @@ class BlockSource extends UiPatternsBlockSource implements PreviewAwarePluginInt
+     $this->inPreview = $in_preview;
+   }
+ 
++  /**
++   * Adds the block label above the block content when it is set to display.
++   *
++   * A placed block gets its label from block.html.twig, which a source never
++   * renders through, so a block showing its label in the block layout lost it
++   * here. The rules are the ones core applies: the label shows only when
++   * label_display is set, and a block giving its content a #title (a views
++   * block showing the view title) overrides the configured label.
++   *
++   * @param mixed $build
++   *   What the block plugin built.
++   *
++   * @return mixed
++   *   The build, with the label above it when there is one to show.
++   *
++   * @see \Drupal\block\Hook\BlockHooks::preprocessBlock()
++   */
++  private function addBlockLabel(mixed $build): mixed {
++    if (!\is_array($build) || Element::isEmpty($build) || !$this->isSlotProp() || !$this->block instanceof BlockPluginInterface) {
++      return $build;
++    }
++
++    // Read the stored settings, not the plugin configuration: a block plugin
++    // defaults label_display to visible, and a block placed without settings
++    // never asked for a label.
++    $plugin_id = $this->getSetting('plugin_id');
++    $settings = \is_string($plugin_id) ? $this->getSetting($plugin_id) : NULL;
++
++    if (!\is_array($settings) || empty($settings['label_display'])) {
++      return $build;
++    }
++
++    $label = $build['#title'] ?? $this->block->label();
++
++    if (\is_array($label)) {
++      $title = $label;
++    }
++    elseif ($label instanceof MarkupInterface) {
++      $title = ['#markup' => $label];
++    }
++    elseif (\is_scalar($label) && (string) $label !== '') {
++      $title = ['#plain_text' => (string) $label];
++    }
++    else {
++      return $build;
++    }
++
++    return [
++      'label' => [
++        '#type' => 'html_tag',
++        '#tag' => 'h2',
++        'title' => $title,
++      ],
++      'content' => $build,
++    ];
++  }
++
+   /**
+    * A named region standing in for a block that cannot resolve here.
+    *
+diff --git a/tests/modules/display_builder_test/src/Plugin/Block/TitledRenderable.php b/tests/modules/display_builder_test/src/Plugin/Block/TitledRenderable.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..918d3ea34ef1df7f8bb2623eef35bcea0aed3e44
+--- /dev/null
++++ b/tests/modules/display_builder_test/src/Plugin/Block/TitledRenderable.php
+@@ -0,0 +1,35 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\display_builder_test\Plugin\Block;
++
++use Drupal\Core\Block\Attribute\Block;
++use Drupal\Core\Block\BlockBase;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Block giving its content a title, as a views block does.
++ *
++ * Used by BlockSourceTest.
++ */
++#[Block(
++  id: 'display_builder_test_titled',
++  admin_label: new TranslatableMarkup('Titled renderable'),
++)]
++
++class TitledRenderable extends BlockBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function build() {
++    return [
++      '#type' => 'html_tag',
++      '#tag' => 'p',
++      '#value' => 'Content with its own title.',
++      '#title' => 'Title from the content',
++    ];
++  }
++
++}
+diff --git a/tests/src/Kernel/BlockSourceTest.php b/tests/src/Kernel/BlockSourceTest.php
+index 18652f6c75cfdbb71b0a694460bfac786bdb9b7e..0e97cd17b94528659d157758ebc6040014f2a2a6 100644
+--- a/tests/src/Kernel/BlockSourceTest.php
++++ b/tests/src/Kernel/BlockSourceTest.php
+@@ -81,6 +81,75 @@ final class BlockSourceTest extends DisplayBuilderKernelTestBase {
+     self::assertArrayNotHasKey('#component', $build);
+   }
+ 
++  /**
++   * A block set to display its label renders it above its content.
++   *
++   * Core does it in block.html.twig, which a source never renders through.
++   */
++  public function testVisibleLabelIsRendered(): void {
++    $build = $this->buildBlock('display_builder_test_correct', FALSE, [
++      'label' => 'Latest releases',
++      'label_display' => 'visible',
++    ]);
++
++    self::assertSame('h2', $build['label']['#tag'] ?? NULL);
++    self::assertSame('Latest releases', $build['label']['title']['#plain_text'] ?? NULL);
++    self::assertSame('p', $build['content']['#tag'] ?? NULL, 'The block content follows the label.');
++  }
++
++  /**
++   * A block with its label hidden renders its content only.
++   */
++  public function testHiddenLabelIsNotRendered(): void {
++    foreach (['0', ''] as $label_display) {
++      $build = $this->buildBlock('display_builder_test_correct', FALSE, [
++        'label' => 'Latest releases',
++        'label_display' => $label_display,
++      ]);
++
++      self::assertArrayNotHasKey('label', $build);
++      self::assertSame('p', $build['#tag'] ?? NULL);
++    }
++  }
++
++  /**
++   * A block placed without settings renders no label.
++   *
++   * Block plugins default label_display to visible, which must not count.
++   */
++  public function testBlockWithoutSettingsHasNoLabel(): void {
++    $build = $this->buildBlock('display_builder_test_correct', FALSE);
++
++    self::assertArrayNotHasKey('label', $build);
++    self::assertSame('p', $build['#tag'] ?? NULL);
++  }
++
++  /**
++   * A title given by the block content wins over the configured label.
++   *
++   * A views block gives its content the view title, and core shows that one.
++   */
++  public function testContentTitleOverridesTheLabel(): void {
++    $build = $this->buildBlock('display_builder_test_titled', FALSE, [
++      'label' => 'Configured label',
++      'label_display' => 'visible',
++    ]);
++
++    self::assertSame('Title from the content', $build['label']['title']['#plain_text'] ?? NULL);
++  }
++
++  /**
++   * The label shows in a builder too, so the canvas matches the page.
++   */
++  public function testVisibleLabelIsRenderedInsideBuilder(): void {
++    $build = $this->buildBlock('display_builder_test_correct', TRUE, [
++      'label' => 'Latest releases',
++      'label_display' => 'visible',
++    ]);
++
++    self::assertSame('Latest releases', $build['label']['title']['#plain_text'] ?? NULL);
++  }
++
+   /**
+    * Builds one block the way a slot would.
+    *
+@@ -88,11 +157,13 @@ final class BlockSourceTest extends DisplayBuilderKernelTestBase {
+    *   The block plugin to place.
+    * @param bool $in_builder
+    *   Whether to mark the contexts as a builder rendering this.
++   * @param array $configuration
++   *   (Optional) The block plugin configuration.
+    *
+    * @return array
+    *   What the source resolved to.
+    */
+-  private function buildBlock(string $plugin_id, bool $in_builder): array {
++  private function buildBlock(string $plugin_id, bool $in_builder, array $configuration = []): array {
+     $contexts = [];
+ 
+     if ($in_builder) {
+@@ -106,6 +177,10 @@ final class BlockSourceTest extends DisplayBuilderKernelTestBase {
+       'source_id' => 'block',
+       'source' => ['plugin_id' => $plugin_id],
+     ];
++
++    if ($configuration) {
++      $source['source'][$plugin_id] = $configuration + ['id' => $plugin_id, 'provider' => 'display_builder_test'];
++    }
+     $build = $this->container->get('ui_patterns.component_element_builder')
+       ->buildSource([], 'content', [], $source, $contexts);
+ 

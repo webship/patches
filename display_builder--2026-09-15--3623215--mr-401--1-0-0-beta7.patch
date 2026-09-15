@@ -1,0 +1,367 @@
+diff --git a/display_builder.services.yml b/display_builder.services.yml
+index b24d3aa..89e5ec4 100644
+--- a/display_builder.services.yml
++++ b/display_builder.services.yml
+@@ -27,6 +27,12 @@ services:
+   display_builder.block_library_sources:
+     class: Drupal\display_builder\BlockLibrarySources
+ 
++  display_builder.source_data_caster:
++    class: Drupal\display_builder\SourceDataCaster
++    arguments:
++      - '@config.typed'
++  Drupal\display_builder\SourceDataCaster: '@display_builder.source_data_caster'
++
+   display_builder.event_subscriber:
+     class: '\Drupal\display_builder\Event\DisplayBuilderEventsSubscriber'
+     arguments:
+diff --git a/src/Controller/ApiController.php b/src/Controller/ApiController.php
+index 7a9857b..804edf4 100644
+--- a/src/Controller/ApiController.php
++++ b/src/Controller/ApiController.php
+@@ -17,6 +17,7 @@ use Drupal\display_builder\InstanceInterface;
+ use Drupal\display_builder\Island\IslandPluginManagerInterface;
+ use Drupal\display_builder\Plugin\display_builder\Island\ContextualFormPanel;
+ use Drupal\display_builder\RenderableBuilderTrait;
++use Drupal\display_builder\SourceDataCaster;
+ use Drupal\display_builder\SourceProcessingDataInterface;
+ use Drupal\display_builder\SourceTree;
+ use Drupal\ui_patterns\SourcePluginManager;
+@@ -44,6 +45,7 @@ class ApiController extends ApiControllerBase implements ApiControllerInterface
+     private IslandPluginManagerInterface $islandPluginManager,
+     #[Autowire(service: 'plugin.manager.ui_patterns_source')]
+     private SourcePluginManager $sourceManager,
++    private SourceDataCaster $sourceDataCaster,
+   ) {
+     parent::__construct($eventDispatcher, $renderer, $time, $sharedTempStoreFactory, $session, $requestStack);
+   }
+@@ -342,6 +344,10 @@ class ApiController extends ApiControllerBase implements ApiControllerInterface
+       $data['source'] = $source->processFormData($data['source'], $form_state);
+     }
+ 
++    // The form posts strings: store the types the config schema declares, as
++    // a config entity save would.
++    $data['source'] = $this->sourceDataCaster->castSource((string) $node['source_id'], $data['source']);
++
+     $display_builder_instance->setSource($node_id, $node['source_id'], $data['source']);
+     $display_builder_instance->save();
+ 
+diff --git a/src/SourceDataCaster.php b/src/SourceDataCaster.php
+new file mode 100644
+index 0000000..5a1f9c8
+--- /dev/null
++++ b/src/SourceDataCaster.php
+@@ -0,0 +1,160 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\display_builder;
++
++use Drupal\Core\Config\Schema\ArrayElement;
++use Drupal\Core\Config\Schema\Ignore;
++use Drupal\Core\Config\Schema\Undefined;
++use Drupal\Core\Config\TypedConfigManagerInterface;
++use Drupal\Core\TypedData\PrimitiveInterface;
++use Drupal\Core\TypedData\Type\FloatInterface;
++use Drupal\Core\TypedData\Type\IntegerInterface;
++use Drupal\Core\TypedData\TypedDataInterface;
++
++/**
++ * Casts source data posted by a form to the types of its config schema.
++ *
++ * A form posts every value as a string, so a menu block depth arrives as '2'
++ * and a checkbox as '1'. A config entity casts its values when it is saved,
++ * but the sources of a display are stored under an 'ignore' schema, so the
++ * strings were published as they came. This casts them the way config would.
++ *
++ * UI Patterns declares the block source schema as 'ignore' too, because a
++ * block keeps its settings under a key named after its plugin ID. Those are
++ * cast against the block settings schema of that plugin.
++ *
++ * @see \Drupal\Core\Config\StorableConfigBase::castValue()
++ */
++class SourceDataCaster {
++
++  public function __construct(
++    protected TypedConfigManagerInterface $typedConfigManager,
++  ) {}
++
++  /**
++   * Casts the data of a source, and of every source nested in it.
++   *
++   * @param string $source_id
++   *   The source plugin ID.
++   * @param array $source
++   *   The source data.
++   *
++   * @return array
++   *   The source data, with values cast to their schema types.
++   */
++  public function castSource(string $source_id, array $source): array {
++    $source = $this->castToSchema('ui_patterns_source.' . $source_id, $source);
++
++    $plugin_id = $source['plugin_id'] ?? NULL;
++
++    if ($source_id === 'block' && \is_string($plugin_id) && \is_array($source[$plugin_id] ?? NULL)) {
++      $source[$plugin_id] = $this->castToSchema('block.settings.' . $plugin_id, $source[$plugin_id]);
++    }
++
++    return $this->castNestedSources($source);
++  }
++
++  /**
++   * Casts the sources found anywhere below the given data.
++   *
++   * A source with its own 'ignore' schema, like an entity field, still holds
++   * sources with a typed schema, like a field formatter.
++   *
++   * @param array $data
++   *   Data which may contain sources.
++   *
++   * @return array
++   *   The data, with every nested source cast.
++   */
++  protected function castNestedSources(array $data): array {
++    foreach ($data as $key => $value) {
++      if (!\is_array($value)) {
++        continue;
++      }
++
++      if (\is_string($value['source_id'] ?? NULL) && \is_array($value['source'] ?? NULL)) {
++        // The weight of a source in a slot, typed 'weight' in UI Patterns.
++        if (isset($value['_weight']) && \is_numeric($value['_weight'])) {
++          $value['_weight'] = (int) $value['_weight'];
++        }
++        $value['source'] = $this->castSource($value['source_id'], $value['source']);
++      }
++      else {
++        $value = $this->castNestedSources($value);
++      }
++
++      $data[$key] = $value;
++    }
++
++    return $data;
++  }
++
++  /**
++   * Casts data to a config schema type, when that type has a schema.
++   *
++   * @param string $type
++   *   The config schema type.
++   * @param array $data
++   *   The data.
++   *
++   * @return array
++   *   The data, cast where the schema knows the type.
++   */
++  protected function castToSchema(string $type, array $data): array {
++    if (!$this->typedConfigManager->hasConfigSchema($type)) {
++      return $data;
++    }
++
++    $element = $this->typedConfigManager->createFromNameAndData($type, $data);
++    $cast = $this->castValue($element, $data);
++
++    return \is_array($cast) ? $cast : $data;
++  }
++
++  /**
++   * Casts a value to the type of its typed data element.
++   *
++   * @param \Drupal\Core\TypedData\TypedDataInterface $element
++   *   The typed data element describing the value.
++   * @param mixed $value
++   *   The value.
++   *
++   * @return mixed
++   *   The cast value.
++   */
++  protected function castValue(TypedDataInterface $element, mixed $value): mixed {
++    if ($element instanceof Undefined || $element instanceof Ignore) {
++      return $value;
++    }
++
++    if (\is_scalar($value) || $value === NULL) {
++      if (!$element instanceof PrimitiveInterface) {
++        return $value;
++      }
++      // As config does: an empty string is no number.
++      $empty_number = $value === '' && ($element instanceof IntegerInterface || $element instanceof FloatInterface);
++
++      return ($value === NULL || $empty_number) ? NULL : $element->getCastedValue();
++    }
++
++    if (!\is_array($value) || !$element instanceof ArrayElement) {
++      return $value;
++    }
++
++    foreach ($value as $key => $nested_value) {
++      try {
++        $nested_element = $element->get((string) $key);
++      }
++      catch (\InvalidArgumentException) {
++        // A key the schema does not describe is kept as it is.
++        continue;
++      }
++      $value[$key] = $this->castValue($nested_element, $nested_value);
++    }
++
++    return $value;
++  }
++
++}
+diff --git a/tests/src/Kernel/SourceDataCasterTest.php b/tests/src/Kernel/SourceDataCasterTest.php
+new file mode 100644
+index 0000000..157cd11
+--- /dev/null
++++ b/tests/src/Kernel/SourceDataCasterTest.php
+@@ -0,0 +1,147 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\display_builder\Kernel;
++
++use Drupal\display_builder\SourceDataCaster;
++use Drupal\KernelTests\KernelTestBase;
++use PHPUnit\Framework\Attributes\CoversClass;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
++/**
++ * Kernel test for the casting of posted source data to its schema types.
++ *
++ * @internal
++ */
++#[CoversClass(SourceDataCaster::class)]
++#[Group('display_builder')]
++#[RunTestsInSeparateProcesses]
++final class SourceDataCasterTest extends KernelTestBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  protected static $modules = [
++    'block',
++    'system',
++    'user',
++    'ui_patterns',
++    'display_builder',
++  ];
++
++  /**
++   * The caster under test.
++   */
++  private SourceDataCaster $caster;
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp(): void {
++    parent::setUp();
++    $this->caster = $this->container->get('display_builder.source_data_caster');
++  }
++
++  /**
++   * Checkboxes posted as strings are stored as booleans.
++   *
++   * The menu source schema types level and depth as strings, so those stay
++   * strings: only what the schema types differently changes.
++   */
++  public function testMenuSourceIsCastToItsSchema(): void {
++    $source = $this->caster->castSource('menu', [
++      'menu' => 'main',
++      'level' => '1',
++      'depth' => '2',
++      'expand_all_items' => '1',
++      'set_active_trail' => '0',
++    ]);
++
++    self::assertSame([
++      'menu' => 'main',
++      'level' => '1',
++      'depth' => '2',
++      'expand_all_items' => TRUE,
++      'set_active_trail' => FALSE,
++    ], $source);
++  }
++
++  /**
++   * Block settings follow the schema of their block plugin.
++   */
++  public function testBlockSettingsAreCastToTheBlockSchema(): void {
++    $source = $this->caster->castSource('block', [
++      'plugin_id' => 'system_menu_block:main',
++      'system_menu_block:main' => [
++        'id' => 'system_menu_block:main',
++        'label' => 'Main navigation',
++        'label_display' => '0',
++        'provider' => 'system',
++        'level' => '1',
++        'depth' => '',
++        'expand_all_items' => '1',
++      ],
++    ]);
++    $settings = $source['system_menu_block:main'];
++
++    self::assertSame(1, $settings['level']);
++    self::assertNull($settings['depth'], 'An empty number is stored as NULL, as config does.');
++    self::assertTrue($settings['expand_all_items']);
++    self::assertSame('0', $settings['label_display']);
++  }
++
++  /**
++   * Sources nested in a component slot are cast, with their weight.
++   */
++  public function testNestedSourcesAndWeightsAreCast(): void {
++    $source = $this->caster->castSource('component', [
++      'component' => [
++        'component_id' => 'display_builder:menu',
++        'props' => [
++          'items' => [
++            'source_id' => 'menu',
++            'source' => ['menu' => 'main', 'expand_all_items' => '1'],
++          ],
++        ],
++        'slots' => [
++          'content' => [
++            'sources' => [
++              [
++                'source_id' => 'menu',
++                'source' => ['menu' => 'footer', 'set_active_trail' => '1'],
++                'node_id' => 'abc',
++                '_weight' => '3',
++              ],
++            ],
++          ],
++        ],
++      ],
++    ]);
++
++    self::assertTrue($source['component']['props']['items']['source']['expand_all_items']);
++    $nested = $source['component']['slots']['content']['sources'][0];
++    self::assertTrue($nested['source']['set_active_trail']);
++    self::assertSame(3, $nested['_weight']);
++    self::assertSame('abc', $nested['node_id']);
++  }
++
++  /**
++   * Keys and sources without a schema are left untouched.
++   */
++  public function testDataWithoutSchemaIsKept(): void {
++    $data = [
++      'plugin_id' => 'missing_block_plugin',
++      'missing_block_plugin' => ['count' => '5', 'extra' => ['a' => '1']],
++    ];
++
++    self::assertSame($data, $this->caster->castSource('block', $data));
++    self::assertSame(['value' => '5'], $this->caster->castSource('unknown_source', ['value' => '5']));
++    self::assertSame(
++      ['menu' => 'main', 'not_in_schema' => '1'],
++      $this->caster->castSource('menu', ['menu' => 'main', 'not_in_schema' => '1']),
++    );
++  }
++
++}
