@@ -1,0 +1,33 @@
+diff --git a/config/install/recaptcha_v3.settings.yml b/config/install/recaptcha_v3.settings.yml
+index d00affa7c58e62ce0f7a7a390a36b10511af5f49..674cdbf1a851776570be12b35c3d3f5c6c99ccd9 100644
+--- a/config/install/recaptcha_v3.settings.yml
++++ b/config/install/recaptcha_v3.settings.yml
+@@ -1,3 +1,4 @@
++langcode: en
+ site_key: ""
+ secret_key: ""
+ verify_hostname: true
+diff --git a/recaptcha_v3.install b/recaptcha_v3.install
+new file mode 100644
+index 0000000000000000000000000000000000000000..d0f9349613559e4e786cb4d8f9715ba926628db7
+--- /dev/null
++++ b/recaptcha_v3.install
+@@ -0,0 +1,18 @@
++<?php
++
++/**
++ * @file
++ * Install, update and uninstall functions for the reCAPTCHA v3 module.
++ */
++
++/**
++ * Sets the langcode on recaptcha_v3.settings for sites installed before it
++ * was added to the default configuration.
++ */
++function recaptcha_v3_update_10001() {
++  $config = \Drupal::configFactory()->getEditable('recaptcha_v3.settings');
++  if ($config->get('langcode') === NULL) {
++    $config->set('langcode', \Drupal::languageManager()->getDefaultLanguage()->getId());
++    $config->save(TRUE);
++  }
++}
