@@ -69,6 +69,9 @@
             "drupal/shield": {
                 "fix: #3562392 PHP 8.4 - Implicit nullable parameters for Shield": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/shield--2025-12-10--3562392--mr-30.patch"
             },
+            "drupal/ui_patterns": {
+                "Issue #3623504: Recipe apply fails with a TypeError when Canvas is installed": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-09-16--3623504--mr-566.patch"
+            },
             "drupal/views_bulk_edit": {
                 "Issue #3544584: Change default Change method to Replace the current value when configuring Modify field values action": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/views_bulk_edit--2025-09-03--3544584--mr-44.patch"
             }
