@@ -1,0 +1,90 @@
+diff --git a/src/DependencyInjection/Compiler/CanvasComponentPluginManagerPass.php b/src/DependencyInjection/Compiler/CanvasComponentPluginManagerPass.php
+new file mode 100644
+index 0000000..45f55f5
+--- /dev/null
++++ b/src/DependencyInjection/Compiler/CanvasComponentPluginManagerPass.php
+@@ -0,0 +1,58 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\ui_patterns\DependencyInjection\Compiler;
++
++use Symfony\Component\DependencyInjection\ContainerBuilder;
++use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
++
++/**
++ * Keeps Canvas pointed at its own SDC component plugin manager.
++ *
++ * Canvas sets the class of `plugin.manager.sdc` to its own
++ * \Drupal\canvas\Plugin\ComponentPluginManager and aliases that class name to
++ * `plugin.manager.sdc`. UI Patterns decorates `plugin.manager.sdc` and stays
++ * outermost (decoration_priority: -100), so that alias resolves to the UI
++ * Patterns manager instead, and every Canvas method typed against its own
++ * class - most visibly
++ * \Drupal\canvas\PropShape\PropShape::componentPluginManager() - throws a
++ * TypeError. That breaks every recipe apply, because Canvas regenerates its
++ * components from a recipe event subscriber.
++ *
++ * This pass re-points the Canvas class alias at the service UI Patterns
++ * decorates, which is the Canvas-classed manager itself. Canvas keeps getting
++ * a Canvas manager, UI Patterns keeps its own annotated definitions and stays
++ * the service behind `plugin.manager.sdc` for everyone else.
++ *
++ * It runs as a compiler pass rather than from
++ * \Drupal\ui_patterns\UiPatternsServiceProvider::alter() so that it cannot be
++ * overwritten by the Canvas service provider, whose alter() may run later.
++ */
++final class CanvasComponentPluginManagerPass implements CompilerPassInterface {
++
++  /**
++   * The Canvas component plugin manager class, used as a service id.
++   */
++  private const CANVAS_MANAGER = 'Drupal\canvas\Plugin\ComponentPluginManager';
++
++  /**
++   * The service UI Patterns decorates, renamed by the decoration pass.
++   */
++  private const INNER_SERVICE = 'Drupal\ui_patterns\ComponentPluginManager.inner';
++
++  /**
++   * {@inheritdoc}
++   */
++  public function process(ContainerBuilder $container): void {
++    if (!$container->hasAlias(self::CANVAS_MANAGER)) {
++      return;
++    }
++    if (!$container->hasDefinition('Drupal\ui_patterns\ComponentPluginManager')) {
++      return;
++    }
++    $container->setAlias(self::CANVAS_MANAGER, self::INNER_SERVICE)
++      ->setPublic(TRUE);
++  }
++
++}
+diff --git a/src/UiPatternsServiceProvider.php b/src/UiPatternsServiceProvider.php
+index 24172b2..211b90b 100644
+--- a/src/UiPatternsServiceProvider.php
++++ b/src/UiPatternsServiceProvider.php
+@@ -6,6 +6,7 @@ namespace Drupal\ui_patterns;
+ 
+ use Drupal\Core\DependencyInjection\ContainerBuilder;
+ use Drupal\Core\DependencyInjection\ServiceProviderBase;
++use Drupal\ui_patterns\DependencyInjection\Compiler\CanvasComponentPluginManagerPass;
+ use Symfony\Component\DependencyInjection\Reference;
+ 
+ /**
+@@ -21,6 +22,13 @@ class UiPatternsServiceProvider extends ServiceProviderBase {
+     if (\is_array($modules) === FALSE) {
+       return;
+     }
++    if (isset($modules['canvas'])) {
++      // Canvas aliases its own component plugin manager class to
++      // `plugin.manager.sdc`, which we decorate. Give Canvas back a manager of
++      // the class it is typed against.
++      // @see \Drupal\ui_patterns\DependencyInjection\Compiler\CanvasComponentPluginManagerPass
++      $container->addCompilerPass(new CanvasComponentPluginManagerPass());
++    }
+     if (isset($modules['layout_builder'])) {
+       $service = $container->register('ui_patterns.layout_builder_context_entity_resolver', '\Drupal\ui_patterns\Resolver\LayoutBuilderContextEntityResolver');
+       $service->addArgument(new Reference('current_route_match'));
