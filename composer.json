@@ -39,7 +39,7 @@
         "class": "Webship\\Patches\\Plugin\\PatchesPlugin",
         "patches": {
             "drupal/display_builder": {
-                "fix: #3623215 Store the schema types of values saved from the Config panel": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-09-15--3623215--mr-401--1-0-0-beta7.patch",
+                "fix: #3623215 Store the schema types of values saved from the Config panel": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-09-20--3623215--mr-401--1-0-x.patch",
                 "fix: #3623217 Render the block label when the block is set to display it": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-09-15--3623217--mr-402.patch"
             },
             "drupal/embed": {
