@@ -26,7 +26,6 @@
         "cweagans/composer-patches": "~2.0",
         "drupal/core-composer-scaffold": "~11.4.0",
         "drupal/core-recommended": "~11.4.0",
-        "drupal/display_builder": "^1.0@beta",
         "drupal/embed": "~1",
         "drupal/entity_embed": "~1",
         "drupal/gin": "~5",

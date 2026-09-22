@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the patches for the Display Builder module (`drupal/display_builder`)
+
 ## [11.0.1] - 2026-09-15
 
 - Add patches for the Display Builder and reCAPTCHA v3 modules ([#10](https://github.com/webship/patches/pull/10), patch files in [#9](https://github.com/webship/patches/pull/9))
