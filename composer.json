@@ -48,7 +48,7 @@
                 "Issue #3594629: Automated Drupal 12 compatibility fixes for ai_content_suggestions 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_content_suggestions--2026-10-01--3594629--info-yml.patch"
             },
             "drupal/ai_image_alt_text": {
-                "Issue #3594672: Automated Drupal 12 compatibility fixes for ai_image_alt_text 1.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_image_alt_text--2026-10-01--3594672--mr-30--info-yml.patch"
+                "Issue #3594672: Automated Drupal 12 compatibility fixes for ai_image_alt_text 1.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_image_alt_text--2026-10-01--3594672--mr-30--info-yml--1-0-3.patch"
             },
             "drupal/ai_penpot": {
                 "Issue #3617097: Automated Drupal 12 compatibility fixes for ai_penpot 1.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_penpot--2026-10-01--3617097--mr-5.patch"
