@@ -1,0 +1,23 @@
+diff --git a/google_tag.install b/google_tag.install
+index 1f79fe078b7f68d4f6154746bfbab8508a10a655..21cf720822fe02ad40d5eb3232df30f7b7e41e1d 100644
+--- a/google_tag.install
++++ b/google_tag.install
+@@ -4,7 +4,8 @@
+  * @file
+  * Provides google_tag install, update, and uninstall functions.
+  */
+-
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
+ use Drupal\google_tag\Migration\GoogleAnalyticsMigrator;
+ use Drupal\google_tag\Migration\GoogleTagUpgradeManager;
+ 
+@@ -93,7 +94,7 @@ function google_tag_requirements($phase) {
+       $requirements['google_tag'] = [
+         'title' => t('Google Tag'),
+         'description' => t('In order to use Google Tag 2.x, you must decide the upgrade path between Google Tag 1.x and Google Analytics.'),
+-        'severity' => REQUIREMENT_ERROR,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Error, fn() => REQUIREMENT_ERROR),
+         'value' => 'Google Tag 2.x is incompatible with Google Analytics while upgrading from 1.x.',
+       ];
+     }

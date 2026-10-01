@@ -1,0 +1,597 @@
+diff --git a/modules/webform_access/src/WebformAccessGroupListBuilder.php b/modules/webform_access/src/WebformAccessGroupListBuilder.php
+index 7c731d4f1b0c1107feba26a0ae06d0e85f54a7a9..acff862eaa9f4ef4aa997cccffbc01e6709724a6 100644
+--- a/modules/webform_access/src/WebformAccessGroupListBuilder.php
++++ b/modules/webform_access/src/WebformAccessGroupListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform_access;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -194,9 +195,12 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity, $type = 'edit') {
+-    $operations = parent::getDefaultOperations($entity);
+-    if ($entity->access('duplicate')) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $cacheability ??= new CacheableMetadata();
++    $operations = parent::getDefaultOperations($entity, $cacheability);
++    $duplicate_access = $entity->access('duplicate', NULL, TRUE);
++    $cacheability->addCacheableDependency($duplicate_access);
++    if ($duplicate_access->isAllowed()) {
+       $operations['duplicate'] = [
+         'title' => $this->t('Duplicate'),
+         'weight' => 20,
+diff --git a/modules/webform_access/src/WebformAccessTypeListBuilder.php b/modules/webform_access/src/WebformAccessTypeListBuilder.php
+index 2991de0b706fd7188fa4b0e551dc1149c1764233..772cce636567884215bff6b213aae1734c63181d 100644
+--- a/modules/webform_access/src/WebformAccessTypeListBuilder.php
++++ b/modules/webform_access/src/WebformAccessTypeListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform_access;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -114,8 +115,8 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity, $type = 'edit') {
+-    $operations = parent::getDefaultOperations($entity);
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $operations = parent::getDefaultOperations($entity, $cacheability);
+     if (isset($operations['delete'])) {
+       $operations['delete']['attributes'] = WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NARROW);
+     }
+diff --git a/modules/webform_image_select/src/WebformImageSelectImagesListBuilder.php b/modules/webform_image_select/src/WebformImageSelectImagesListBuilder.php
+index 18f45319c915de9a859b84349e71e69df43a7436..84a5bf711e90025c0126873c966d8d7923373323 100644
+--- a/modules/webform_image_select/src/WebformImageSelectImagesListBuilder.php
++++ b/modules/webform_image_select/src/WebformImageSelectImagesListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform_image_select;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -157,9 +158,12 @@ class WebformImageSelectImagesListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity, $type = 'edit') {
+-    $operations = parent::getDefaultOperations($entity);
+-    if ($entity->access('duplicate')) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $cacheability ??= new CacheableMetadata();
++    $operations = parent::getDefaultOperations($entity, $cacheability);
++    $duplicate_access = $entity->access('duplicate', NULL, TRUE);
++    $cacheability->addCacheableDependency($duplicate_access);
++    if ($duplicate_access->isAllowed()) {
+       $operations['duplicate'] = [
+         'title' => $this->t('Duplicate'),
+         'weight' => 20,
+diff --git a/modules/webform_node/src/Controller/WebformNodeReferencesListController.php b/modules/webform_node/src/Controller/WebformNodeReferencesListController.php
+index c6533d20bc4638decd05da91671496040c3922de..c7b7c05e401c6f5c24ca12b2fad3776d1c9a6418 100644
+--- a/modules/webform_node/src/Controller/WebformNodeReferencesListController.php
++++ b/modules/webform_node/src/Controller/WebformNodeReferencesListController.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform_node\Controller;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityListBuilder;
+@@ -422,44 +423,61 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
+    * {@inheritdoc}
+    */
+   public function buildOperations(EntityInterface $entity) {
+-    return ($entity instanceof NodeInterface) ? [
++    if (!$entity instanceof NodeInterface) {
++      return [];
++    }
++    $cacheability = new CacheableMetadata();
++    $build = [
+       '#type' => 'operations',
+-      '#links' => $this->getOperations($entity),
++      '#links' => $this->getOperations($entity, $cacheability),
+       '#prefix' => '<div class="webform-dropbutton">',
+       '#suffix' => '</div>',
+-    ] : [];
++    ];
++    $cacheability->applyTo($build);
++    return $build;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $cacheability ??= new CacheableMetadata();
+     $route_parameters = [
+       'node' => $entity->id(),
+     ];
+     $operations = [];
+-    if ($entity->access('update')) {
++
++    $update_access = $entity->access('update', NULL, TRUE);
++    $cacheability->addCacheableDependency($update_access);
++    if ($update_access->isAllowed()) {
+       $operations['edit'] = [
+         'title' => $this->t('Edit'),
+         'url' => $this->ensureDestination($entity->toUrl('edit-form')),
+         'weight' => 10,
+       ];
+     }
+-    if ($entity->access('view')) {
++
++    $view_access = $entity->access('view', NULL, TRUE);
++    $cacheability->addCacheableDependency($view_access);
++    if ($view_access->isAllowed()) {
+       $operations['view'] = [
+         'title' => $this->t('View'),
+         'url' => $this->ensureDestination($entity->toUrl('canonical')),
+         'weight' => 20,
+       ];
+     }
+-    if ($entity->access('submission_view_any') && !$this->webform->isResultsDisabled()) {
++
++    $results_access = $entity->access('submission_view_any', NULL, TRUE);
++    $cacheability->addCacheableDependency($results_access);
++    if ($results_access->isAllowed() && !$this->webform->isResultsDisabled()) {
+       $operations['results'] = [
+         'title' => $this->t('Results'),
+         'url' => Url::fromRoute('entity.node.webform.results_submissions', $route_parameters),
+         'weight' => 30,
+       ];
+     }
+-    if ($entity->access('update')
++
++    if ($update_access->isAllowed()
+       && $this->webform->getSetting('share_node', TRUE)
+       && $this->moduleHandler()->moduleExists('webform_share')) {
+       $operations['share'] = [
+@@ -468,13 +486,17 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
+         'weight' => 40,
+       ];
+     }
+-    if ($entity->access('delete')) {
++
++    $delete_access = $entity->access('delete', NULL, TRUE);
++    $cacheability->addCacheableDependency($delete_access);
++    if ($delete_access->isAllowed()) {
+       $operations['delete'] = [
+         'title' => $this->t('Delete'),
+         'url' => $this->ensureDestination($entity->toUrl('delete-form')),
+         'weight' => 100,
+       ];
+     }
++
+     return $operations;
+   }
+ 
+diff --git a/modules/webform_node/src/Hook/WebformNodeHooks.php b/modules/webform_node/src/Hook/WebformNodeHooks.php
+index f7d066cf9218e84914e48511c42529c90867e211..2bc564e281383630361e474ac9b23e17c488a2a7 100644
+--- a/modules/webform_node/src/Hook/WebformNodeHooks.php
++++ b/modules/webform_node/src/Hook/WebformNodeHooks.php
+@@ -4,6 +4,7 @@ namespace Drupal\webform_node\Hook;
+ 
+ use Drupal\Component\Serialization\Yaml;
+ use Drupal\Core\Access\AccessResult;
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -36,14 +37,18 @@ class WebformNodeHooks {
+    * Implements hook_entity_operation().
+    */
+   #[Hook('entity_operation')]
+-  public function entityOperation(EntityInterface $entity) {
++  public function entityOperation(EntityInterface $entity, CacheableMetadata $cacheability): array {
+     $operations = [];
+-    if ($entity instanceof WebformInterface && $entity->access('update')) {
+-      $operations['references'] = [
+-        'title' => $this->t('References'),
+-        'url' => $entity->toUrl('references'),
+-        'weight' => 40,
+-      ];
++    if ($entity instanceof WebformInterface) {
++      $access = $entity->access('update', NULL, TRUE);
++      $cacheability->addCacheableDependency($access);
++      if ($access->isAllowed()) {
++        $operations['references'] = [
++          'title' => $this->t('References'),
++          'url' => $entity->toUrl('references'),
++          'weight' => 40,
++        ];
++      }
+     }
+     return $operations;
+   }
+diff --git a/modules/webform_node/webform_node.module b/modules/webform_node/webform_node.module
+index facbf861ae7feb9044a5abe8f2e1e9b5d1e8d883..f60b3562eaffb882bea34fa1ff4e34483375b1e4 100644
+--- a/modules/webform_node/webform_node.module
++++ b/modules/webform_node/webform_node.module
+@@ -7,6 +7,7 @@
+ 
+ use Drupal\Core\Hook\Attribute\LegacyHook;
+ use Drupal\Core\Render\BubbleableMetadata;
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -46,8 +47,8 @@ function webform_node_entity_type_alter(array &$entity_types) {
+  * Implements hook_entity_operation().
+  */
+ #[LegacyHook]
+-function webform_node_entity_operation(EntityInterface $entity) {
+-  return \Drupal::service(WebformNodeHooks::class)->entityOperation($entity);
++function webform_node_entity_operation(EntityInterface $entity, CacheableMetadata $cacheability) {
++  return \Drupal::service(WebformNodeHooks::class)->entityOperation($entity, $cacheability);
+ }
+ 
+ /**
+diff --git a/modules/webform_options_custom/src/WebformOptionsCustomListBuilder.php b/modules/webform_options_custom/src/WebformOptionsCustomListBuilder.php
+index e0e3cd6a12cabb5e10db3883c69bb4b858a080e0..4035cbc065b36eeaac544bd7fb8bf0d846fdd025 100644
+--- a/modules/webform_options_custom/src/WebformOptionsCustomListBuilder.php
++++ b/modules/webform_options_custom/src/WebformOptionsCustomListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform_options_custom;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -170,16 +171,21 @@ class WebformOptionsCustomListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity, $type = 'edit') {
+-    $operations = parent::getDefaultOperations($entity);
+-    if ($entity->access('edit')) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $cacheability ??= new CacheableMetadata();
++    $operations = parent::getDefaultOperations($entity, $cacheability);
++    $edit_access = $entity->access('edit', NULL, TRUE);
++    $cacheability->addCacheableDependency($edit_access);
++    if ($edit_access->isAllowed()) {
+       $operations['preview'] = [
+         'title' => $this->t('Preview'),
+         'weight' => 20,
+         'url' => Url::fromRoute('entity.webform_options_custom.preview_form', ['webform_options_custom' => $entity->id()]),
+       ];
+     }
+-    if ($entity->access('duplicate')) {
++    $duplicate_access = $entity->access('duplicate', NULL, TRUE);
++    $cacheability->addCacheableDependency($duplicate_access);
++    if ($duplicate_access->isAllowed()) {
+       $operations['duplicate'] = [
+         'title' => $this->t('Duplicate'),
+         'weight' => 30,
+diff --git a/modules/webform_share/src/Hook/WebformShareHooks.php b/modules/webform_share/src/Hook/WebformShareHooks.php
+index c5f2e5c5f78771607a8f6e1101cd54246da659e4..56a9fd1e3596f2104de87c04f6d355207a748048 100644
+--- a/modules/webform_share/src/Hook/WebformShareHooks.php
++++ b/modules/webform_share/src/Hook/WebformShareHooks.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform_share\Hook;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\webform\WebformInterface;
+@@ -123,10 +124,14 @@ class WebformShareHooks {
+    * Implements hook_entity_operation().
+    */
+   #[Hook('entity_operation')]
+-  public function entityOperation(EntityInterface $entity) {
++  public function entityOperation(EntityInterface $entity, CacheableMetadata $cacheability): array {
+     $operations = [];
+-    if ($entity instanceof WebformInterface && $entity->access('update') && $entity->getSetting('share', TRUE)) {
+-      $operations['share'] = ['title' => $this->t('Share'), 'url' => $entity->toUrl('share-embed'), 'weight' => 80];
++    if ($entity instanceof WebformInterface && $entity->getSetting('share', TRUE)) {
++      $access = $entity->access('update', NULL, TRUE);
++      $cacheability->addCacheableDependency($access);
++      if ($access->isAllowed()) {
++        $operations['share'] = ['title' => $this->t('Share'), 'url' => $entity->toUrl('share-embed'), 'weight' => 80];
++      }
+     }
+     return $operations;
+   }
+diff --git a/modules/webform_share/webform_share.module b/modules/webform_share/webform_share.module
+index 3818fc93799bac1da55629d32c874712a1b7e6c4..ca9a6ec414c23dbe76b20db06462768868a3af7b 100644
+--- a/modules/webform_share/webform_share.module
++++ b/modules/webform_share/webform_share.module
+@@ -8,6 +8,7 @@
+ use Drupal\Core\Hook\Attribute\LegacyHook;
+ use Drupal\webform_share\Hook\WebformShareHooks;
+ use Drupal\Component\Utility\NestedArray;
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Render\Markup;
+@@ -57,8 +58,8 @@ function webform_share_entity_type_alter(array &$entity_types) {
+  * Implements hook_entity_operation().
+  */
+ #[LegacyHook]
+-function webform_share_entity_operation(EntityInterface $entity) {
+-  return \Drupal::service(WebformShareHooks::class)->entityOperation($entity);
++function webform_share_entity_operation(EntityInterface $entity, CacheableMetadata $cacheability) {
++  return \Drupal::service(WebformShareHooks::class)->entityOperation($entity, $cacheability);
+ }
+ 
+ /**
+diff --git a/src/WebformEntityListBuilder.php b/src/WebformEntityListBuilder.php
+index 606d40d44027a0276c9004be5bf7d285fd42f3d0..e3bf641c5d397ea3db0be40449cfc165d86a90e7 100644
+--- a/src/WebformEntityListBuilder.php
++++ b/src/WebformEntityListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -399,46 +400,63 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity, $type = 'edit') {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+     /** @var \Drupal\webform\WebformInterface $entity */
++    $cacheability ??= new CacheableMetadata();
+ 
+     $operations = [];
+-    if ($entity->access('update')) {
++
++    $update_access = $entity->access('update', NULL, TRUE);
++    $cacheability->addCacheableDependency($update_access);
++    if ($update_access->isAllowed()) {
+       $operations['edit'] = [
+         'title' => $this->t('Build'),
+         'url' => $this->ensureDestination($entity->toUrl('edit-form')),
+         'weight' => 0,
+       ];
+     }
+-    if ($entity->access('submission_page')) {
++
++    $submission_page_access = $entity->access('submission_page', NULL, TRUE);
++    $cacheability->addCacheableDependency($submission_page_access);
++    if ($submission_page_access->isAllowed()) {
+       $operations['view'] = [
+         'title' => $this->t('View'),
+         'url' => $entity->toUrl('canonical'),
+         'weight' => 10,
+       ];
+     }
+-    if ($entity->access('test')) {
++
++    $test_access = $entity->access('test', NULL, TRUE);
++    $cacheability->addCacheableDependency($test_access);
++    if ($test_access->isAllowed()) {
+       $operations['test'] = [
+         'title' => $this->t('Test'),
+         'url' => $entity->toUrl('test-form'),
+         'weight' => 20,
+       ];
+     }
+-    if ($entity->access('submission_view_any') && !$entity->isResultsDisabled()) {
++
++    $results_access = $entity->access('submission_view_any', NULL, TRUE);
++    $cacheability->addCacheableDependency($results_access);
++    if ($results_access->isAllowed() && !$entity->isResultsDisabled()) {
+       $operations['results'] = [
+         'title' => $this->t('Results'),
+         'url' => $entity->toUrl('results-submissions'),
+         'weight' => 30,
+       ];
+     }
+-    if ($entity->access('update')) {
++
++    if ($update_access->isAllowed()) {
+       $operations['settings'] = [
+         'title' => $this->t('Settings'),
+         'url' => $entity->toUrl('settings'),
+         'weight' => 40,
+       ];
+     }
+-    if ($entity->access('duplicate')) {
++
++    $duplicate_access = $entity->access('duplicate', NULL, TRUE);
++    $cacheability->addCacheableDependency($duplicate_access);
++    if ($duplicate_access->isAllowed()) {
+       $operations['duplicate'] = [
+         'title' => $this->t('Duplicate'),
+         'url' => $entity->toUrl('duplicate-form'),
+@@ -446,7 +464,10 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
+         'weight' => 90,
+       ];
+     }
+-    if ($entity->access('delete') && $entity->hasLinkTemplate('delete-form')) {
++
++    $delete_access = $entity->access('delete', NULL, TRUE);
++    $cacheability->addCacheableDependency($delete_access);
++    if ($delete_access->isAllowed() && $entity->hasLinkTemplate('delete-form')) {
+       $operations['delete'] = [
+         'title' => $this->t('Delete'),
+         'url' => $this->ensureDestination($entity->toUrl('delete-form')),
+@@ -454,6 +475,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
+         'weight' => 100,
+       ];
+     }
++
+     return $operations;
+   }
+ 
+diff --git a/src/WebformOptionsListBuilder.php b/src/WebformOptionsListBuilder.php
+index 6186637abc9eb23214eb89a01af11405202b8ec9..4bba0eb9486eed23eed1a17bb7785f8bf720daba 100644
+--- a/src/WebformOptionsListBuilder.php
++++ b/src/WebformOptionsListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -164,9 +165,12 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity, $type = 'edit') {
+-    $operations = parent::getDefaultOperations($entity);
+-    if ($entity->access('duplicate')) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $cacheability ??= new CacheableMetadata();
++    $operations = parent::getDefaultOperations($entity, $cacheability);
++    $duplicate_access = $entity->access('duplicate', NULL, TRUE);
++    $cacheability->addCacheableDependency($duplicate_access);
++    if ($duplicate_access->isAllowed()) {
+       $operations['duplicate'] = [
+         'title' => $this->t('Duplicate'),
+         'weight' => 20,
+diff --git a/src/WebformSubmissionListBuilder.php b/src/WebformSubmissionListBuilder.php
+index 7dbd1daf065ab0ff30c81ebf80639ddc0a20f9af..14e5fff049baafe5139f40b5247c5aa830861bd7 100644
+--- a/src/WebformSubmissionListBuilder.php
++++ b/src/WebformSubmissionListBuilder.php
+@@ -4,6 +4,7 @@ namespace Drupal\webform;
+ 
+ use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\Component\Utility\Html;
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Database\Database;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityListBuilder;
+@@ -1069,14 +1070,24 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+     /** @var \Drupal\webform\WebformInterface $webform */
+     $webform = $entity->getWebform();
++    $cacheability ??= new CacheableMetadata();
+ 
+     $operations = [];
+ 
++    $update_access = $entity->access('update', NULL, TRUE);
++    $cacheability->addCacheableDependency($update_access);
++    $view_access = $entity->access('view', NULL, TRUE);
++    $cacheability->addCacheableDependency($view_access);
++    $duplicate_access = $entity->access('duplicate', NULL, TRUE);
++    $cacheability->addCacheableDependency($duplicate_access);
++    $delete_access = $entity->access('delete', NULL, TRUE);
++    $cacheability->addCacheableDependency($delete_access);
++
+     if ($this->account) {
+-      if ($entity->access('update')) {
++      if ($update_access->isAllowed()) {
+         $operations['edit'] = [
+           'title' => $this->t('Edit'),
+           'weight' => 10,
+@@ -1084,7 +1095,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('view')) {
++      if ($view_access->isAllowed()) {
+         $operations['view'] = [
+           'title' => $this->t('View'),
+           'weight' => 20,
+@@ -1092,7 +1103,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('duplicate') && $webform->getSetting('submission_user_duplicate')) {
++      if ($duplicate_access->isAllowed() && $webform->getSetting('submission_user_duplicate')) {
+         $operations['duplicate'] = [
+           'title' => $this->t('Duplicate'),
+           'weight' => 30,
+@@ -1100,7 +1111,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('delete')) {
++      if ($delete_access->isAllowed()) {
+         $operations['delete'] = [
+           'title' => $this->t('Delete'),
+           'weight' => 100,
+@@ -1110,7 +1121,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+       }
+     }
+     else {
+-      if ($entity->access('update')) {
++      if ($update_access->isAllowed()) {
+         $operations['edit'] = [
+           'title' => $this->t('Edit'),
+           'weight' => 10,
+@@ -1118,7 +1129,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('view')) {
++      if ($view_access->isAllowed()) {
+         $operations['view'] = [
+           'title' => $this->t('View'),
+           'weight' => 20,
+@@ -1126,7 +1137,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('notes')) {
++      $notes_access = $entity->access('notes', NULL, TRUE);
++      $cacheability->addCacheableDependency($notes_access);
++      if ($notes_access->isAllowed()) {
+         $operations['notes'] = [
+           'title' => $this->t('Notes'),
+           'weight' => 30,
+@@ -1134,14 +1147,16 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('resend') && $webform->hasMessageHandler()) {
++      $resend_access = $entity->access('resend', NULL, TRUE);
++      $cacheability->addCacheableDependency($resend_access);
++      if ($resend_access->isAllowed() && $webform->hasMessageHandler()) {
+         $operations['resend'] = [
+           'title' => $this->t('Resend'),
+           'weight' => 40,
+           'url' => $this->requestHandler->getUrl($entity, $this->sourceEntity, 'webform_submission.resend_form'),
+         ];
+       }
+-      if ($entity->access('duplicate')) {
++      if ($duplicate_access->isAllowed()) {
+         $operations['duplicate'] = [
+           'title' => $this->t('Duplicate'),
+           'weight' => 50,
+@@ -1149,7 +1164,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('delete')) {
++      if ($delete_access->isAllowed()) {
+         $operations['delete'] = [
+           'title' => $this->t('Delete'),
+           'weight' => 100,
+@@ -1158,7 +1173,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
+         ];
+       }
+ 
+-      if ($entity->access('view_any')
++      $view_any_access = $entity->access('view_any', NULL, TRUE);
++      $cacheability->addCacheableDependency($view_any_access);
++      if ($view_any_access->isAllowed()
+         && $this->currentUser->hasPermission('access webform submission log')
+         && $webform->hasSubmissionLog()
+         && $this->moduleHandler->moduleExists('webform_submission_log')) {

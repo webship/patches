@@ -1,0 +1,4567 @@
+diff --git a/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentToken.php b/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentToken.php
+index 0ca1425f1124a79260d6a31b757ffc8b8903440e..bb7f3f24adcef176a37199ab4334c1695100f338 100644
+--- a/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentToken.php
++++ b/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentToken.php
+@@ -3,17 +3,18 @@
+ namespace Drupal\webform_attachment\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ 
+ /**
+  * Provides a 'webform_attachment_token' element.
+- *
+- * @WebformElement(
+- *   id = "webform_attachment_token",
+- *   label = @Translation("Attachment token"),
+- *   description = @Translation("Generates an attachment using tokens."),
+- *   category = @Translation("File attachment elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_attachment_token',
++  label: new TranslatableMarkup('Attachment token'),
++  category: new TranslatableMarkup('File attachment elements'),
++  description: new TranslatableMarkup('Generates an attachment using tokens.')
++)]
+ class WebformAttachmentToken extends WebformAttachmentBase {
+ 
+   /**
+diff --git a/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentTwig.php b/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentTwig.php
+index 5302fd10cb152a3ab0039716eec40ae4b9e62e4e..64fe5e29a010a230c01977816c8290ca7b8dcd51 100644
+--- a/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentTwig.php
++++ b/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentTwig.php
+@@ -3,19 +3,20 @@
+ namespace Drupal\webform_attachment\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Twig\WebformTwigExtension;
+ use Drupal\webform\Utility\WebformElementHelper;
+ 
+ /**
+  * Provides a 'webform_attachment_twig' element.
+- *
+- * @WebformElement(
+- *   id = "webform_attachment_twig",
+- *   label = @Translation("Attachment Twig"),
+- *   description = @Translation("Generates an attachment using Twig."),
+- *   category = @Translation("File attachment elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_attachment_twig',
++  label: new TranslatableMarkup('Attachment Twig'),
++  category: new TranslatableMarkup('File attachment elements'),
++  description: new TranslatableMarkup('Generates an attachment using Twig.')
++)]
+ class WebformAttachmentTwig extends WebformAttachmentBase {
+ 
+   /**
+diff --git a/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentUrl.php b/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentUrl.php
+index 03be784ba7f446452e1409f11ae40dc50335be9d..0d06063f68cca50df023e6b9e1f5b4ea11ead2b2 100644
+--- a/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentUrl.php
++++ b/modules/webform_attachment/src/Plugin/WebformElement/WebformAttachmentUrl.php
+@@ -4,18 +4,19 @@ namespace Drupal\webform_attachment\Plugin\WebformElement;
+ 
+ use Drupal\Component\Utility\UrlHelper;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use GuzzleHttp\Exception\ClientException;
+ 
+ /**
+  * Provides a 'webform_attachment_url' element.
+- *
+- * @WebformElement(
+- *   id = "webform_attachment_url",
+- *   label = @Translation("Attachment URL"),
+- *   description = @Translation("Generates an attachment using a URL."),
+- *   category = @Translation("File attachment elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_attachment_url',
++  label: new TranslatableMarkup('Attachment URL'),
++  category: new TranslatableMarkup('File attachment elements'),
++  description: new TranslatableMarkup('Generates an attachment using a URL.')
++)]
+ class WebformAttachmentUrl extends WebformAttachmentBase {
+ 
+   /**
+diff --git a/modules/webform_cards/src/Plugin/WebformElement/WebformCard.php b/modules/webform_cards/src/Plugin/WebformElement/WebformCard.php
+index 57028a374e31274b47de2f8e0f4e4237b75ec30b..b039731b7d22378ced7bfd38fe6ce7b32b7ded1d 100644
+--- a/modules/webform_cards/src/Plugin/WebformElement/WebformCard.php
++++ b/modules/webform_cards/src/Plugin/WebformElement/WebformCard.php
+@@ -3,20 +3,21 @@
+ namespace Drupal\webform_cards\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElement\ContainerBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'card' element.
+- *
+- * @WebformElement(
+- *   id = "webform_card",
+- *   label = @Translation("Card"),
+- *   description = @Translation("Provides an element for a fast clientside pagination."),
+- *   category = @Translation("Cards"),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_card',
++  label: new TranslatableMarkup('Card'),
++  category: new TranslatableMarkup('Cards'),
++  description: new TranslatableMarkup('Provides an element for a fast clientside pagination.'),
++  hidden: TRUE
++)]
+ class WebformCard extends ContainerBase {
+ 
+   /**
+diff --git a/modules/webform_entity_print/src/Plugin/WebformExporter/WebformEntityPrintWebformExporter.php b/modules/webform_entity_print/src/Plugin/WebformExporter/WebformEntityPrintWebformExporter.php
+index ff49d2128ecd0b9396ba5e46cd6e7d2525e6996c..a574dd6cad4335f42e1f6b02f99d1e651077a77c 100644
+--- a/modules/webform_entity_print/src/Plugin/WebformExporter/WebformEntityPrintWebformExporter.php
++++ b/modules/webform_entity_print/src/Plugin/WebformExporter/WebformEntityPrintWebformExporter.php
+@@ -3,20 +3,23 @@
+ namespace Drupal\webform_entity_print\Plugin\WebformExporter;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformExporter;
+ use Drupal\webform\Plugin\WebformExporter\DocumentBaseWebformExporter;
+ use Drupal\webform\WebformSubmissionInterface;
++use Drupal\webform_entity_print\Plugin\Derivative\WebformEntityPrintWebformExporterDeriver;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Defines a Webform Entity Print PDF exporter.
+- *
+- * @WebformExporter(
+- *   id = "webform_entity_print",
+- *   archive = TRUE,
+- *   options = FALSE,
+- *   deriver = "Drupal\webform_entity_print\Plugin\Derivative\WebformEntityPrintWebformExporterDeriver",
+- * )
+  */
++#[WebformExporter(
++  id: 'webform_entity_print',
++  label: new TranslatableMarkup('Webform Entity Print'),
++  archive: TRUE,
++  options: FALSE,
++  deriver: WebformEntityPrintWebformExporterDeriver::class
++)]
+ class WebformEntityPrintWebformExporter extends DocumentBaseWebformExporter {
+ 
+   /**
+diff --git a/modules/webform_entity_print_attachment/src/Plugin/WebformElement/WebformEntityPrintAttachment.php b/modules/webform_entity_print_attachment/src/Plugin/WebformElement/WebformEntityPrintAttachment.php
+index 8adb70687e4e14ff7a506b834cec0673167dd0cc..b7e91fa2107f57de3a649f480cc18b13d7ba6f93 100644
+--- a/modules/webform_entity_print_attachment/src/Plugin/WebformElement/WebformEntityPrintAttachment.php
++++ b/modules/webform_entity_print_attachment/src/Plugin/WebformElement/WebformEntityPrintAttachment.php
+@@ -3,23 +3,25 @@
+ namespace Drupal\webform_entity_print_attachment\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\webform\Twig\WebformTwigExtension;
+ use Drupal\webform\Utility\WebformElementHelper;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Drupal\webform_attachment\Plugin\WebformElement\WebformAttachmentBase;
++use Drupal\webform_entity_print_attachment\Plugin\Derivative\WebformEntityPrintAttachmentDeriver;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
++use Drupal\webform\Attribute\WebformElement;
+ 
+ /**
+  * Provides a 'webform_entity_print_attachment' element.
+- *
+- * @WebformElement(
+- *   id = "webform_entity_print_attachment",
+- *   label = @Translation("Attachment print document"),
+- *   description = @Translation("Attaches submission's print document."),
+- *   category = @Translation("File attachment elements"),
+- *   deriver = "\Drupal\webform_entity_print_attachment\Plugin\Derivative\WebformEntityPrintAttachmentDeriver",
+- * )
+  */
++#[WebformElement(
++  id: 'webform_entity_print_attachment',
++  label: new TranslatableMarkup('Attachment print document'),
++  category: new TranslatableMarkup('File attachment elements'),
++  description: new TranslatableMarkup("Attaches submission's print document."),
++  deriver: WebformEntityPrintAttachmentDeriver::class
++  )]
+ class WebformEntityPrintAttachment extends WebformAttachmentBase {
+ 
+   /**
+diff --git a/modules/webform_example_composite/src/Plugin/WebformElement/WebformExampleComposite.php b/modules/webform_example_composite/src/Plugin/WebformElement/WebformExampleComposite.php
+index a9937b355f326b432e1fc2b2c3b63d420b9569d0..1e546a7b3b43452763a174321490743dbca57a07 100644
+--- a/modules/webform_example_composite/src/Plugin/WebformElement/WebformExampleComposite.php
++++ b/modules/webform_example_composite/src/Plugin/WebformElement/WebformExampleComposite.php
+@@ -2,28 +2,29 @@
+ 
+ namespace Drupal\webform_example_composite\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_example_composite' element.
+  *
+- * @WebformElement(
+- *   id = "webform_example_composite",
+- *   label = @Translation("Webform example composite"),
+- *   description = @Translation("Provides a webform element example."),
+- *   category = @Translation("Example elements"),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+- *
+  * @see \Drupal\webform_example_composite\Element\WebformExampleComposite
+  * @see \Drupal\webform\Plugin\WebformElement\WebformCompositeBase
+  * @see \Drupal\webform\Plugin\WebformElementBase
+  * @see \Drupal\webform\Plugin\WebformElementInterface
+  * @see \Drupal\webform\Annotation\WebformElement
+  */
++#[WebformElement(
++  id: 'webform_example_composite',
++  label: new TranslatableMarkup('Webform example composite'),
++  category: new TranslatableMarkup('Example elements'),
++  description: new TranslatableMarkup('Provides a webform element example.'),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformExampleComposite extends WebformCompositeBase {
+ 
+   /**
+diff --git a/modules/webform_example_element/src/Plugin/WebformElement/WebformExampleElement.php b/modules/webform_example_element/src/Plugin/WebformElement/WebformExampleElement.php
+index 14d36c4b46de3401c7274463d1d4a0e431beedb7..15ffe5ab3aa0e011b6bc10f57893ab50749e937b 100644
+--- a/modules/webform_example_element/src/Plugin/WebformElement/WebformExampleElement.php
++++ b/modules/webform_example_element/src/Plugin/WebformElement/WebformExampleElement.php
+@@ -3,24 +3,25 @@
+ namespace Drupal\webform_example_element\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_example_element' element.
+  *
+- * @WebformElement(
+- *   id = "webform_example_element",
+- *   label = @Translation("Webform example element"),
+- *   description = @Translation("Provides a webform element example."),
+- *   category = @Translation("Example elements"),
+- * )
+- *
+  * @see \Drupal\webform_example_element\Element\WebformExampleElement
+  * @see \Drupal\webform\Plugin\WebformElementBase
+  * @see \Drupal\webform\Plugin\WebformElementInterface
+  * @see \Drupal\webform\Annotation\WebformElement
+  */
++#[WebformElement(
++  id: 'webform_example_element',
++  label: new TranslatableMarkup('Webform example element'),
++  category: new TranslatableMarkup('Example elements'),
++  description: new TranslatableMarkup('Provides a webform element example.')
++)]
+ class WebformExampleElement extends WebformElementBase {
+ 
+   /**
+diff --git a/modules/webform_example_handler/src/Plugin/WebformHandler/ExampleWebformHandler.php b/modules/webform_example_handler/src/Plugin/WebformHandler/ExampleWebformHandler.php
+index 43d4e00ecba5d640873e9830da17a0fef8ef7199..9ea77752e1984058dde01552053b9ebf88691614 100644
+--- a/modules/webform_example_handler/src/Plugin/WebformHandler/ExampleWebformHandler.php
++++ b/modules/webform_example_handler/src/Plugin/WebformHandler/ExampleWebformHandler.php
+@@ -5,24 +5,26 @@ namespace Drupal\webform_example_handler\Plugin\WebformHandler;
+ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Markup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\WebformInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Webform example handler.
+- *
+- * @WebformHandler(
+- *   id = "example",
+- *   label = @Translation("Example"),
+- *   category = @Translation("Example"),
+- *   description = @Translation("Example of a webform submission handler."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_SINGLE,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_IGNORED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_REQUIRED,
+- * )
+  */
++#[WebformHandler(
++  id: 'example',
++  label: new TranslatableMarkup('Example'),
++  category: new TranslatableMarkup('Example'),
++  description: new TranslatableMarkup('Example of a webform submission handler.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_SINGLE,
++  results: WebformHandlerInterface::RESULTS_IGNORED,
++  submission: WebformHandlerInterface::SUBMISSION_REQUIRED
++)]
+ class ExampleWebformHandler extends WebformHandlerBase {
+ 
+   /**
+diff --git a/modules/webform_example_variant/src/Plugin/WebformVariant/ExampleWebformVariant.php b/modules/webform_example_variant/src/Plugin/WebformVariant/ExampleWebformVariant.php
+index 77f5ef331910c912e408a3d77b16edff78d061e2..3ce61ead03f7aae7325390ed4159cfcbe4cfdbe2 100644
+--- a/modules/webform_example_variant/src/Plugin/WebformVariant/ExampleWebformVariant.php
++++ b/modules/webform_example_variant/src/Plugin/WebformVariant/ExampleWebformVariant.php
+@@ -3,19 +3,20 @@
+ namespace Drupal\webform_example_variant\Plugin\WebformVariant;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformVariant;
+ use Drupal\webform\Plugin\WebformVariantBase;
+ use Drupal\webform\WebformInterface;
+ 
+ /**
+  * Webform example variant.
+- *
+- * @WebformVariant(
+- *   id = "example",
+- *   label = @Translation("Example"),
+- *   category = @Translation("Example"),
+- *   description = @Translation("Example of a webform variant."),
+- * )
+  */
++#[WebformVariant(
++  id: 'example',
++  label: new TranslatableMarkup('Example'),
++  category: new TranslatableMarkup('Example'),
++  description: new TranslatableMarkup('Example of a webform variant.')
++)]
+ class ExampleWebformVariant extends WebformVariantBase {
+ 
+   /**
+diff --git a/modules/webform_image_select/src/Plugin/WebformElement/WebformImageSelect.php b/modules/webform_image_select/src/Plugin/WebformElement/WebformImageSelect.php
+index 5ba755c6d099d5f80d6f0a3e31d43f59028def95..87b6bddfe12e0360ba46d6f0f505a5e3cbd1dd97 100644
+--- a/modules/webform_image_select/src/Plugin/WebformElement/WebformImageSelect.php
++++ b/modules/webform_image_select/src/Plugin/WebformElement/WebformImageSelect.php
+@@ -4,6 +4,8 @@ namespace Drupal\webform_image_select\Plugin\WebformElement;
+ 
+ use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElement\Select;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Drupal\webform_image_select\Element\WebformImageSelect as WebformImageSelectElement;
+@@ -12,14 +14,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'image_select' element.
+- *
+- * @WebformElement(
+- *   id = "webform_image_select",
+- *   label = @Translation("Image select"),
+- *   description = @Translation("Provides a form element for selecting images."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_image_select',
++  label: new TranslatableMarkup('Image select'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for selecting images.')
++)]
+ class WebformImageSelect extends Select {
+ 
+   /**
+diff --git a/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtons.php b/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtons.php
+index bbce49a0a78531ed11f99769a84081449090d23f..f1c1eaf5323bfcf72a42d14c98625f53c3ef1bd5 100644
+--- a/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtons.php
++++ b/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtons.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform_jqueryui_buttons\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElement\OptionsBase;
+ 
+ /**
+  * Provides a 'buttons' element.
+- *
+- * @WebformElement(
+- *   id = "webform_buttons",
+- *   label = @Translation("Buttons"),
+- *   description = @Translation("Provides a group of multiple buttons used for selecting a value."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_buttons',
++  label: new TranslatableMarkup('Buttons'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a group of multiple buttons used for selecting a value.')
++)]
+ class WebformButtons extends OptionsBase {
+ 
+ }
+diff --git a/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtonsOther.php b/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtonsOther.php
+index 1348715fb93f8ae99176920a259aff22b9fcadc4..51f84a1c22a6e263a6832dc7d2e737b7cbc9098f 100644
+--- a/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtonsOther.php
++++ b/modules/webform_jqueryui_buttons/src/Plugin/WebformElement/WebformButtonsOther.php
+@@ -2,17 +2,18 @@
+ 
+ namespace Drupal\webform_jqueryui_buttons\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElement\OptionsBase;
+ use Drupal\webform\Plugin\WebformElementOtherInterface;
+ 
+ /**
+  * Provides a 'buttons_other' element.
+- *
+- * @WebformElement(
+- *   id = "webform_buttons_other",
+- *   label = @Translation("Buttons other"),
+- *   description = @Translation("Provides a group of multiple buttons used for selecting a value, with the ability to enter a custom value."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_buttons_other',
++  label: new TranslatableMarkup('Buttons other'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a group of multiple buttons used for selecting a value, with the ability to enter a custom value.')
++)]
+ class WebformButtonsOther extends OptionsBase implements WebformElementOtherInterface {}
+diff --git a/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustom.php b/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustom.php
+index c9050de68b39313a1a47f5bc73e6a0175500fa43..24d6825f6daccfa132a1f960ac8fb8cb646d590b 100644
+--- a/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustom.php
++++ b/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustom.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\webform_options_custom\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Element\WebformMessage;
+ use Drupal\webform\Entity\WebformOptions;
+@@ -11,19 +13,19 @@ use Drupal\webform\Plugin\WebformElementAssetInterface;
+ use Drupal\webform\Utility\WebformOptionsHelper;
+ use Drupal\webform\WebformInterface;
+ use Drupal\webform\WebformSubmissionInterface;
++use Drupal\webform_options_custom\Plugin\Derivative\WebformOptionsCustomDeriver;
+ use Drupal\webform_options_custom\Plugin\WebformOptionsCustomInterface;
+ 
+ /**
+  * Provides a custom options element.
+- *
+- * @WebformElement(
+- *   id = "webform_options_custom",
+- *   label = @Translation("Custom element"),
+- *   description = @Translation("Provides a form element for creating custom options using HTML and SVG markup."),
+- *   category = @Translation("Custom elements"),
+- *   deriver = "Drupal\webform_options_custom\Plugin\Derivative\WebformOptionsCustomDeriver"
+- * )
+  */
++#[WebformElement(
++  id: 'webform_options_custom',
++  label: new TranslatableMarkup('Custom element'),
++  category: new TranslatableMarkup('Custom elements'),
++  description: new TranslatableMarkup('Provides a form element for creating custom options using HTML and SVG markup.'),
++  deriver: WebformOptionsCustomDeriver::class
++)]
+ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterface, WebformElementAssetInterface {
+ 
+   /**
+diff --git a/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustomEntity.php b/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustomEntity.php
+index 0426ea1baf107a374f21a7ebd89f1294cacd2be2..e8e4df7d58fd595e3c1bac61a174ec822f1f78f5 100644
+--- a/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustomEntity.php
++++ b/modules/webform_options_custom/src/Plugin/WebformElement/WebformOptionsCustomEntity.php
+@@ -2,21 +2,23 @@
+ 
+ namespace Drupal\webform_options_custom\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElement\WebformEntityOptionsTrait;
+ use Drupal\webform\Plugin\WebformElement\WebformEntityReferenceTrait;
+ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
++use Drupal\webform_options_custom\Plugin\Derivative\WebformOptionsCustomEntityDeriver;
+ 
+ /**
+  * Provides a custom options entity reference element.
+- *
+- * @WebformElement(
+- *   id = "webform_options_custom_entity",
+- *   label = @Translation("Custom entity reference"),
+- *   description = @Translation("Provides a form element for creating custom options using HTML and SVG markup with entity references."),
+- *   category = @Translation("Custom elements"),
+- *   deriver = "Drupal\webform_options_custom\Plugin\Derivative\WebformOptionsCustomEntityDeriver"
+- * )
+  */
++#[WebformElement(
++  id: 'webform_options_custom_entity',
++  label: new TranslatableMarkup('Custom entity reference'),
++  category: new TranslatableMarkup('Custom elements'),
++  description: new TranslatableMarkup('Provides a form element for creating custom options using HTML and SVG markup with entity references.'),
++  deriver: WebformOptionsCustomEntityDeriver::class
++)]
+ class WebformOptionsCustomEntity extends WebformOptionsCustom implements WebformElementEntityOptionsInterface {
+ 
+   use WebformEntityReferenceTrait;
+diff --git a/modules/webform_options_limit/src/Plugin/WebformHandler/OptionsLimitWebformHandler.php b/modules/webform_options_limit/src/Plugin/WebformHandler/OptionsLimitWebformHandler.php
+index 7fae34c818b34c90629a6b96747b606774f8f5a1..185d3d7ab3c3d547c98907160e0c964413b03716 100644
+--- a/modules/webform_options_limit/src/Plugin/WebformHandler/OptionsLimitWebformHandler.php
++++ b/modules/webform_options_limit/src/Plugin/WebformHandler/OptionsLimitWebformHandler.php
+@@ -8,6 +8,8 @@ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Form\OptGroup;
+ use Drupal\Core\Render\Element;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Element\WebformAjaxElementTrait;
+ use Drupal\webform\Element\WebformEntityTrait;
+ use Drupal\webform\Element\WebformMessage;
+@@ -16,6 +18,7 @@ use Drupal\webform\Plugin\WebformElement\OptionsBase;
+ use Drupal\webform\Plugin\WebformElement\TableSelect;
+ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\Utility\WebformOptionsHelper;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Drupal\webform_options_custom\Plugin\WebformOptionsCustomInterface;
+@@ -23,7 +26,7 @@ use Drupal\webform_options_limit\Plugin\WebformOptionsLimitHandlerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Webform options and boolean (bool) limit handler.
++ * Webform options and boolean (boolean) limit handler.
+  *
+  * @WebformHandler(
+  *   id = "options_limit",
+@@ -35,6 +38,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_REQUIRED,
+  * )
+  */
++#[WebformHandler(
++  id: 'options_limit',
++  label: new TranslatableMarkup('Options/Checkbox limit'),
++  category: new TranslatableMarkup('Options'),
++  description: new TranslatableMarkup('Define options or checkbox submission limits.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_IGNORED,
++  submission: WebformHandlerInterface::SUBMISSION_REQUIRED
++)]
+ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOptionsLimitHandlerInterface {
+ 
+   use WebformAjaxElementTrait;
+diff --git a/modules/webform_scheduled_email/src/Plugin/WebformHandler/ScheduleEmailWebformHandler.php b/modules/webform_scheduled_email/src/Plugin/WebformHandler/ScheduleEmailWebformHandler.php
+index 0dfc16079064a9c91bcf570d31ba84c0be64b04b..ee0e7eab5220d0afebf56619de662135bbd55090 100644
+--- a/modules/webform_scheduled_email/src/Plugin/WebformHandler/ScheduleEmailWebformHandler.php
++++ b/modules/webform_scheduled_email/src/Plugin/WebformHandler/ScheduleEmailWebformHandler.php
+@@ -5,27 +5,29 @@ namespace Drupal\webform_scheduled_email\Plugin\WebformHandler;
+ use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Url;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Element\WebformMessage;
+ use Drupal\webform\Element\WebformOtherBase;
+ use Drupal\webform\Plugin\WebformHandler\EmailWebformHandler;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Drupal\webform_scheduled_email\WebformScheduledEmailManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Schedules a webform submission's email.
+- *
+- * @WebformHandler(
+- *   id = "scheduled_email",
+- *   label = @Translation("Scheduled email"),
+- *   category = @Translation("Notification"),
+- *   description = @Translation("Sends a webform submission via a scheduled email."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_PROCESSED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_REQUIRED,
+- * )
+  */
++#[WebformHandler(
++  id: 'scheduled_email',
++  label: new TranslatableMarkup('Scheduled email'),
++  category: new TranslatableMarkup('Notification'),
++  description: new TranslatableMarkup('Sends a webform submission via a scheduled email.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_PROCESSED,
++  submission: WebformHandlerInterface::SUBMISSION_REQUIRED
++)]
+ class ScheduleEmailWebformHandler extends EmailWebformHandler {
+ 
+   /**
+diff --git a/modules/webform_submission_export_import/src/Plugin/WebformExporter/WebformSubmissionExportImportWebformExporter.php b/modules/webform_submission_export_import/src/Plugin/WebformExporter/WebformSubmissionExportImportWebformExporter.php
+index 58e90987f70ea87e88d433bd106807975a33ccc7..fd2bbc0e84a42d24c2d46eed3c5bb542ef926f39 100644
+--- a/modules/webform_submission_export_import/src/Plugin/WebformExporter/WebformSubmissionExportImportWebformExporter.php
++++ b/modules/webform_submission_export_import/src/Plugin/WebformExporter/WebformSubmissionExportImportWebformExporter.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\webform_submission_export_import\Plugin\WebformExporter;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformExporter;
+ use Drupal\webform\Plugin\WebformExporter\FileHandleTraitWebformExporter;
+ use Drupal\webform\Plugin\WebformExporterBase;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -10,16 +12,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Defines a machine readable CSV export that can be imported back into the current webform.
+- *
+- * @WebformExporter(
+- *   id = "webform_submission_export_import",
+- *   label = @Translation("CSV download"),
+- *   description = @Translation("Exports results in CSV that can be imported back into the current webform."),
+- *   archive = FALSE,
+- *   files = FALSE,
+- *   options = FALSE,
+- * )
+  */
++#[WebformExporter(
++  id: 'webform_submission_export_import',
++  label: new TranslatableMarkup('CSV download'),
++  description: new TranslatableMarkup('Exports results in CSV that can be imported back into the current webform.'),
++  archive: FALSE,
++  files: FALSE,
++  options: FALSE
++)]
+ class WebformSubmissionExportImportWebformExporter extends WebformExporterBase {
+ 
+   use FileHandleTraitWebformExporter;
+diff --git a/src/Attribute/WebformElement.php b/src/Attribute/WebformElement.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..e5473d5a043ef1194151c553592a127afbb61769
+--- /dev/null
++++ b/src/Attribute/WebformElement.php
+@@ -0,0 +1,78 @@
++<?php
++
++namespace Drupal\webform\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines a webform element attribute object.
++ *
++ * Plugin Namespace: Plugin\WebformElement.
++ *
++ * For a working example, see
++ * \Drupal\webform\Plugin\WebformElement\Email
++ *
++ * @see hook_webform_element_info_alter()
++ * @see \Drupal\webform\Plugin\WebformElementInterface
++ * @see \Drupal\webform\Plugin\WebformElementBase
++ * @see \Drupal\webform\Plugin\WebformElementManager
++ * @see \Drupal\webform\Plugin\WebformElementManagerInterface
++ * @see plugin_api
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class WebformElement extends Plugin {
++
++  /**
++   * Constructs a new WebformElement instance.
++   *
++   * @param string $id
++   *   The plugin ID.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the webform element.
++   * @param string|null $api
++   *   URL to the element's API documentation.
++   * @param array|null $dependencies
++   *   The element's module dependencies.
++   * @param string $default_key
++   *   The default key used for new webform element.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $category
++   *   The category in the admin UI where the webform will be listed.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
++   *   A brief description of the webform element. This will be shown when
++   *   adding or configuring this webform element.
++   * @param bool $hidden
++   *   Flag that defines hidden element.
++   * @param bool $multiline
++   *   Flag that defines multiline element.
++   * @param bool $composite
++   *   Flag that defines composite element.
++   * @param bool $states_wrapper
++   *   Flag that defines if #states wrapper should applied be to the element.
++   * @param bool $deprecated
++   *   Flag that indicates the element has been deprecated.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $deprecated_message
++   *   Deprecated message.
++   * @param class-string|null $deriver
++   *   (optional) The deriver class.
++   *
++   * @see webform_webform_element_info_alter()
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly string|null $api = NULL,
++    protected ?array $dependencies = [],
++    public readonly string $default_key = '',
++    public readonly ?TranslatableMarkup $category = NULL,
++    public readonly ?TranslatableMarkup $description = NULL,
++    public readonly bool $hidden = FALSE,
++    public readonly bool $multiline = FALSE,
++    public readonly bool $composite = FALSE,
++    public readonly bool $states_wrapper = FALSE,
++    public readonly bool $deprecated = FALSE,
++    public readonly ?TranslatableMarkup $deprecated_message = NULL,
++    public readonly ?string $deriver = NULL,
++  ) {}
++
++}
+diff --git a/src/Attribute/WebformExporter.php b/src/Attribute/WebformExporter.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..ae7cfb24c4da7ea5fd8a24d055e97c8a6e0f0ef4
+--- /dev/null
++++ b/src/Attribute/WebformExporter.php
+@@ -0,0 +1,57 @@
++<?php
++
++namespace Drupal\webform\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines a results exporter attribute object.
++ *
++ * Plugin Namespace: Plugin\WebformExporter.
++ *
++ * For a working example, see
++ * \Drupal\webform\Plugin\WebformExporter\DelimitedText/WebformExporter
++ *
++ * @see hook_webform_exporter_info_alter()
++ * @see \Drupal\webform\Plugin\WebformExporterInterface
++ * @see \Drupal\webform\Plugin\WebformExporterBase
++ * @see \Drupal\webform\Plugin\WebformExporterManager
++ * @see plugin_api
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class WebformExporter extends Plugin {
++
++  /**
++   * Constructs a new WebformExporter instance.
++   *
++   * @param string $id
++   *   The plugin ID.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the results exporter.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $category
++   *   The category in the admin UI where the block will be listed.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
++   *   A brief description of the results exporter. This will be shown when
++   *   adding or configuring this results exporter.
++   * @param bool $archive
++   *   Generates zipped archive.
++   * @param bool $files
++   *   Download uploaded files (in a zipped archive).
++   * @param bool $options
++   *   Using export options.
++   * @param class-string|null $deriver
++   *   (optional) The deriver class.
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly ?TranslatableMarkup $category = NULL,
++    public readonly ?TranslatableMarkup $description = NULL,
++    public readonly bool $archive = FALSE,
++    public readonly bool $files = TRUE,
++    public readonly bool $options = TRUE,
++    public readonly ?string $deriver = NULL,
++  ) {}
++
++}
+diff --git a/src/Attribute/WebformHandler.php b/src/Attribute/WebformHandler.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..24eac72b18eebb782da56f12ff17184e5b0b4a22
+--- /dev/null
++++ b/src/Attribute/WebformHandler.php
+@@ -0,0 +1,70 @@
++<?php
++
++namespace Drupal\webform\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Plugin\WebformHandlerInterface;
++
++/**
++ * Defines a webform handler attribute object.
++ *
++ * Plugin Namespace: Plugin\WebformHandler.
++ *
++ * For a working example, see
++ * \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler
++ *
++ * @see hook_webform_handler_info_alter()
++ * @see \Drupal\webform\Plugin\WebformHandlerInterface
++ * @see \Drupal\webform\Plugin\WebformHandlerBase
++ * @see \Drupal\webform\Plugin\WebformHandlerManager
++ * @see plugin_api
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class WebformHandler extends Plugin {
++
++  /**
++   * Constructs a new WebformHandler instance.
++   *
++   * @var string $id
++   *   The plugin ID.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the webform handler.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup|null $category
++   *   The category in the admin UI where the block will be listed.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
++   *   A brief description of the webform handler. This will be shown when
++   *   adding or configuring this webform handler.
++   * @var int $cardinality
++   *   The maximum number of instances allowed for this webform handler.
++   *
++   *   Possible values are positive integers or
++   *   \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED or
++   *   \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_SINGLE.
++   * @var bool $results
++   *   Notifies the webform that this handler processes results.
++   *   When set to TRUE, 'Disable saving of submissions.' can be set.
++   * @var bool $conditions
++   *   Indicated whether handler supports condition logic.
++   *   Most handlers will support conditional logic, this flat allows custom
++   *   handlers and custom modules to easily disabled conditional logic for
++   *   a handler.
++   * @var bool$tokens
++   *   Indicated whether handler supports tokens.
++   * @var bool $submission
++   *   Indicated whether submission must be stored in the database for this
++   *   handler processes results.
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly ?TranslatableMarkup $category = NULL,
++    public readonly ?TranslatableMarkup $description = NULL,
++    public readonly int $cardinality = WebformHandlerInterface::CARDINALITY_UNLIMITED,
++    public readonly bool $results = WebformHandlerInterface::RESULTS_IGNORED,
++    public readonly bool $conditions = TRUE,
++    public readonly bool $tokens = FALSE,
++    public readonly bool $submission = WebformHandlerInterface::SUBMISSION_OPTIONAL,
++  ) {}
++
++}
+diff --git a/src/Attribute/WebformSourceEntity.php b/src/Attribute/WebformSourceEntity.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..54c52cbabf6457bd83984af0a13fdfe7b2ee2043
+--- /dev/null
++++ b/src/Attribute/WebformSourceEntity.php
+@@ -0,0 +1,49 @@
++<?php
++
++namespace Drupal\webform\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines a webform source entity attribute object.
++ *
++ * Plugin Namespace: Plugin\WebformSourceEntity.
++ *
++ * For a working example, see
++ * \Drupal\webform\Plugin\WebformSourceEntity\QueryStringWebformSourceEntity
++ *
++ * @see hook_webform_source_entity_info()
++ * @see \Drupal\webform\Plugin\WebformSourceEntityInterface
++ * @see \Drupal\webform\Plugin\WebformSourceEntityManager
++ * @see \Drupal\webform\Plugin\WebformSourceEntityManagerInterface
++ * @see plugin_api
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class WebformSourceEntity extends Plugin {
++
++  /**
++   * Constructs a new WebformSourceEntity instance.
++   *
++   * @var string $id
++   *   The plugin ID.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the plugin.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
++   *   A brief description of the plugin.
++   * @var int $weight
++   *   Weight (priority) of the plugin.
++   * @var array $dependencies
++   *   The element's module dependencies.
++   *
++   * @see webform_webform_element_info_alter()
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly ?TranslatableMarkup $description = NULL,
++    public readonly int $weight = 0,
++    public ?array $dependencies = [],
++  ) {}
++
++}
+diff --git a/src/Attribute/WebformVariant.php b/src/Attribute/WebformVariant.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..e12c7e7f6fd96ad71c2836cf4e517168b118944a
+--- /dev/null
++++ b/src/Attribute/WebformVariant.php
+@@ -0,0 +1,51 @@
++<?php
++
++namespace Drupal\webform\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines a webform variant attribute object.
++ *
++ * Plugin Namespace: Plugin\WebformVariant.
++ *
++ * For a working example, see
++ * \Drupal\webform\Plugin\WebformVariant\OverrideWebformVariant
++ *
++ * @see hook_webform_variant_info_alter()
++ * @see \Drupal\webform\Plugin\WebformVariantInterface
++ * @see \Drupal\webform\Plugin\WebformVariantBase
++ * @see \Drupal\webform\Plugin\WebformVariantManager
++ * @see plugin_api
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class WebformVariant extends Plugin {
++
++  /**
++   * Constructs a new WebformVariant instance.
++   *
++   * @var string $id
++   *   The plugin ID.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the webform variant.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup|null $category
++   *   The category in the admin UI where the block will be listed.
++   * @var \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
++   *   A brief description of the webform variant.
++   *   This will be shown when adding or configuring this webform variant.
++   * @var string $machine_name_replace_pattern
++   *   The machine name replacement pattern.
++   * @var string $machine_name_replace
++   *   The machine name replacement character.
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly ?TranslatableMarkup $category = NULL,
++    public readonly ?TranslatableMarkup $description = NULL,
++    public readonly string $machine_name_replace_pattern = '[^a-zA-Z0-9_-]+',
++    public readonly string $machine_name_replace = '_',
++  ) {}
++
++}
+diff --git a/src/Entity/Webform.php b/src/Entity/Webform.php
+index 4c80b9d1f4e1bf5daa711260eeba77b2220a979d..8056f69086bcc26542d1e37ad67e9660eff3a907 100644
+--- a/src/Entity/Webform.php
++++ b/src/Entity/Webform.php
+@@ -2645,7 +2645,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
+     if (isset($results)) {
+       foreach ($handlers as $instance_id => $handler) {
+         $plugin_definition = $handler->getPluginDefinition();
+-        if ($plugin_definition['results'] !== $results) {
++        if ($plugin_definition['results'] !== (bool) $results) {
+           $handlers->removeInstanceId($instance_id);
+         }
+       }
+diff --git a/src/Plugin/WebformElement/Address.php b/src/Plugin/WebformElement/Address.php
+index 25c87e2bf8b70495115123f83437c9e9e7aab917..2ae7152041416cefe4c5d5747333534f681d9095 100644
+--- a/src/Plugin/WebformElement/Address.php
++++ b/src/Plugin/WebformElement/Address.php
+@@ -12,6 +12,8 @@ use Drupal\Core\Language\LanguageInterface;
+ use Drupal\Core\Mail\MailFormatHelper;
+ use Drupal\address\FieldHelper;
+ use Drupal\address\LabelHelper;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Utility\WebformElementHelper;
+ use Drupal\webform\WebformInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -21,21 +23,18 @@ use Symfony\Component\Validator\Validation;
+ /**
+  * Provides a 'address' element.
+  *
+- * @WebformElement(
+- *   id = "address",
+- *   label = @Translation("Advanced address"),
+- *   description = @Translation("Provides advanced element for storing, validating and displaying international postal addresses."),
+- *   category = @Translation("Composite elements"),
+- *   composite = TRUE,
+- *   multiline = TRUE,
+- *   states_wrapper = TRUE,
+- *   dependencies = {
+- *     "address",
+- *   }
+- * )
+- *
+  * @see \Drupal\address\Element\Address
+  */
++#[WebformElement(
++  id: 'address',
++  label: new TranslatableMarkup('Advanced address'),
++  dependencies: ['address'],
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup('Provides advanced element for storing, validating and displaying international postal addresses.'),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE,
++)]
+ class Address extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Captcha.php b/src/Plugin/WebformElement/Captcha.php
+index 4155b39f182926faa22c58d42983fad57a3ffd2f..5a3d83c1877958cf32a91b08f698e5495fcac057 100644
+--- a/src/Plugin/WebformElement/Captcha.php
++++ b/src/Plugin/WebformElement/Captcha.php
+@@ -3,27 +3,26 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\webform\Element\WebformMessage as WebformMessageElement;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'captcha' element.
+- *
+- * @WebformElement(
+- *   id = "captcha",
+- *   default_key = "captcha",
+- *   api = "https://www.drupal.org/project/captcha",
+- *   label = @Translation("CAPTCHA"),
+- *   description = @Translation("Provides a form element that determines whether the user is human."),
+- *   category = @Translation("Advanced elements"),
+- *   states_wrapper = TRUE,
+- *   dependencies = {
+- *     "captcha",
+- *   }
+- * )
+  */
++#[WebformElement(
++  id: 'captcha',
++  label: new TranslatableMarkup('CAPTCHA'),
++  api: 'https://www.drupal.org/project/captcha',
++  dependencies: ['captcha'],
++  default_key: 'captcha',
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element that determines whether the user is human.'),
++  states_wrapper: TRUE
++)]
+ class Captcha extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Checkbox.php b/src/Plugin/WebformElement/Checkbox.php
+index 55b08b08cb833095b8ad84dbfb1a2aaccbebbd62..6396c772364d5e1a57017a94963c97d02669b88e 100644
+--- a/src/Plugin/WebformElement/Checkbox.php
++++ b/src/Plugin/WebformElement/Checkbox.php
+@@ -3,19 +3,20 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'checkbox' element.
+- *
+- * @WebformElement(
+- *   id = "checkbox",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Checkbox.php/class/Checkbox",
+- *   label = @Translation("Checkbox"),
+- *   description = @Translation("Provides a form element for a single checkbox."),
+- *   category = @Translation("Basic elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'checkbox',
++  label: new TranslatableMarkup('Checkbox'),
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Checkbox.php/class/Checkbox',
++  category: new TranslatableMarkup('Basic elements'),
++  description: new TranslatableMarkup('Provides a form element for a single checkbox.')
++)]
+ class Checkbox extends BooleanBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Checkboxes.php b/src/Plugin/WebformElement/Checkboxes.php
+index 9b998ca2bc109c6a21192e1ae1cc87f8a6930a59..6e1ec03035d5eafcabc3e1e21998ebb1a05620fd 100644
+--- a/src/Plugin/WebformElement/Checkboxes.php
++++ b/src/Plugin/WebformElement/Checkboxes.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Utility\WebformArrayHelper;
+ use Drupal\webform\Utility\WebformOptionsHelper;
+ use Drupal\webform\WebformSubmissionConditionsValidator;
+@@ -10,15 +12,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'checkboxes' element.
+- *
+- * @WebformElement(
+- *   id = "checkboxes",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Checkboxes.php/class/Checkboxes",
+- *   label = @Translation("Checkboxes"),
+- *   description = @Translation("Provides a form element for a set of checkboxes."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'checkboxes',
++  label: new TranslatableMarkup('Checkboxes'),
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Checkboxes.php/class/Checkboxes',
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a set of checkboxes.')
++)]
+ class Checkboxes extends OptionsBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Color.php b/src/Plugin/WebformElement/Color.php
+index 307614b80c20ec01a85f6e933b918d9f6c320f36..9261966a9c779303d47b413b38e7ca59e27c21d7 100644
+--- a/src/Plugin/WebformElement/Color.php
++++ b/src/Plugin/WebformElement/Color.php
+@@ -3,21 +3,22 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'color' element.
+- *
+- * @WebformElement(
+- *   id = "color",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Color.php/class/Color",
+- *   label = @Translation("Color"),
+- *   description = @Translation("Provides a form element for choosing a color."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'color',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Color.php/class/Color',
++  label: new TranslatableMarkup('Color'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for choosing a color.')
++)]
+ class Color extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Container.php b/src/Plugin/WebformElement/Container.php
+index fdf740f88e3126c3a1152e84b0d8264fc05f6046..bd554c72fba00ce628e9391753499cc6746fbcb8 100644
+--- a/src/Plugin/WebformElement/Container.php
++++ b/src/Plugin/WebformElement/Container.php
+@@ -2,18 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'container' element.
+- *
+- * @WebformElement(
+- *   id = "container",
+- *   default_key = "container",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Container.php/class/Container",
+- *   label = @Translation("Container"),
+- *   description = @Translation("Provides an element that wraps child elements in a container."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'container',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Container.php/class/Container',
++  label: new TranslatableMarkup('Container'),
++  default_key: 'container',
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides an element that wraps child elements in a container.')
++)]
+ class Container extends ContainerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Date.php b/src/Plugin/WebformElement/Date.php
+index 9bc2c8863a17a0140d7ba95dc080573e4527919d..db47f1ffce7a770f4f812d9e38fa116b57038005 100644
+--- a/src/Plugin/WebformElement/Date.php
++++ b/src/Plugin/WebformElement/Date.php
+@@ -3,19 +3,20 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Datetime\Entity\DateFormat;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'date' element.
+- *
+- * @WebformElement(
+- *   id = "date",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Date.php/class/Date",
+- *   label = @Translation("Date"),
+- *   description = @Translation("Provides a form element for date selection."),
+- *   category = @Translation("Date/time elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'date',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Date.php/class/Date',
++  label: new TranslatableMarkup('Date'),
++  category: new TranslatableMarkup('Date/time elements'),
++  description: new TranslatableMarkup('Provides a form element for date selection.')
++)]
+ class Date extends DateBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/DateList.php b/src/Plugin/WebformElement/DateList.php
+index b45e4923ea13a98a2aae55a5a28e5248835c9b93..77eec181be00f4640fd10c9a6f70e6dbd57a382d 100644
+--- a/src/Plugin/WebformElement/DateList.php
++++ b/src/Plugin/WebformElement/DateList.php
+@@ -9,20 +9,20 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element;
+ use Drupal\Core\Security\TrustedCallbackInterface;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionConditionsValidator;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'datelist' element.
+- *
+- * @WebformElement(
+- *   id = "datelist",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Datetime!Element!Datelist.php/class/Datelist",
+- *   label = @Translation("Date list"),
+- *   description = @Translation("Provides a form element for date & time selection using select menus and text fields."),
+- *   category = @Translation("Date/time elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'datelist',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Datetime!Element!Datelist.php/class/Datelist',
++  label: new TranslatableMarkup('Date list'),
++  category: new TranslatableMarkup('Date/time elements'),
++  description: new TranslatableMarkup('Provides a form element for date & time selection using select menus and text fields.')
++)]
+ class DateList extends DateBase implements TrustedCallbackInterface {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/DateTime.php b/src/Plugin/WebformElement/DateTime.php
+index 14646b0af632856016b5e99189885fadc2fe3bf9..716d27cc3b4364d98e79f2fecde889d23080ae05 100644
+--- a/src/Plugin/WebformElement/DateTime.php
++++ b/src/Plugin/WebformElement/DateTime.php
+@@ -6,20 +6,21 @@ use Drupal\Core\Datetime\DrupalDateTime;
+ use Drupal\Core\Datetime\Entity\DateFormat;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Security\TrustedCallbackInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionConditionsValidator;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'datetime' element.
+- *
+- * @WebformElement(
+- *   id = "datetime",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Datetime!Element!Datetime.php/class/Datetime",
+- *   label = @Translation("Date/time"),
+- *   description = @Translation("Provides a form element for date & time selection."),
+- *   category = @Translation("Date/time elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'datetime',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Datetime!Element!Datetime.php/class/Datetime',
++  label: new TranslatableMarkup('Date/time'),
++  category: new TranslatableMarkup('Date/time elements'),
++  description: new TranslatableMarkup('Provides a form element for date & time selection.')
++)]
+ class DateTime extends DateBase implements TrustedCallbackInterface {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Details.php b/src/Plugin/WebformElement/Details.php
+index 2b56a536f7e7aa569f3c9f228b87f07f06d60640..454a8a4f84131d842597f9669f145421c4e6de8e 100644
+--- a/src/Plugin/WebformElement/Details.php
++++ b/src/Plugin/WebformElement/Details.php
+@@ -2,19 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'details' element.
+- *
+- * @WebformElement(
+- *   id = "details",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Details.php/class/Details",
+- *   label = @Translation("Details"),
+- *   description = @Translation("Provides an interactive element that a user can open and close."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'details',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Details.php/class/Details',
++  label: new TranslatableMarkup('Details'),
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides an interactive element that a user can open and close.')
++)]
+ class Details extends ContainerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Email.php b/src/Plugin/WebformElement/Email.php
+index 98de3cfe9360e509ce23f19a9e6a821e956cdd5a..704ddc2b70752268c8f2eeb1156b1d83ac798e12 100644
+--- a/src/Plugin/WebformElement/Email.php
++++ b/src/Plugin/WebformElement/Email.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'email' element.
+- *
+- * @WebformElement(
+- *   id = "email",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Email.php/class/Email",
+- *   label = @Translation("Email"),
+- *   description = @Translation("Provides a form element for entering an email address."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'email',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Email.php/class/Email',
++  label: new TranslatableMarkup('Email'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for entering an email address.')
++)]
+ class Email extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/EntityAutocomplete.php b/src/Plugin/WebformElement/EntityAutocomplete.php
+index aaf1705b66d621c95b171b74d51d88c4d87a3891..5457d0fc6751e37d50520bd629ec2d3716bf76bf 100644
+--- a/src/Plugin/WebformElement/EntityAutocomplete.php
++++ b/src/Plugin/WebformElement/EntityAutocomplete.php
+@@ -3,21 +3,22 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'entity_autocomplete' element.
+- *
+- * @WebformElement(
+- *   id = "entity_autocomplete",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Entity!Element!EntityAutocomplete.php/class/EntityAutocomplete",
+- *   label = @Translation("Entity autocomplete"),
+- *   description = @Translation("Provides a form element to select an entity reference using an autocompletion."),
+- *   category = @Translation("Entity reference elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'entity_autocomplete',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Entity!Element!EntityAutocomplete.php/class/EntityAutocomplete',
++  label: new TranslatableMarkup('Entity autocomplete'),
++  category: new TranslatableMarkup('Entity reference elements'),
++  description: new TranslatableMarkup('Provides a form element to select an entity reference using an autocompletion.')
++)]
+ class EntityAutocomplete extends WebformElementBase implements WebformElementEntityReferenceInterface {
+ 
+   use WebformEntityReferenceTrait;
+diff --git a/src/Plugin/WebformElement/Fieldset.php b/src/Plugin/WebformElement/Fieldset.php
+index 83ad919f17e2e38612da5851425b76360fd7342d..e436f94cae739ebdfe9ab54da9da410460f0b830 100644
+--- a/src/Plugin/WebformElement/Fieldset.php
++++ b/src/Plugin/WebformElement/Fieldset.php
+@@ -2,17 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'fieldset' element.
+- *
+- * @WebformElement(
+- *   id = "fieldset",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Fieldset.php/class/Fieldset",
+- *   label = @Translation("Fieldset"),
+- *   description = @Translation("Provides an element for a group of form elements."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'fieldset',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Fieldset.php/class/Fieldset',
++  label: new TranslatableMarkup('Fieldset'),
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides an element for a group of form elements.')
++)]
+ class Fieldset extends ContainerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Hidden.php b/src/Plugin/WebformElement/Hidden.php
+index 1eed0ea507f50021cd0e345f220af713036b8a0b..af1162a7a0e17164a28c3aa5063b11c9d0677aac 100644
+--- a/src/Plugin/WebformElement/Hidden.php
++++ b/src/Plugin/WebformElement/Hidden.php
+@@ -3,19 +3,20 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformInterface;
+ 
+ /**
+  * Provides a 'hidden' element.
+- *
+- * @WebformElement(
+- *   id = "hidden",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Hidden.php/class/Hidden",
+- *   label = @Translation("Hidden"),
+- *   description = @Translation("Provides a form element for an HTML 'hidden' input element."),
+- *   category = @Translation("Basic elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'hidden',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Hidden.php/class/Hidden',
++  label: new TranslatableMarkup('Hidden'),
++  category: new TranslatableMarkup('Basic elements'),
++  description: new TranslatableMarkup("Provides a form element for an HTML 'hidden' input element.")
++)]
+ class Hidden extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Item.php b/src/Plugin/WebformElement/Item.php
+index be340570a32c71cfd8044d2b896f9f8212696085..874a76676a56e4878d6f0ffd8cbbb4b9c58ea377 100644
+--- a/src/Plugin/WebformElement/Item.php
++++ b/src/Plugin/WebformElement/Item.php
+@@ -4,19 +4,20 @@ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'item' element.
+- *
+- * @WebformElement(
+- *   id = "item",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Item.php/class/Item",
+- *   label = @Translation("Item"),
+- *   description = @Translation("Provides a display-only form element with an optional title and description."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'item',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Item.php/class/Item',
++  label: new TranslatableMarkup('Item'),
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides a display-only form element with an optional title and description.')
++)]
+ class Item extends WebformMarkup {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Label.php b/src/Plugin/WebformElement/Label.php
+index 61cc6132edef143511427b7f3494ad2038a50825..e55aebc6554211c2618480c0043c1ccb62285a5d 100644
+--- a/src/Plugin/WebformElement/Label.php
++++ b/src/Plugin/WebformElement/Label.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\webform\WebformSubmissionInterface;
++use Drupal\webform\Attribute\WebformElement;
+ 
+ /**
+  * Provides a 'label' element.
+- *
+- * @WebformElement(
+- *   id = "label",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Label.php/class/Label",
+- *   label = @Translation("Label"),
+- *   description = @Translation("Provides an element for displaying the label for a form element."),
+- *   category = @Translation("Markup elements"),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'label',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Label.php/class/Label',
++  label: new TranslatableMarkup('Label'),
++  category: new TranslatableMarkup('Markup elements'),
++  description: new TranslatableMarkup('Provides an element for displaying the label for a form element.'),
++  states_wrapper: TRUE
++)]
+ class Label extends WebformMarkupBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/LanguageSelect.php b/src/Plugin/WebformElement/LanguageSelect.php
+index 1d69b9629ec284ba57085715697bcd22658ab5ea..1db4b6b5c8bd108b624c577401337847826f1f24 100644
+--- a/src/Plugin/WebformElement/LanguageSelect.php
++++ b/src/Plugin/WebformElement/LanguageSelect.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'language_select' element.
+- *
+- * @WebformElement(
+- *   id = "language_select",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!LanguageSelect.php/class/LanguageSelect",
+- *   label = @Translation("Language select"),
+- *   description = @Translation("Provides a form element for selecting a language."),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'language_select',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!LanguageSelect.php/class/LanguageSelect',
++  label: new TranslatableMarkup('Language select'),
++  description: new TranslatableMarkup('Provides a form element for selecting a language.'),
++  hidden: TRUE
++)]
+ class LanguageSelect extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/MachineName.php b/src/Plugin/WebformElement/MachineName.php
+index 1fb4e370977afa059af5ffbf5132ded0674f403b..5f83f7d4c09cc21b51c31bd2bec51defc95db45e 100644
+--- a/src/Plugin/WebformElement/MachineName.php
++++ b/src/Plugin/WebformElement/MachineName.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'machine_name' element.
+- *
+- * @WebformElement(
+- *   id = "machine_name",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!MachineName.php/class/MachineName",
+- *   description = @Translation("Provides a form element to enter a machine name, which is validated to ensure that the name is unique and does not contain disallowed characters."),
+- *   label = @Translation("Machine name"),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'machine_name',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!MachineName.php/class/MachineName',
++  label: new TranslatableMarkup('Machine name'),
++  description: new TranslatableMarkup('Provides a form element to enter a machine name, which is validated to ensure that the name is unique and does not contain disallowed characters.'),
++  hidden: TRUE
++)]
+ class MachineName extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/ManagedFile.php b/src/Plugin/WebformElement/ManagedFile.php
+index 42264e23393c854c5f036371657a24a6181b8cdc..f858a47ea8df0d8dce0cbb83c0af53608da834ee 100644
+--- a/src/Plugin/WebformElement/ManagedFile.php
++++ b/src/Plugin/WebformElement/ManagedFile.php
+@@ -2,16 +2,18 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'managed_file' element.
+- *
+- * @WebformElement(
+- *   id = "managed_file",
+- *   api = "https://api.drupal.org/api/drupal/core!modules!file!src!Element!ManagedFile.php/class/ManagedFile",
+- *   label = @Translation("File"),
+- *   description = @Translation("Provides a form element for uploading and saving a file."),
+- *   category = @Translation("File upload elements"),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++id: 'managed_file',
++  api: 'https://api.drupal.org/api/drupal/core!modules!file!src!Element!ManagedFile.php/class/ManagedFile',
++  label: new TranslatableMarkup('File'),
++  category: new TranslatableMarkup('File upload elements'),
++  description: new TranslatableMarkup('Provides a form element for uploading and saving a file.'),
++  states_wrapper: TRUE
++)]
+ class ManagedFile extends WebformManagedFileBase {}
+diff --git a/src/Plugin/WebformElement/Number.php b/src/Plugin/WebformElement/Number.php
+index 6c350e41921a02b0d0b5548e504d99e922bfa70a..ae65f453303436866b29fc859363a36623627d74 100644
+--- a/src/Plugin/WebformElement/Number.php
++++ b/src/Plugin/WebformElement/Number.php
+@@ -2,17 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'number' element.
+- *
+- * @WebformElement(
+- *   id = "number",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Number.php/class/Number",
+- *   label = @Translation("Number"),
+- *   description = @Translation("Provides a form element for numeric input, with special numeric validation."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++id: 'number',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Number.php/class/Number',
++  label: new TranslatableMarkup('Number'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for numeric input, with special numeric validation.')
++)]
+ class Number extends NumericBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Password.php b/src/Plugin/WebformElement/Password.php
+index 6f74855d40c62e4b64fabf744914dee95a12a532..e0a8623d43604b0f67bb7e59ad7d2d175fdcfae1 100644
+--- a/src/Plugin/WebformElement/Password.php
++++ b/src/Plugin/WebformElement/Password.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'password' element.
+- *
+- * @WebformElement(
+- *   id = "password",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Password.php/class/Password",
+- *   label = @Translation("Password"),
+- *   description = @Translation("Provides a form element for entering a password, with hidden text."),
+- *   category = @Translation("Basic elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'password',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Password.php/class/Password',
++  label: new TranslatableMarkup('Password'),
++  category: new TranslatableMarkup('Basic elements'),
++  description: new TranslatableMarkup('Provides a form element for entering a password, with hidden text.')
++)]
+ class Password extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/PasswordConfirm.php b/src/Plugin/WebformElement/PasswordConfirm.php
+index 9b74a948ecc62c423c0ea994728a68dd96c4ca9f..95e0d1ae4fae000c30fcfe4d75644d8cae431e7d 100644
+--- a/src/Plugin/WebformElement/PasswordConfirm.php
++++ b/src/Plugin/WebformElement/PasswordConfirm.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'password_confirm' element.
+- *
+- * @WebformElement(
+- *   id = "password_confirm",
+- *   label = @Translation("Password confirm"),
+- *   category = @Translation("Advanced elements"),
+- *   description = @Translation("Provides a form element for double-input of passwords."),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'password_confirm',
++  label: new TranslatableMarkup('Password confirm'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for double-input of passwords.'),
++  states_wrapper: TRUE,
++)]
+ class PasswordConfirm extends Password {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/ProcessedText.php b/src/Plugin/WebformElement/ProcessedText.php
+index 16b301b538003bb45f6c4846ce3a193f070db87e..0578badc2a65b4052a0a08bb0ceb71e9f0dac205 100644
+--- a/src/Plugin/WebformElement/ProcessedText.php
++++ b/src/Plugin/WebformElement/ProcessedText.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Mail\MailFormatHelper;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -9,16 +10,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'processed_text' element.
+- *
+- * @WebformElement(
+- *   id = "processed_text",
+- *   default_key = "processed_text",
+- *   label = @Translation("Advanced HTML/Text"),
+- *   category = @Translation("Markup elements"),
+- *   description = @Translation("Provides an element to render advanced HTML markup and processed text."),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'processed_text',
++  label: new \Drupal\Core\StringTranslation\TranslatableMarkup('Advanced HTML/Text'),
++  default_key: 'processed_text',
++  category: new \Drupal\Core\StringTranslation\TranslatableMarkup('Markup elements'),
++  description: new \Drupal\Core\StringTranslation\TranslatableMarkup('Provides an element to render advanced HTML markup and processed text.'),
++  states_wrapper: TRUE
++)]
+ class ProcessedText extends WebformMarkupBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Radios.php b/src/Plugin/WebformElement/Radios.php
+index 7eac2a05c2a80f9db9323c9cb8160c8dfe57df39..c9db4904bea4d3f3467c053b1c4e69d0333ada26 100644
+--- a/src/Plugin/WebformElement/Radios.php
++++ b/src/Plugin/WebformElement/Radios.php
+@@ -2,17 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'radios' element.
+- *
+- * @WebformElement(
+- *   id = "radios",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Radios.php/class/Radios",
+- *   label = @Translation("Radios"),
+- *   description = @Translation("Provides a form element for a set of radio buttons."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'radios',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Radios.php/class/Radios',
++  label: new TranslatableMarkup('Radios'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a set of radio buttons.')
++)]
+ class Radios extends OptionsBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Range.php b/src/Plugin/WebformElement/Range.php
+index 1f17abea1d5090f5b13a83eca9cc80059a97b930..db1f9da067b20c567fc114fa09de4f01fbc606d6 100644
+--- a/src/Plugin/WebformElement/Range.php
++++ b/src/Plugin/WebformElement/Range.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Markup;
+ use Drupal\Core\Template\Attribute;
+@@ -9,15 +11,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'range' element.
+- *
+- * @WebformElement(
+- *   id = "range",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Range.php/class/Range",
+- *   label = @Translation("Range"),
+- *   description = @Translation("Provides a form element for input of a number within a specific range using a slider."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'range',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Range.php/class/Range',
++  label: new TranslatableMarkup('Range'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for input of a number within a specific range using a slider.')
++)]
+ class Range extends NumericBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Search.php b/src/Plugin/WebformElement/Search.php
+index 63a01195382a44aabd845a693a472203294d238c..831e348b24814daf62203d03ff722fb416fe45b5 100644
+--- a/src/Plugin/WebformElement/Search.php
++++ b/src/Plugin/WebformElement/Search.php
+@@ -2,17 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'search' element.
+- *
+- * @WebformElement(
+- *   id = "search",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Search.php/class/Search",
+- *   label = @Translation("Search"),
+- *   description = @Translation("Provides form element for entering a search phrase."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'search',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Search.php/class/Search',
++  label: new TranslatableMarkup('Search'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides form element for entering a search phrase.')
++)]
+ class Search extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Select.php b/src/Plugin/WebformElement/Select.php
+index 9576eee5cdf762f8fd014e2bd944004734a40fe3..23b9bea53c4336dd66e44fed6cfa26671f9a50ed 100644
+--- a/src/Plugin/WebformElement/Select.php
++++ b/src/Plugin/WebformElement/Select.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Utility\WebformArrayHelper;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'select' element.
+- *
+- * @WebformElement(
+- *   id = "select",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Select.php/class/Select",
+- *   label = @Translation("Select"),
+- *   description = @Translation("Provides a form element for a drop-down menu or scrolling selection box."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'select',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Select.php/class/Select',
++  label: new TranslatableMarkup('Select'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a drop-down menu or scrolling selection box.')
++)]
+ class Select extends OptionsBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Table.php b/src/Plugin/WebformElement/Table.php
+index 152766fbbe2c64572bfaae254cc4b1ebea33b054..9a61c23f81ddff9572bd40f7fbdac0ac672779c6 100644
+--- a/src/Plugin/WebformElement/Table.php
++++ b/src/Plugin/WebformElement/Table.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\Utility\WebformElementHelper;
+@@ -11,15 +13,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'table' element.
+- *
+- * @WebformElement(
+- *   id = "table",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Table.php/class/Table",
+- *   label = @Translation("Table"),
+- *   description = @Translation("Provides an element to render a table."),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'table',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Table.php/class/Table',
++  label: new TranslatableMarkup('Table'),
++  description: new TranslatableMarkup('Provides an element to render a table.'),
++  hidden: TRUE
++)]
+ class Table extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/TableSelect.php b/src/Plugin/WebformElement/TableSelect.php
+index 98c107df7593f635b5db65441f2948bf57c3753f..8149d9291105449777f6ee12551e5254bfdbab7c 100644
+--- a/src/Plugin/WebformElement/TableSelect.php
++++ b/src/Plugin/WebformElement/TableSelect.php
+@@ -2,17 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'tableselect' element.
+- *
+- * @WebformElement(
+- *   id = "tableselect",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Tableselect.php/class/Tableselect",
+- *   label = @Translation("Table select"),
+- *   description = @Translation("Provides a form element for a table with radios or checkboxes in left column."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'tableselect',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Tableselect.php/class/Tableselect',
++  label: new TranslatableMarkup('Table select'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a table with radios or checkboxes in left column.')
++)]
+ class TableSelect extends OptionsBase {
+ 
+   use WebformTableTrait;
+diff --git a/src/Plugin/WebformElement/Telephone.php b/src/Plugin/WebformElement/Telephone.php
+index 471b381d3bb320a0d23224f7d9c841f94a8e6b58..65d6a3bd0905dd1a2d0eec94c7bd8fd747450eb3 100644
+--- a/src/Plugin/WebformElement/Telephone.php
++++ b/src/Plugin/WebformElement/Telephone.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use libphonenumber\PhoneNumberFormat;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -11,17 +13,16 @@ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ // phpcs:disable Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
+-
+ /**
+  * Provides a 'tel' element.
+- *
+- * @WebformElement(
+- *   id = "tel",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Tel.php/class/Tel",
+- *   label = @Translation("Telephone"), description = @Translation("Provides a form element for entering a telephone number."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'tel',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Tel.php/class/Tel',
++  label: new TranslatableMarkup('Telephone'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for entering a telephone number.')
++)]
+ class Telephone extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/TextField.php b/src/Plugin/WebformElement/TextField.php
+index 6bfc7a583e070ca768d7cad3a4018e494474851b..e0dcc97ecbd986885cb7ccdd24dbc0e090c23d41 100644
+--- a/src/Plugin/WebformElement/TextField.php
++++ b/src/Plugin/WebformElement/TextField.php
+@@ -2,19 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'textfield' element.
+- *
+- * @WebformElement(
+- *   id = "textfield",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Textfield.php/class/Textfield",
+- *   label = @Translation("Text field"),
+- *   description = @Translation("Provides a form element for input of a single-line text."),
+- *   category = @Translation("Basic elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'textfield',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Textfield.php/class/Textfield',
++  label: new TranslatableMarkup('Text field'),
++  category: new TranslatableMarkup('Basic elements'),
++  description: new TranslatableMarkup('Provides a form element for input of a single-line text.')
++)]
+ class TextField extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/TextFormat.php b/src/Plugin/WebformElement/TextFormat.php
+index a1f9281c7460b3e8fb3c4429b6c6da738dc63782..f74bd5e390d47d28d8d5316e3066f892f5565511 100644
+--- a/src/Plugin/WebformElement/TextFormat.php
++++ b/src/Plugin/WebformElement/TextFormat.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Mail\MailFormatHelper;
+@@ -13,18 +15,17 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'text_format' element.
+- *
+- * @WebformElement(
+- *   id = "text_format",
+- *   api = "https://api.drupal.org/api/drupal/core!modules!filter!src!Element!TextFormat.php/class/TextFormat",
+- *   label = @Translation("Text format"),
+- *   description = @Translation("Provides a text format form element."),
+- *   category = @Translation("Advanced elements"),
+- *   states_wrapper = TRUE,
+- *   composite = TRUE,
+- *   multiline = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'text_format',
++  api: 'https://api.drupal.org/api/drupal/core!modules!filter!src!Element!TextFormat.php/class/TextFormat',
++  label: new TranslatableMarkup('Text format'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a text format form element.'),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class TextFormat extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Textarea.php b/src/Plugin/WebformElement/Textarea.php
+index ecd39f5f36125a4188df32c5a1dae094cd384699..ebef8412050d39491db52fc383c2e59914f8cc03 100644
+--- a/src/Plugin/WebformElement/Textarea.php
++++ b/src/Plugin/WebformElement/Textarea.php
+@@ -2,22 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Component\Render\HtmlEscapedText;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'textarea' element.
+- *
+- * @WebformElement(
+- *   id = "textarea",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Textarea.php/class/Textarea",
+- *   label = @Translation("Textarea"),
+- *   description = @Translation("Provides a form element for input of multiple-line text."),
+- *   category = @Translation("Basic elements"),
+- *   multiline = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'textarea',
++  label: new TranslatableMarkup('Textarea'),
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Textarea.php/class/Textarea',
++  category: new TranslatableMarkup('Basic elements'),
++  description: new TranslatableMarkup('Provides a form element for input of multiple-line text.'),
++  multiline: TRUE
++)]
+ class Textarea extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Url.php b/src/Plugin/WebformElement/Url.php
+index 3aa94a7dd3a361eda4c08d1c1b509c4f337be1e5..d6c6e6aefeef983f54b1a0a92cc27bd267da7815 100644
+--- a/src/Plugin/WebformElement/Url.php
++++ b/src/Plugin/WebformElement/Url.php
+@@ -3,20 +3,21 @@
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
+ use Drupal\Core\Url as CoreUrl;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'url' element.
+- *
+- * @WebformElement(
+- *   id = "url",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Url.php/class/Url",
+- *   label = @Translation("URL"),
+- *   description = @Translation("Provides a form element for input of a URL."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'url',
++  label: new TranslatableMarkup('URL'),
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Url.php/class/Url',
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for input of a URL.')
++)]
+ class Url extends TextBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/Value.php b/src/Plugin/WebformElement/Value.php
+index 4c9182a62c8d2b8ff5b48aa3dbc6fe95ec956b87..ea41ab3265672a5dc273bd4b0d5811ffcf11783c 100644
+--- a/src/Plugin/WebformElement/Value.php
++++ b/src/Plugin/WebformElement/Value.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformInterface;
+ 
+ /**
+  * Provides a 'value' element.
+- *
+- * @WebformElement(
+- *   id = "value",
+- *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Value.php/class/Value",
+- *   label = @Translation("Value"),
+- *   description = @Translation("Provides a form element for storage of internal information."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'value',
++  api: 'https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Value.php/class/Value',
++  label: new TranslatableMarkup('Value'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for storage of internal information.')
++)]
+ class Value extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/VerticalTabs.php b/src/Plugin/WebformElement/VerticalTabs.php
+index af3cfa13725b8ad98319ccd418067c103188985c..e2782278ce591d76dd7da756f89d7d4cf55ccb66 100644
+--- a/src/Plugin/WebformElement/VerticalTabs.php
++++ b/src/Plugin/WebformElement/VerticalTabs.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformMessage as WebformMessageElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+@@ -9,15 +11,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a hidden 'vertical_tabs' element.
+- *
+- * @WebformElement(
+- *   id = "vertical_tabs",
+- *   label = @Translation("Vertical tabs"),
+- *   description = @Translation("Provides a vertical tabs element."),
+- *   category = @Translation("Markup elements"),
+- *   hidden = TRUE
+- * )
+  */
++#[WebformElement(
++  id: 'vertical_tabs',
++  label: new TranslatableMarkup('Vertical tabs'),
++  category: new TranslatableMarkup('Markup elements'),
++  description: new TranslatableMarkup('Provides a vertical tabs element.'),
++  hidden: TRUE
++)]
+ class VerticalTabs extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/View.php b/src/Plugin/WebformElement/View.php
+index 3c6255b7adb5718a6f344bf5865b4b1a4f2c2dc8..b2790bc1277ad09df87b9d545b04e22d147b6aaa 100644
+--- a/src/Plugin/WebformElement/View.php
++++ b/src/Plugin/WebformElement/View.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\Entity\View as ViewEntity;
+ use Drupal\webform\Element\WebformMessage as WebformMessageElement;
+@@ -9,15 +11,14 @@ use Drupal\webform\Plugin\WebformElementDisplayOnInterface;
+ 
+ /**
+  * Provides a hidden 'view' element.
+- *
+- * @WebformElement(
+- *   id = "view",
+- *   label = @Translation("View"),
+- *   description = @Translation("Provides a view embed element. Only users who can 'Administer views' or 'Edit webform source code' can create and update this element."),
+- *   category = @Translation("Markup elements"),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'view',
++  label: new TranslatableMarkup('View'),
++  category: new TranslatableMarkup('Markup elements'),
++  description: new TranslatableMarkup("Provides a view embed element. Only users who can 'Administer views' or 'Edit webform source code' can create and update this element."),
++  states_wrapper: TRUE
++)]
+ class View extends WebformMarkupBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformActions.php b/src/Plugin/WebformElement/WebformActions.php
+index bc7db1400365213347c6ffcd09e423806f66f7fb..7ce6607fbd1e6680e11a8ee963d2ce4821246544 100644
+--- a/src/Plugin/WebformElement/WebformActions.php
++++ b/src/Plugin/WebformElement/WebformActions.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformActions as WebformActionsElement;
+ use Drupal\webform\WebformInterface;
+@@ -9,15 +11,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_actions' element.
+- *
+- * @WebformElement(
+- *   id = "webform_actions",
+- *   default_key = "actions",
+- *   label = @Translation("Submit button(s)"),
+- *   description = @Translation("Provides an element that contains a Webform's submit, draft, wizard, and/or preview buttons."),
+- *   category = @Translation("Buttons"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_actions',
++  label: new TranslatableMarkup('Submit button(s)'),
++  default_key: 'actions',
++  category: new TranslatableMarkup('Buttons'),
++  description: new TranslatableMarkup("Provides an element that contains a Webform's submit, draft, wizard, and/or preview buttons.")
++)]
+ class WebformActions extends ContainerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformAddress.php b/src/Plugin/WebformElement/WebformAddress.php
+index ee83c542eb7766e2de092d51dabbefd91f9e4f6d..a3f7cee22bd179310985c6cfb49bc71fcbdd5a58 100644
+--- a/src/Plugin/WebformElement/WebformAddress.php
++++ b/src/Plugin/WebformElement/WebformAddress.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides an 'address' element.
+- *
+- * @WebformElement(
+- *   id = "webform_address",
+- *   label = @Translation("Address"),
+- *   description = @Translation("Provides a form element to collect address information (street, city, state, zip)."),
+- *   category = @Translation("Composite elements"),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_address',
++  label: new TranslatableMarkup('Address'),
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup('Provides a form element to collect address information (street, city, state, zip).'),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformAddress extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformAudioFile.php b/src/Plugin/WebformElement/WebformAudioFile.php
+index 3d87bdb6636179d12d5e627f3a21d9b2f3e3596e..9abc878356d4ad8d6a612848f63a471694e2dae5 100644
+--- a/src/Plugin/WebformElement/WebformAudioFile.php
++++ b/src/Plugin/WebformElement/WebformAudioFile.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'webform_audio_file' element.
+- *
+- * @WebformElement(
+- *   id = "webform_audio_file",
+- *   label = @Translation("Audio file"),
+- *   description = @Translation("Provides a form element for uploading and saving an audio file."),
+- *   category = @Translation("File upload elements"),
+- *   states_wrapper = TRUE,
+- *   dependencies = {
+- *     "file",
+- *   }
+- * )
+  */
++#[WebformElement(
++  id: 'webform_audio_file',
++  api: '',
++  dependencies: ['file'],
++  label: new TranslatableMarkup('Audio file'),
++  category: new TranslatableMarkup('File upload elements'),
++  description: new TranslatableMarkup('Provides a form element for uploading and saving an audio file.'),
++  states_wrapper: TRUE
++)]
+ class WebformAudioFile extends WebformManagedFileBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformAutocomplete.php b/src/Plugin/WebformElement/WebformAutocomplete.php
+index ee445fbe4003f745b12370db36b6f16a31b8dd3c..bb29bf97518db860bdeabf22ed8789a8f24f7ee9 100644
+--- a/src/Plugin/WebformElement/WebformAutocomplete.php
++++ b/src/Plugin/WebformElement/WebformAutocomplete.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'autocomplete' element.
+- *
+- * @WebformElement(
+- *   id = "webform_autocomplete",
+- *   label = @Translation("Autocomplete"),
+- *   description = @Translation("Provides a text field element with auto completion."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_autocomplete',
++  label: new TranslatableMarkup('Autocomplete'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a text field element with auto completion.')
++)]
+ class WebformAutocomplete extends TextField {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformCheckboxesOther.php b/src/Plugin/WebformElement/WebformCheckboxesOther.php
+index 663217d71108a9df23f68701cac7c3a8ab70877a..4bf5b70c5c70ff97a42ee1797e6d9644e9ddd2d7 100644
+--- a/src/Plugin/WebformElement/WebformCheckboxesOther.php
++++ b/src/Plugin/WebformElement/WebformCheckboxesOther.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementOtherInterface;
+ use Drupal\webform\WebformSubmissionConditionsValidator;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'checkboxes_other' element.
+- *
+- * @WebformElement(
+- *   id = "webform_checkboxes_other",
+- *   label = @Translation("Checkboxes other"),
+- *   description = @Translation("Provides a form element for a set of checkboxes, with the ability to enter a custom value."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++id: 'webform_checkboxes_other',
++  label: new TranslatableMarkup('Checkboxes other'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a set of checkboxes, with the ability to enter a custom value.')
++)]
+ class WebformCheckboxesOther extends Checkboxes implements WebformElementOtherInterface {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformCodeMirror.php b/src/Plugin/WebformElement/WebformCodeMirror.php
+index ac4c62b1a3ae46a3f8b2a1380dc9bd3e742af3f5..88b1bf6d6f239aaf47263a5b44e54aeec46c5be1 100644
+--- a/src/Plugin/WebformElement/WebformCodeMirror.php
++++ b/src/Plugin/WebformElement/WebformCodeMirror.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformInterface;
+@@ -9,15 +11,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_codemirror' element.
+- *
+- * @WebformElement(
+- *   id = "webform_codemirror",
+- *   label = @Translation("CodeMirror"),
+- *   description = @Translation("Provides a form element for editing code in a number of programming languages and markup. Code editing support is provided by the <a href=""https://codemirror.net"">CodeMirror</a> library."),
+- *   category = @Translation("Advanced elements"),
+- *   multiline = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_codemirror',
++  label: new TranslatableMarkup('CodeMirror'),
++  description: new TranslatableMarkup('Provides a form element for editing code in a number of programming languages and markup. Code editing support is provided by the <a href="https://codemirror.net">CodeMirror</a> library.'),
++  category: new TranslatableMarkup('Advanced elements'),
++  multiline: TRUE,
++)]
+ class WebformCodeMirror extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformComputedToken.php b/src/Plugin/WebformElement/WebformComputedToken.php
+index dc7b0c9becb7a286e11365923ad54048a519ed4e..7fd7581deda58c20ecbb8aa1abf110014c54fcb6 100644
+--- a/src/Plugin/WebformElement/WebformComputedToken.php
++++ b/src/Plugin/WebformElement/WebformComputedToken.php
+@@ -2,16 +2,18 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'webform_computed_token' element.
+- *
+- * @WebformElement(
+- *   id = "webform_computed_token",
+- *   label = @Translation("Computed token"),
+- *   description = @Translation("Provides an item to display computed webform submission values using tokens."),
+- *   category = @Translation("Computed Elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_computed_token',
++  label: new TranslatableMarkup('Computed token'),
++  category: new TranslatableMarkup('Computed Elements'),
++  description: new TranslatableMarkup('Provides an item to display computed webform submission values using tokens.')
++)]
+ class WebformComputedToken extends WebformComputedBase {
+ 
+ }
+diff --git a/src/Plugin/WebformElement/WebformComputedTwig.php b/src/Plugin/WebformElement/WebformComputedTwig.php
+index 5f01bdc147c8700d501917d51108469ee36e45ab..ddbed4270832edbc2b97d7d01dee9e65c471c5bd 100644
+--- a/src/Plugin/WebformElement/WebformComputedTwig.php
++++ b/src/Plugin/WebformElement/WebformComputedTwig.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Twig\WebformTwigExtension;
+ use Drupal\webform\Utility\WebformElementHelper;
+ 
+ /**
+  * Provides a 'webform_computed_twig' element.
+- *
+- * @WebformElement(
+- *   id = "webform_computed_twig",
+- *   label = @Translation("Computed Twig"),
+- *   description = @Translation("Provides an item to display computed webform submission values using Twig."),
+- *   category = @Translation("Computed Elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_computed_twig',
++  label: new TranslatableMarkup('Computed Twig'),
++  category: new TranslatableMarkup('Computed Elements'),
++  description: new TranslatableMarkup('Provides an item to display computed webform submission values using Twig.')
++)]
+ class WebformComputedTwig extends WebformComputedBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformContact.php b/src/Plugin/WebformElement/WebformContact.php
+index 5be617e157bd1560ae0fa4e846e6de65532fe9b3..a9354372f975aaf8859a4b302de14d1ca0ed9838 100644
+--- a/src/Plugin/WebformElement/WebformContact.php
++++ b/src/Plugin/WebformElement/WebformContact.php
+@@ -2,22 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'contact' element.
+- *
+- * @WebformElement(
+- *   id = "webform_contact",
+- *   label = @Translation("Contact"),
+- *   description = @Translation("Provides a form element to collect contact information (name, address, phone, email)."),
+- *   category = @Translation("Composite elements"),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_contact',
++  label: new TranslatableMarkup('Contact'),
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup('Provides a form element to collect contact information (name, address, phone, email).'),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformContact extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformCustomComposite.php b/src/Plugin/WebformElement/WebformCustomComposite.php
+index e3cee9b4cbdaa448d317cbaffd7793585cbcab2a..2f068868a1e4b2abf9879e0978efbd59b0a5d5be 100644
+--- a/src/Plugin/WebformElement/WebformCustomComposite.php
++++ b/src/Plugin/WebformElement/WebformCustomComposite.php
+@@ -2,23 +2,24 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a custom composite element.
+- *
+- * @WebformElement(
+- *   id = "webform_custom_composite",
+- *   label = @Translation("Custom composite"),
+- *   description = @Translation("Provides a form element to create custom composites using a grid/table layout."),
+- *   category = @Translation("Composite elements"),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_custom_composite',
++  label: new TranslatableMarkup('Custom composite'),
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup('Provides a form element to create custom composites using a grid/table layout.'),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformCustomComposite extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformDocumentFile.php b/src/Plugin/WebformElement/WebformDocumentFile.php
+index fa498802023ee0edd92a3c5f4b95930feb20c8d8..8656074bdf96f7344fd54a4322883fbea7a5a5e4 100644
+--- a/src/Plugin/WebformElement/WebformDocumentFile.php
++++ b/src/Plugin/WebformElement/WebformDocumentFile.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'webform_document_file' element.
+- *
+- * @WebformElement(
+- *   id = "webform_document_file",
+- *   label = @Translation("Document file"),
+- *   description = @Translation("Provides a form element for uploading and saving a document."),
+- *   category = @Translation("File upload elements"),
+- *   states_wrapper = TRUE,
+- *   dependencies = {
+- *     "file",
+- *   }
+- * )
+  */
++#[WebformElement(
++  id: 'webform_document_file',
++  api: '',
++  dependencies: ['file'],
++  label: new TranslatableMarkup('Document file'),
++  category: new TranslatableMarkup('File upload elements'),
++  description: new TranslatableMarkup('Provides a form element for uploading and saving a document.'),
++  states_wrapper: TRUE
++)]
+ class WebformDocumentFile extends WebformManagedFileBase {}
+diff --git a/src/Plugin/WebformElement/WebformElement.php b/src/Plugin/WebformElement/WebformElement.php
+index 57b1289988acc550c77e2c4b7e3845c2accf9703..feb350878e103b80b696b9dae7ae9afbcf714b0c 100644
+--- a/src/Plugin/WebformElement/WebformElement.php
++++ b/src/Plugin/WebformElement/WebformElement.php
+@@ -2,19 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement as WebformElementAttribute;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementBase;
+ 
+ /**
+  * Provides a 'generic' element. Used as a fallback.
+- *
+- * @WebformElement(
+- *   id = "webform_element",
+- *   label = @Translation("Generic element"),
+- *   description = @Translation("Provides a generic form element."),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElementAttribute(
++  id: 'webform_element',
++  label: new TranslatableMarkup('Generic element'),
++  description: new TranslatableMarkup('Provides a generic form element.'),
++  hidden: TRUE
++)]
+ class WebformElement extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformEmailConfirm.php b/src/Plugin/WebformElement/WebformEmailConfirm.php
+index df16c73b579d7ce71db549cd294ba0ec9a7dbbff..ceb15862623f8d94e23f84978e350540be9c5922 100644
+--- a/src/Plugin/WebformElement/WebformEmailConfirm.php
++++ b/src/Plugin/WebformElement/WebformEmailConfirm.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'email_confirm' element.
+- *
+- * @WebformElement(
+- *   id = "webform_email_confirm",
+- *   label = @Translation("Email confirm"),
+- *   description = @Translation("Provides a form element for double-input of email addresses."),
+- *   category = @Translation("Advanced elements"),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_email_confirm',
++  label: new TranslatableMarkup('Email confirm'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for double-input of email addresses.'),
++  states_wrapper: TRUE
++)]
+ class WebformEmailConfirm extends Email {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformEmailMultiple.php b/src/Plugin/WebformElement/WebformEmailMultiple.php
+index f30ae3deb4d265c465bc164b5d1ee5e41815c25c..40a4b4bef25c5cd8c2bbc9f9f45c89284aabdf2e 100644
+--- a/src/Plugin/WebformElement/WebformEmailMultiple.php
++++ b/src/Plugin/WebformElement/WebformEmailMultiple.php
+@@ -2,19 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'email_multiple' element.
+- *
+- * @WebformElement(
+- *   id = "webform_email_multiple",
+- *   label = @Translation("Email multiple"),
+- *   description = @Translation("Provides a form element for multiple email addresses."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_email_multiple',
++  label: new TranslatableMarkup('Email multiple'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for multiple email addresses.')
++)]
+ class WebformEmailMultiple extends Email {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformEntityCheckboxes.php b/src/Plugin/WebformElement/WebformEntityCheckboxes.php
+index a7316fa3e5653558606a74cef96e4bdb1acbab99..4f027a39a29e5912d5f6d0e8d765a11e3e42a092 100644
+--- a/src/Plugin/WebformElement/WebformEntityCheckboxes.php
++++ b/src/Plugin/WebformElement/WebformEntityCheckboxes.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
+ 
+ /**
+  * Provides a 'webform_entity_checkboxes' element.
+- *
+- * @WebformElement(
+- *   id = "webform_entity_checkboxes",
+- *   label = @Translation("Entity checkboxes"),
+- *   description = @Translation("Provides a form element to select multiple entity references using checkboxes."),
+- *   category = @Translation("Entity reference elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_entity_checkboxes',
++  label: new TranslatableMarkup('Entity checkboxes'),
++  category: new TranslatableMarkup('Entity reference elements'),
++  description: new TranslatableMarkup('Provides a form element to select multiple entity references using checkboxes.')
++)]
+ class WebformEntityCheckboxes extends Checkboxes implements WebformElementEntityOptionsInterface {
+ 
+   use WebformEntityReferenceTrait;
+diff --git a/src/Plugin/WebformElement/WebformEntityRadios.php b/src/Plugin/WebformElement/WebformEntityRadios.php
+index 913b4549de95845706532e5ff72189005aa16c44..00dfb44ea1adcab06a6a5e2844bf85feab6cc09e 100644
+--- a/src/Plugin/WebformElement/WebformEntityRadios.php
++++ b/src/Plugin/WebformElement/WebformEntityRadios.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
+ 
+ /**
+  * Provides a 'webform_entity_radios' element.
+- *
+- * @WebformElement(
+- *   id = "webform_entity_radios",
+- *   label = @Translation("Entity radios"),
+- *   description = @Translation("Provides a form element to select a single entity reference using radio buttons."),
+- *   category = @Translation("Entity reference elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_entity_radios',
++  label: new TranslatableMarkup('Entity radios'),
++  category: new TranslatableMarkup('Entity reference elements'),
++  description: new TranslatableMarkup('Provides a form element to select a single entity reference using radio buttons.')
++)]
+ class WebformEntityRadios extends Radios implements WebformElementEntityOptionsInterface {
+ 
+   use WebformEntityReferenceTrait;
+diff --git a/src/Plugin/WebformElement/WebformEntitySelect.php b/src/Plugin/WebformElement/WebformEntitySelect.php
+index b66e69c4b62c79db4fa03ee379a60206e931b5c4..684e7da7d445a0eef02716de638a483f5e6e4997 100644
+--- a/src/Plugin/WebformElement/WebformEntitySelect.php
++++ b/src/Plugin/WebformElement/WebformEntitySelect.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
+ 
+ /**
+  * Provides a 'webform_entity_select' element.
+- *
+- * @WebformElement(
+- *   id = "webform_entity_select",
+- *   label = @Translation("Entity select"),
+- *   description = @Translation("Provides a form element to select a single or multiple entity references using a select menu."),
+- *   category = @Translation("Entity reference elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_entity_select',
++  label: new TranslatableMarkup('Entity select'),
++  category: new TranslatableMarkup('Entity reference elements'),
++  description: new TranslatableMarkup('Provides a form element to select a single or multiple entity references using a select menu.')
++)]
+ class WebformEntitySelect extends Select implements WebformElementEntityOptionsInterface {
+ 
+   use WebformEntityReferenceTrait;
+diff --git a/src/Plugin/WebformElement/WebformFlexbox.php b/src/Plugin/WebformElement/WebformFlexbox.php
+index 7e59d8179a6e801ebd1c7b6706e00996d55d7b0a..92283b1d83c619c5d662ffdec550f24e8a036c4b 100644
+--- a/src/Plugin/WebformElement/WebformFlexbox.php
++++ b/src/Plugin/WebformElement/WebformFlexbox.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'flexbox' element.
+- *
+- * @WebformElement(
+- *   id = "webform_flexbox",
+- *   default_key = "flexbox",
+- *   api = "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox",
+- *   label = @Translation("Flexbox layout"),
+- *   description = @Translation("Provides a flex(ible) box container used to layout elements in multiple columns."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_flexbox',
++  api: 'https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox',
++  label: new TranslatableMarkup('Flexbox layout'),
++  default_key: 'flexbox',
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides a flex(ible) box container used to layout elements in multiple columns.')
++)]
+ class WebformFlexbox extends Container {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformHeight.php b/src/Plugin/WebformElement/WebformHeight.php
+index 8acc0cea15f600fb1263c12af5bf41744131040e..3e042085c01e51035b9c5e7d309868882a2a7c1f 100644
+--- a/src/Plugin/WebformElement/WebformHeight.php
++++ b/src/Plugin/WebformElement/WebformHeight.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformHeight as WebformHeightElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+@@ -11,14 +13,13 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'height' element.
+- *
+- * @WebformElement(
+- *   id = "webform_height",
+- *   label = @Translation("Height (feet/inches)"),
+- *   description = @Translation("Provides a form element to collect height in feet and inches."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_height',
++  label: new TranslatableMarkup('Height (feet/inches)'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element to collect height in feet and inches.')
++)]
+ class WebformHeight extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformHorizontalRule.php b/src/Plugin/WebformElement/WebformHorizontalRule.php
+index 416a3a348a8e658544a843a20dfd2fb30df85c6c..fba60d0521ea6e9cd28e956dd42b39b6a18ba6c3 100644
+--- a/src/Plugin/WebformElement/WebformHorizontalRule.php
++++ b/src/Plugin/WebformElement/WebformHorizontalRule.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\Plugin\WebformElementDisplayOnInterface;
+@@ -9,16 +11,15 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_horizontal_rule' element.
+- *
+- * @WebformElement(
+- *   id = "webform_horizontal_rule",
+- *   default_key = "horizontal_rule",
+- *   label = @Translation("Horizontal rule"),
+- *   description = @Translation("Provides a horizontal rule element."),
+- *   category = @Translation("Markup elements"),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_horizontal_rule',
++  label: new TranslatableMarkup('Horizontal rule'),
++  default_key: 'horizontal_rule',
++  category: new TranslatableMarkup('Markup elements'),
++  description: new TranslatableMarkup('Provides a horizontal rule element.'),
++  states_wrapper: TRUE
++)]
+ class WebformHorizontalRule extends WebformElementBase implements WebformElementDisplayOnInterface {
+ 
+   use WebformDisplayOnTrait;
+diff --git a/src/Plugin/WebformElement/WebformImageFile.php b/src/Plugin/WebformElement/WebformImageFile.php
+index 9c07f956e748cb93c92523b29525f3af3b425d47..d84a1f1cf0a73437c13f9f3068bcd08f5196a690 100644
+--- a/src/Plugin/WebformElement/WebformImageFile.php
++++ b/src/Plugin/WebformElement/WebformImageFile.php
+@@ -2,23 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_image_file' element.
+- *
+- * @WebformElement(
+- *   id = "webform_image_file",
+- *   label = @Translation("Image file"),
+- *   description = @Translation("Provides a form element for uploading and saving an image file."),
+- *   category = @Translation("File upload elements"),
+- *   states_wrapper = TRUE,
+- *   dependencies = {
+- *     "file",
+- *   }
+- * )
+  */
++#[WebformElement(
++  id: 'webform_image_file',
++  api: '',
++  dependencies: ['file'],
++  label: new TranslatableMarkup('Image file'),
++  category: new TranslatableMarkup('File upload elements'),
++  description: new TranslatableMarkup('Provides a form element for uploading and saving an image file.'),
++  states_wrapper: TRUE
++)]
+ class WebformImageFile extends WebformManagedFileBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformLikert.php b/src/Plugin/WebformElement/WebformLikert.php
+index 20c85ff5d96c20ff6f3314cda3f7c7ccb7f87449..c2db7cd1718448f31fbacadb8ebcc50db0ebf0db 100644
+--- a/src/Plugin/WebformElement/WebformLikert.php
++++ b/src/Plugin/WebformElement/WebformLikert.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformLikert as WebformLikertElement;
+ use Drupal\webform\Entity\WebformOptions;
+@@ -14,16 +16,15 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'likert' element.
+- *
+- * @WebformElement(
+- *   id = "webform_likert",
+- *   label = @Translation("Likert"),
+- *   description = @Translation("Provides a form element where users can respond to multiple questions using a <a href=""https://en.wikipedia.org/wiki/Likert_scale"">Likert</a> scale."),
+- *   category = @Translation("Options elements"),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_likert',
++  label: new TranslatableMarkup('Likert'),
++  description: new TranslatableMarkup('Provides a form element where users can respond to multiple questions using a <a href="https://en.wikipedia.org/wiki/Likert_scale">Likert</a> scale.'),
++  category: new TranslatableMarkup('Options elements'),
++  multiline: TRUE,
++  composite: TRUE,
++)]
+ class WebformLikert extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformLink.php b/src/Plugin/WebformElement/WebformLink.php
+index b3929c5e7ee4ac4ee1778162bd6825fdd217b64c..a7486317b05d923736fa5570fcfd718e4f44970c 100644
+--- a/src/Plugin/WebformElement/WebformLink.php
++++ b/src/Plugin/WebformElement/WebformLink.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\Core\Url;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -9,16 +11,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'link' element.
+- *
+- * @WebformElement(
+- *   id = "webform_link",
+- *   label = @Translation("Link"),
+- *   category = @Translation("Composite elements"),
+- *   description = @Translation("Provides a form element to display a link."),
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_link',
++  label: new TranslatableMarkup('Link'),
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup('Provides a form element to display a link.'),
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformLink extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformMapping.php b/src/Plugin/WebformElement/WebformMapping.php
+index a310dfc491111b3cf0a143cc25f83d78bd1e04bc..0b22873f1bb2cf02513d1e731849654827a73e05 100644
+--- a/src/Plugin/WebformElement/WebformMapping.php
++++ b/src/Plugin/WebformElement/WebformMapping.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormState;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element as RenderElement;
+@@ -17,16 +19,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'mapping' element.
+- *
+- * @WebformElement(
+- *   id = "webform_mapping",
+- *   label = @Translation("Mapping"),
+- *   description = @Translation("Provides a form element where source values can mapped to destination values."),
+- *   category = @Translation("Advanced elements"),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_mapping',
++  label: new TranslatableMarkup('Mapping'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element where source values can mapped to destination values.'),
++  multiline: TRUE,
++  composite: TRUE
++)]
+ class WebformMapping extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformMarkup.php b/src/Plugin/WebformElement/WebformMarkup.php
+index f98cea30f2b4a3ebcd340fc1321dadf04d9a8e21..7bc489da7432b761efb3af10370c664309341293 100644
+--- a/src/Plugin/WebformElement/WebformMarkup.php
++++ b/src/Plugin/WebformElement/WebformMarkup.php
+@@ -2,22 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Mail\MailFormatHelper;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_markup' element.
+- *
+- * @WebformElement(
+- *   id = "webform_markup",
+- *   default_key = "markup",
+- *   label = @Translation("Basic HTML"),
+- *   description = @Translation("Provides an element to render basic HTML markup."),
+- *   category = @Translation("Markup elements"),
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_markup',
++  label: new TranslatableMarkup('Basic HTML'),
++  default_key: 'markup',
++  description: new TranslatableMarkup('Provides an element to render basic HTML markup.'),
++  category: new TranslatableMarkup('Markup elements'),
++  states_wrapper: TRUE
++)]
+ class WebformMarkup extends WebformMarkupBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformMessage.php b/src/Plugin/WebformElement/WebformMessage.php
+index e62587a71d24ffaa0aba220c055c896b3876c02b..4438fce49b5c91549dd85414ce2c7daec218a542 100644
+--- a/src/Plugin/WebformElement/WebformMessage.php
++++ b/src/Plugin/WebformElement/WebformMessage.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Element\WebformMessage as WebformMessageElement;
+@@ -9,14 +11,13 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_message' element.
+- *
+- * @WebformElement(
+- *   id = "webform_message",
+- *   label = @Translation("Message"),
+- *   description = @Translation("Provides an element to render custom, dismissible, inline status messages."),
+- *   category = @Translation("Markup elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_message',
++  label: new TranslatableMarkup('Message'),
++  category: new TranslatableMarkup('Markup elements'),
++  description: new TranslatableMarkup('Provides an element to render custom, dismissible, inline status messages.')
++)]
+ class WebformMessage extends WebformMarkupBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformMore.php b/src/Plugin/WebformElement/WebformMore.php
+index 5a1772b87f04c284cf7fd243e87f2d6141771ece..42afbb083a01bc4396707409c81557497a50eb45 100644
+--- a/src/Plugin/WebformElement/WebformMore.php
++++ b/src/Plugin/WebformElement/WebformMore.php
+@@ -2,19 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementDisplayOnInterface;
+ 
+ /**
+  * Provides a 'item' element.
+- *
+- * @WebformElement(
+- *   id = "webform_more",
+- *   label = @Translation("More"),
+- *   description = @Translation("Provides a more slideout element."),
+- *   category = @Translation("Markup elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_more',
++  label: new TranslatableMarkup('More'),
++  category: new TranslatableMarkup('Markup elements'),
++  description: new TranslatableMarkup('Provides a more slideout element.')
++)]
+ class WebformMore extends WebformMarkupBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformName.php b/src/Plugin/WebformElement/WebformName.php
+index 4a08f9de77dc1cbe164812deeadd9ceaacd6b5c8..1f1fcf59b6b14bff483c8cc10489d5da6b6431bc 100644
+--- a/src/Plugin/WebformElement/WebformName.php
++++ b/src/Plugin/WebformElement/WebformName.php
+@@ -2,22 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Render\Element;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'name' element.
+- *
+- * @WebformElement(
+- *   id = "webform_name",
+- *   label = @Translation("Name"),
+- *   category = @Translation("Composite elements"),
+- *   description = @Translation("Provides a form element to collect a person's full name."),
+- *   multiline = TRUE,
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_name',
++  label: new TranslatableMarkup('Name'),
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup("Provides a form element to collect a person's full name."),
++  multiline: TRUE,
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformName extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformRadiosOther.php b/src/Plugin/WebformElement/WebformRadiosOther.php
+index c5b01e014c8b61dd362041aba86b5cfd5b8a5ea3..76b01a4dfbd87066246a822553e1a39e5b6528c4 100644
+--- a/src/Plugin/WebformElement/WebformRadiosOther.php
++++ b/src/Plugin/WebformElement/WebformRadiosOther.php
+@@ -2,16 +2,17 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementOtherInterface;
+ 
+ /**
+  * Provides a 'radios_other' element.
+- *
+- * @WebformElement(
+- *   id = "webform_radios_other",
+- *   label = @Translation("Radios other"),
+- *   description = @Translation("Provides a form element for a set of radio buttons, with the ability to enter a custom value."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_radios_other',
++  label: new TranslatableMarkup('Radios other'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a set of radio buttons, with the ability to enter a custom value.')
++)]
+ class WebformRadiosOther extends Radios implements WebformElementOtherInterface {}
+diff --git a/src/Plugin/WebformElement/WebformRating.php b/src/Plugin/WebformElement/WebformRating.php
+index 384aacf366bc09d0df68ec502cea762744ac02f5..fd709372647e3ff2143f27b6bb9277255b1a6832 100644
+--- a/src/Plugin/WebformElement/WebformRating.php
++++ b/src/Plugin/WebformElement/WebformRating.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformRating as WebformRatingElement;
+ use Drupal\webform\WebformInterface;
+@@ -9,14 +11,13 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'rating' element.
+- *
+- * @WebformElement(
+- *   id = "webform_rating",
+- *   label = @Translation("Rating"),
+- *   description = @Translation("Provides a form element to rate something using an attractive voting widget. Rating widget is provided by the <a href=""https://github.com/gjunge/rateit.js"">RateIt</a> library."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_rating',
++  label: new TranslatableMarkup('Rating'),
++  description: new TranslatableMarkup('Provides a form element to rate something using an attractive voting widget. Rating widget is provided by the <a href="https://github.com/gjunge/rateit.js">RateIt</a> library.'),
++  category: new TranslatableMarkup('Advanced elements'),
++)]
+ class WebformRating extends Range {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformSame.php b/src/Plugin/WebformElement/WebformSame.php
+index c01ec2c3dad1b40a4a3213438fc55b7e6952b14f..2c60eb50d45d0036289760841ee45754cce29b5d 100644
+--- a/src/Plugin/WebformElement/WebformSame.php
++++ b/src/Plugin/WebformElement/WebformSame.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Utility\WebformElementHelper;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_same' element.
+- *
+- * @WebformElement(
+- *   id = "webform_same",
+- *   label = @Translation("Same as…"),
+- *   description = @Translation("Provides a form element for syncing the value of two elements."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_same',
++  label: new TranslatableMarkup('Same as…'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for syncing the value of two elements.')
++)]
+ class WebformSame extends Checkbox {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformScale.php b/src/Plugin/WebformElement/WebformScale.php
+index b93f3a7efa8534ba27eb9188738d50d964f61386..e723c66977572099d1ce95214224f1ab4dd928d0 100644
+--- a/src/Plugin/WebformElement/WebformScale.php
++++ b/src/Plugin/WebformElement/WebformScale.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+  * Provides a 'scale' element.
+- *
+- * @WebformElement(
+- *   id = "webform_scale",
+- *   label = @Translation("Scale"),
+- *   description = @Translation("Provides a form element for input of a numeric scale."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_scale',
++  label: new TranslatableMarkup('Scale'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for input of a numeric scale.')
++)]
+ class WebformScale extends NumericBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformSection.php b/src/Plugin/WebformElement/WebformSection.php
+index 33bdef400951dee48d8663ce07417506b8bff01b..39e439521dac60f9d68f565becb1e64cd5949198 100644
+--- a/src/Plugin/WebformElement/WebformSection.php
++++ b/src/Plugin/WebformElement/WebformSection.php
+@@ -2,19 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'section' element.
+- *
+- * @WebformElement(
+- *   id = "webform_section",
+- *   label = @Translation("Section"),
+- *   description = @Translation("Provides an element for a section/group of form elements."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_section',
++  label: new TranslatableMarkup('Section'),
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides an element for a section/group of form elements.')
++)]
+ class WebformSection extends ContainerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformSelectOther.php b/src/Plugin/WebformElement/WebformSelectOther.php
+index 4d4c74aa272fcd0e9bd7cfade5666d323e4524bf..b25540fd7a8bb531242042d4ad04a3f2ed543e84 100644
+--- a/src/Plugin/WebformElement/WebformSelectOther.php
++++ b/src/Plugin/WebformElement/WebformSelectOther.php
+@@ -2,16 +2,17 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Plugin\WebformElementOtherInterface;
+ 
+ /**
+  * Provides a 'select_other' element.
+- *
+- * @WebformElement(
+- *   id = "webform_select_other",
+- *   label = @Translation("Select other"),
+- *   description = @Translation("Provides a form element for a drop-down menu or scrolling selection box, with the ability to enter a custom value."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_select_other',
++  label: new TranslatableMarkup('Select other'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a drop-down menu or scrolling selection box, with the ability to enter a custom value.')
++)]
+ class WebformSelectOther extends Select implements WebformElementOtherInterface {}
+diff --git a/src/Plugin/WebformElement/WebformSignature.php b/src/Plugin/WebformElement/WebformSignature.php
+index fee762c086cb4d1b8da4d79bf4a4891661c5310c..9b74dbb2f6bccbcc042ca7c9fef288c1b55898f4 100644
+--- a/src/Plugin/WebformElement/WebformSignature.php
++++ b/src/Plugin/WebformElement/WebformSignature.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Component\Utility\Crypt;
+ use Drupal\Core\File\FileSystemInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -19,14 +21,13 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
+ 
+ /**
+  * Provides a 'signature' element.
+- *
+- * @WebformElement(
+- *   id = "webform_signature",
+- *   label = @Translation("Signature"),
+- *   description = @Translation("Provides a form element to collect electronic signatures from users. Signature support is provided by the <a href=""https://github.com/szimek/signature_pad"">Signature Pad</a> library."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_signature',
++  label: new TranslatableMarkup('Signature'),
++  description: new TranslatableMarkup('Provides a form element to collect electronic signatures from users. Signature support is provided by the <a href="https://github.com/szimek/signature_pad">Signature Pad</a> library.'),
++  category: new TranslatableMarkup('Advanced elements'),
++)]
+ class WebformSignature extends WebformElementBase implements WebformElementFileDownloadAccessInterface {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformTable.php b/src/Plugin/WebformElement/WebformTable.php
+index ec2ac175e47079edc6802b22075245525c15a95a..6b15e1bdd652bb4a6d93e36b2cd2aaf0ffa80065 100644
+--- a/src/Plugin/WebformElement/WebformTable.php
++++ b/src/Plugin/WebformElement/WebformTable.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element;
+ use Drupal\webform\Plugin\WebformElementBase;
+@@ -10,14 +12,13 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_table' element.
+- *
+- * @WebformElement(
+- *   id = "webform_table",
+- *   label = @Translation("Table"),
+- *   description = @Translation("Provides an element to render a table."),
+- *   category = @Translation("Containers"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_table',
++  label: new TranslatableMarkup('Table'),
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides an element to render a table.')
++)]
+ class WebformTable extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformTableRow.php b/src/Plugin/WebformElement/WebformTableRow.php
+index c8ea96f7863fb41f66ccf7fb14e2cb1975a6cc3b..b68622990784351b66a89f0696a0f2a892543dbd 100644
+--- a/src/Plugin/WebformElement/WebformTableRow.php
++++ b/src/Plugin/WebformElement/WebformTableRow.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformMessage as WebformMessageElement;
+ use Drupal\webform\Plugin\WebformElementBase;
+@@ -12,15 +14,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+ 
+ /**
+  * Provides a 'webform_table_row' element.
+- *
+- * @WebformElement(
+- *   id = "webform_table_row",
+- *   label = @Translation("Table row"),
+- *   description = @Translation("Provides an element to render a table row."),
+- *   category = @Translation("Containers"),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_table_row',
++  label: new TranslatableMarkup('Table row'),
++  category: new TranslatableMarkup('Containers'),
++  description: new TranslatableMarkup('Provides an element to render a table row.'),
++  hidden: TRUE
++)]
+ class WebformTableRow extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformTableSelectSort.php b/src/Plugin/WebformElement/WebformTableSelectSort.php
+index 7f5ea6ad0d1284ef6d562355ff573fe16225e94b..fe0ae31ed8607844b50c36d38b3afce941bc1d1c 100644
+--- a/src/Plugin/WebformElement/WebformTableSelectSort.php
++++ b/src/Plugin/WebformElement/WebformTableSelectSort.php
+@@ -2,16 +2,18 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'webform_tableselect_sort' element.
+- *
+- * @WebformElement(
+- *   id = "webform_tableselect_sort",
+- *   label = @Translation("Tableselect sort"),
+- *   description = @Translation("Provides a form element for a table with radios or checkboxes in left column that can be sorted."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_tableselect_sort',
++  label: new TranslatableMarkup('Tableselect sort'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a table with radios or checkboxes in left column that can be sorted.')
++)]
+ class WebformTableSelectSort extends OptionsBase {
+ 
+   use WebformTableTrait;
+diff --git a/src/Plugin/WebformElement/WebformTableSort.php b/src/Plugin/WebformElement/WebformTableSort.php
+index c9089876529b78dbf20b37a2a68fbdc1823435c0..b9eacec3ed3495a13207913984bc3fcda983d0f0 100644
+--- a/src/Plugin/WebformElement/WebformTableSort.php
++++ b/src/Plugin/WebformElement/WebformTableSort.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\WebformInterface;
+ 
+ /**
+  * Provides a 'webform_table_sort' element.
+- *
+- * @WebformElement(
+- *   id = "webform_table_sort",
+- *   label = @Translation("Table sort"),
+- *   description = @Translation("Provides a form element for a table of values that can be sorted."),
+- *   category = @Translation("Options elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_table_sort',
++  label: new TranslatableMarkup('Table sort'),
++  category: new TranslatableMarkup('Options elements'),
++  description: new TranslatableMarkup('Provides a form element for a table of values that can be sorted.')
++)]
+ class WebformTableSort extends OptionsBase {
+ 
+   use WebformTableTrait;
+diff --git a/src/Plugin/WebformElement/WebformTelephone.php b/src/Plugin/WebformElement/WebformTelephone.php
+index 691aece1eb1f369043ff7f79448b8899a68ab80a..be2a82fdf8483aed0c1fd22a0160208250588429 100644
+--- a/src/Plugin/WebformElement/WebformTelephone.php
++++ b/src/Plugin/WebformElement/WebformTelephone.php
+@@ -2,22 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a 'telephone' (composite) element.
+- *
+- * @WebformElement(
+- *   id = "webform_telephone",
+- *   label = @Translation("Telephone advanced"),
+- *   category = @Translation("Composite elements"),
+- *   description = @Translation("Provides a form element to display a telephone number with type and extension."),
+- *   composite = TRUE,
+- *   states_wrapper = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_telephone',
++  label: new TranslatableMarkup('Telephone advanced'),
++  category: new TranslatableMarkup('Composite elements'),
++  description: new TranslatableMarkup('Provides a form element to display a telephone number with type and extension.'),
++  composite: TRUE,
++  states_wrapper: TRUE
++)]
+ class WebformTelephone extends WebformCompositeBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformTermCheckboxes.php b/src/Plugin/WebformElement/WebformTermCheckboxes.php
+index 7d572c059cd9e4a67353a419997623f514696f49..48bd1e36f35d88cb044f1f98365ad2fb1d9389ae 100644
+--- a/src/Plugin/WebformElement/WebformTermCheckboxes.php
++++ b/src/Plugin/WebformElement/WebformTermCheckboxes.php
+@@ -2,22 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Element\WebformTermCheckboxes as TermCheckboxesElement;
+ use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
+ 
+ /**
+  * Provides a 'webform_term_checkboxes' element.
+- *
+- * @WebformElement(
+- *   id = "webform_term_checkboxes",
+- *   label = @Translation("Term checkboxes"),
+- *   description = @Translation("Provides a form element to select a single or multiple terms displayed as hierarchical tree or as breadcrumbs using checkboxes."),
+- *   category = @Translation("Entity reference elements"),
+- *   dependencies = {
+- *     "taxonomy",
+- *   },
+- * )
+  */
++#[WebformElement(
++  id: 'webform_term_checkboxes',
++  label: new TranslatableMarkup('Term checkboxes'),
++  dependencies: ['taxonomy'],
++  category: new TranslatableMarkup('Entity reference elements'),
++  description: new TranslatableMarkup('Provides a form element to select a single or multiple terms displayed as hierarchical tree or as breadcrumbs using checkboxes.')
++)]
+ class WebformTermCheckboxes extends Checkboxes implements WebformElementEntityReferenceInterface {
+ 
+   use WebformTermReferenceTrait;
+diff --git a/src/Plugin/WebformElement/WebformTermSelect.php b/src/Plugin/WebformElement/WebformTermSelect.php
+index 85588fe5ab37b3a4018ceb232aaaf0731832a611..d34a159a282e3f3b0c3bfa1a550cee44ff538c95 100644
+--- a/src/Plugin/WebformElement/WebformTermSelect.php
++++ b/src/Plugin/WebformElement/WebformTermSelect.php
+@@ -2,22 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Element\WebformTermSelect as TermSelectElement;
+ use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
+ 
+ /**
+  * Provides a 'webform_term_select' element.
+- *
+- * @WebformElement(
+- *   id = "webform_term_select",
+- *   label = @Translation("Term select"),
+- *   description = @Translation("Provides a form element to select a single or multiple terms displayed as hierarchical tree or as breadcrumbs using a select menu."),
+- *   category = @Translation("Entity reference elements"),
+- *   dependencies = {
+- *     "taxonomy",
+- *   }
+- * )
+  */
++#[WebformElement(
++  id: 'webform_term_select',
++  label: new TranslatableMarkup('Term select'),
++  dependencies: ['taxonomy'],
++  category: new TranslatableMarkup('Entity reference elements'),
++  description: new TranslatableMarkup('Provides a form element to select a single or multiple terms displayed as hierarchical tree or as breadcrumbs using a select menu.')
++)]
+ class WebformTermSelect extends Select implements WebformElementEntityReferenceInterface {
+ 
+   use WebformTermReferenceTrait;
+diff --git a/src/Plugin/WebformElement/WebformTermsOfService.php b/src/Plugin/WebformElement/WebformTermsOfService.php
+index 9e071225e7e934858af99164e9934439294b4055..6b4d2975affea37defd0559794bb38640a29bccb 100644
+--- a/src/Plugin/WebformElement/WebformTermsOfService.php
++++ b/src/Plugin/WebformElement/WebformTermsOfService.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Element\WebformTermsOfService as WebformTermsOfServiceElement;
+@@ -9,15 +11,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'terms_of_service' element.
+- *
+- * @WebformElement(
+- *   id = "webform_terms_of_service",
+- *   default_key = "terms_of_service",
+- *   label = @Translation("Terms of service"),
+- *   description = @Translation("Provides a terms of service element."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_terms_of_service',
++  label: new TranslatableMarkup('Terms of service'),
++  default_key: 'terms_of_service',
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a terms of service element.')
++)]
+ class WebformTermsOfService extends Checkbox {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformTime.php b/src/Plugin/WebformElement/WebformTime.php
+index 173f1fc5f68d53ecd82476fa7d099c0696c81463..4cf78816cd878750cd83dceb89001b2f2ec1a6b6 100644
+--- a/src/Plugin/WebformElement/WebformTime.php
++++ b/src/Plugin/WebformElement/WebformTime.php
+@@ -2,21 +2,22 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_time' element.
+- *
+- * @WebformElement(
+- *   id = "webform_time",
+- *   api = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
+- *   label = @Translation("Time"),
+- *   description = @Translation("Provides a form element for time selection."),
+- *   category = @Translation("Date/time elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_time',
++  label: new TranslatableMarkup('Time'),
++  api: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time',
++  category: new TranslatableMarkup('Date/time elements'),
++  description: new TranslatableMarkup('Provides a form element for time selection.')
++)]
+ class WebformTime extends WebformElementBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformVariant.php b/src/Plugin/WebformElement/WebformVariant.php
+index 70fa1229228a2acd5f89d7c9ee568e52b9ad74cb..5fc018a312d79ca9902a0be6f0fac6c0b60a8f2a 100644
+--- a/src/Plugin/WebformElement/WebformVariant.php
++++ b/src/Plugin/WebformElement/WebformVariant.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Plugin\WebformElementBase;
+ use Drupal\webform\Plugin\WebformElementDisplayOnInterface;
+@@ -11,14 +13,13 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_variant' element.
+- *
+- * @WebformElement(
+- *   id = "webform_variant",
+- *   label = @Translation("Variant"),
+- *   description = @Translation("Provides a form element for enabling and tracking webform variants."),
+- *   category = @Translation("Advanced elements"),
+- * )
+  */
++#[WebformElement(
++  id: 'webform_variant',
++  label: new TranslatableMarkup('Variant'),
++  category: new TranslatableMarkup('Advanced elements'),
++  description: new TranslatableMarkup('Provides a form element for enabling and tracking webform variants.')
++)]
+ class WebformVariant extends WebformElementBase implements WebformElementDisplayOnInterface, WebformElementVariantInterface {
+ 
+   use WebformDisplayOnTrait;
+diff --git a/src/Plugin/WebformElement/WebformVideoFile.php b/src/Plugin/WebformElement/WebformVideoFile.php
+index dea0954907bce2b5385db17c16e3d190f50d37eb..a9d957e6744662ddfbaa8c2f8d1337a2fabadcdc 100644
+--- a/src/Plugin/WebformElement/WebformVideoFile.php
++++ b/src/Plugin/WebformElement/WebformVideoFile.php
+@@ -2,20 +2,20 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
++
+ /**
+  * Provides a 'webform_video_file' element.
+- *
+- * @WebformElement(
+- *   id = "webform_video_file",
+- *   label = @Translation("Video file"),
+- *   description = @Translation("Provides a form element for uploading and saving a video file."),
+- *   category = @Translation("File upload elements"),
+- *   states_wrapper = TRUE,
+- *   dependencies = {
+- *     "file",
+- *   }
+- * )
+  */
++#[WebformElement(
++  id: 'webform_video_file',
++  label: new TranslatableMarkup('Video file'),
++  dependencies: ['file'],
++  category: new TranslatableMarkup('File upload elements'),
++  description: new TranslatableMarkup('Provides a form element for uploading and saving a video file.'),
++  states_wrapper: TRUE
++)]
+ class WebformVideoFile extends WebformManagedFileBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformElement/WebformWizardPage.php b/src/Plugin/WebformElement/WebformWizardPage.php
+index 81800554321765ec97c61120774fa429dd3c8afe..dda441cc9e3d1aeaafcc5fd7e1329d8ae655d395 100644
+--- a/src/Plugin/WebformElement/WebformWizardPage.php
++++ b/src/Plugin/WebformElement/WebformWizardPage.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\webform\Plugin\WebformElement;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\webform\Entity\Webform;
+ use Drupal\webform\Plugin\WebformElementWizardPageInterface;
+@@ -10,15 +12,14 @@ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Provides a 'webform_wizard_page' element.
+- *
+- * @WebformElement(
+- *   id = "webform_wizard_page",
+- *   label = @Translation("Wizard page"),
+- *   description = @Translation("Provides an element to display multiple form elements as a page in a multi-step form wizard."),
+- *   category = @Translation("Wizard"),
+- *   hidden = TRUE,
+- * )
+  */
++#[WebformElement(
++  id: 'webform_wizard_page',
++  label: new TranslatableMarkup('Wizard page'),
++  category: new TranslatableMarkup('Wizard'),
++  description: new TranslatableMarkup('Provides an element to display multiple form elements as a page in a multi-step form wizard.'),
++  hidden: TRUE
++)]
+ class WebformWizardPage extends Details implements WebformElementWizardPageInterface {
+ 
+   /**
+diff --git a/src/Plugin/WebformElementManager.php b/src/Plugin/WebformElementManager.php
+index 0914ccca482f6c4e352f195a43b7dc0739358d65..653d21b29a723853afb263088e65bd1715888b66 100644
+--- a/src/Plugin/WebformElementManager.php
++++ b/src/Plugin/WebformElementManager.php
+@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+ use Drupal\Core\Render\ElementInfoManagerInterface;
++use Drupal\webform\Attribute\WebformElement;
+ use Drupal\webform\Utility\WebformElementHelper;
+ use Drupal\webform\WebformSubmissionForm;
+ 
+@@ -74,7 +75,7 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
+    *   The element info manager.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, ConfigFactoryInterface $config_factory, ElementInfoManagerInterface $element_info) {
+-    parent::__construct('Plugin/WebformElement', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformElementInterface', 'Drupal\webform\Annotation\WebformElement');
++    parent::__construct('Plugin/WebformElement', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformElementInterface', WebformElement::class, 'Drupal\webform\Annotation\WebformElement');
+     $this->configFactory = $config_factory;
+     $this->elementInfo = $element_info;
+     $this->themeHandler = $theme_handler;
+@@ -100,7 +101,16 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
+       }
+ 
+       // Check element's (module) dependencies exist.
+-      foreach ($element_definition['dependencies'] as $dependency) {
++      foreach ($element_definition['dependencies'] as $key => $dependency) {
++        // Plugins defined through attributes have nested dependencies. Plugins
++        // with missing dependencies are already removed in
++        // \Drupal\Component\Plugin\Discovery\AttributeClassDiscovery, so this
++        // code is redundant.
++        // @todo Remove in https://www.drupal.org/project/webform/issues/3614800
++        if (is_array($dependency)) {
++          unset($definitions[$element_key]['dependencies'][$key]);
++          continue;
++        }
+         if (!$this->moduleHandler->moduleExists($dependency)) {
+           unset($definitions[$element_key]);
+           continue;
+diff --git a/src/Plugin/WebformExporter/DelimitedWebformExporter.php b/src/Plugin/WebformExporter/DelimitedWebformExporter.php
+index 0707ccb0f67fab5083f19f68dbb222a847f933b4..cc5383f06a63947c9e92f0625f13ec0e5c09c447 100644
+--- a/src/Plugin/WebformExporter/DelimitedWebformExporter.php
++++ b/src/Plugin/WebformExporter/DelimitedWebformExporter.php
+@@ -3,17 +3,18 @@
+ namespace Drupal\webform\Plugin\WebformExporter;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformExporter;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Defines a delimited text exporter.
+- *
+- * @WebformExporter(
+- *   id = "delimited",
+- *   label = @Translation("Delimited text"),
+- *   description = @Translation("Exports results as delimited text file."),
+- * )
+  */
++#[WebformExporter(
++  id: 'delimited',
++  label: new TranslatableMarkup('Delimited text'),
++  description: new TranslatableMarkup('Exports results as delimited text file.')
++)]
+ class DelimitedWebformExporter extends TabularBaseWebformExporter {
+ 
+   /**
+diff --git a/src/Plugin/WebformExporter/JsonWebformExporter.php b/src/Plugin/WebformExporter/JsonWebformExporter.php
+index 6fb1c2ae55b389fee2097f045f02ccaa94fc3eb7..00a3860e52b06306dba66ff9ecdd60abf05f2195 100644
+--- a/src/Plugin/WebformExporter/JsonWebformExporter.php
++++ b/src/Plugin/WebformExporter/JsonWebformExporter.php
+@@ -3,19 +3,20 @@
+ namespace Drupal\webform\Plugin\WebformExporter;
+ 
+ use Drupal\Component\Serialization\Json;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformExporter;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Defines a JSON document exporter.
+- *
+- * @WebformExporter(
+- *   id = "json",
+- *   label = @Translation("JSON documents"),
+- *   description = @Translation("Exports results as JSON documents."),
+- *   archive = TRUE,
+- *   options = FALSE,
+- * )
+  */
++#[WebformExporter(
++  id: 'json',
++  label: new TranslatableMarkup('JSON documents'),
++  description: new TranslatableMarkup('Exports results as JSON documents.'),
++  archive: TRUE,
++  options: FALSE
++)]
+ class JsonWebformExporter extends DocumentBaseWebformExporter {
+ 
+   /**
+diff --git a/src/Plugin/WebformExporter/TableWebformExporter.php b/src/Plugin/WebformExporter/TableWebformExporter.php
+index cea3d09b3ceaf59c080fb7644a7ba631f29eeb86..94fd0b14ce5ce607f87b673c8d553847429f563e 100644
+--- a/src/Plugin/WebformExporter/TableWebformExporter.php
++++ b/src/Plugin/WebformExporter/TableWebformExporter.php
+@@ -3,17 +3,18 @@
+ namespace Drupal\webform\Plugin\WebformExporter;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformExporter;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Defines a HTML table exporter.
+- *
+- * @WebformExporter(
+- *   id = "table",
+- *   label = @Translation("HTML Table"),
+- *   description = @Translation("Exports results as an HTML table."),
+- * )
+  */
++#[WebformExporter(
++  id: 'table',
++  label: new TranslatableMarkup('HTML Table'),
++  description: new TranslatableMarkup('Exports results as an HTML table.')
++)]
+ class TableWebformExporter extends TabularBaseWebformExporter {
+ 
+   /**
+diff --git a/src/Plugin/WebformExporter/YamlWebformExporter.php b/src/Plugin/WebformExporter/YamlWebformExporter.php
+index 085074bec3265017a557245241221d9b106b6b8f..bb5dfab0cab89b56ba7920005425dba3cfcceedc 100644
+--- a/src/Plugin/WebformExporter/YamlWebformExporter.php
++++ b/src/Plugin/WebformExporter/YamlWebformExporter.php
+@@ -2,20 +2,21 @@
+ 
+ namespace Drupal\webform\Plugin\WebformExporter;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformExporter;
+ use Drupal\webform\Utility\WebformYaml;
+ use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Defines a YAML document exporter.
+- *
+- * @WebformExporter(
+- *   id = "yaml",
+- *   label = @Translation("YAML documents"),
+- *   description = @Translation("Exports results as YAML documents."),
+- *   archive = TRUE,
+- *   options = FALSE,
+- * )
+  */
++#[WebformExporter(
++  id: 'yaml',
++  label: new TranslatableMarkup('YAML documents'),
++  description: new TranslatableMarkup('Exports results as YAML documents.'),
++  archive: TRUE,
++  options: FALSE
++)]
+ class YamlWebformExporter extends DocumentBaseWebformExporter {
+ 
+   /**
+diff --git a/src/Plugin/WebformExporterManager.php b/src/Plugin/WebformExporterManager.php
+index ea820ff72958238138a4236dcab75b48816f8d23..4dab360af9a0d1ff1a8d2c225c2cb0209ec85ced 100644
+--- a/src/Plugin/WebformExporterManager.php
++++ b/src/Plugin/WebformExporterManager.php
+@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
+ use Drupal\Core\Plugin\DefaultPluginManager;
++use Drupal\webform\Attribute\WebformExporter;
+ 
+ /**
+  * Manages results exporter plugins.
+@@ -44,7 +45,7 @@ class WebformExporterManager extends DefaultPluginManager implements WebformExpo
+    *   The configuration object factory.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_exporter, ConfigFactoryInterface $config_factory) {
+-    parent::__construct('Plugin/WebformExporter', $namespaces, $module_exporter, 'Drupal\webform\Plugin\WebformExporterInterface', 'Drupal\webform\Annotation\WebformExporter');
++    parent::__construct('Plugin/WebformExporter', $namespaces, $module_exporter, 'Drupal\webform\Plugin\WebformExporterInterface', WebformExporter::class, 'Drupal\webform\Annotation\WebformExporter');
+     $this->configFactory = $config_factory;
+ 
+     $this->alterInfo('webform_exporter_info');
+diff --git a/src/Plugin/WebformHandler/ActionWebformHandler.php b/src/Plugin/WebformHandler/ActionWebformHandler.php
+index a4ea633d5e6a58389fc0dc87e5d5b9397729f147..af6c5caed148928538980bc2fd619a85f9fc2919 100644
+--- a/src/Plugin/WebformHandler/ActionWebformHandler.php
++++ b/src/Plugin/WebformHandler/ActionWebformHandler.php
+@@ -4,25 +4,27 @@ namespace Drupal\webform\Plugin\WebformHandler;
+ 
+ use Drupal\Component\Serialization\Yaml;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Webform submission action handler.
+- *
+- * @WebformHandler(
+- *   id = "action",
+- *   label = @Translation("Action"),
+- *   category = @Translation("Action"),
+- *   description = @Translation("Trigger an action on a submission."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_PROCESSED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
+- *   tokens = TRUE,
+- * )
+  */
++#[WebformHandler(
++  id: 'action',
++  label: new TranslatableMarkup('Action'),
++  category: new TranslatableMarkup('Action'),
++  description: new TranslatableMarkup('Trigger an action on a submission.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_PROCESSED,
++  tokens: TRUE,
++  submission: WebformHandlerInterface::SUBMISSION_OPTIONAL
++)]
+ class ActionWebformHandler extends WebformHandlerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformHandler/BrokenWebformHandler.php b/src/Plugin/WebformHandler/BrokenWebformHandler.php
+index cbf6533b57f766ab50058db0bc0e0758db09b7cb..a125f1e403687b1d37a2b2da853c7f6b879db912 100644
+--- a/src/Plugin/WebformHandler/BrokenWebformHandler.php
++++ b/src/Plugin/WebformHandler/BrokenWebformHandler.php
+@@ -2,21 +2,23 @@
+ 
+ namespace Drupal\webform\Plugin\WebformHandler;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ 
+ /**
+  * Defines a fallback plugin for missing webform handler plugins.
+- *
+- * @WebformHandler(
+- *   id = "broken",
+- *   label = @Translation("Broken/Missing"),
+- *   category = @Translation("Broken"),
+- *   description = @Translation("Broken/missing webform handler plugin."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_IGNORED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
+- * )
+  */
++#[WebformHandler(
++  id: 'broken',
++  label: new TranslatableMarkup('Broken/Missing'),
++  category: new TranslatableMarkup('Broken'),
++  description: new TranslatableMarkup('Broken/missing webform handler plugin.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_IGNORED,
++  submission: WebformHandlerInterface::SUBMISSION_OPTIONAL
++)]
+ class BrokenWebformHandler extends WebformHandlerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformHandler/DebugWebformHandler.php b/src/Plugin/WebformHandler/DebugWebformHandler.php
+index 5f7b7f2a1c202eb8295f34b499705aa35b489a66..67251953233c3951b311729d78285bacc0266c29 100644
+--- a/src/Plugin/WebformHandler/DebugWebformHandler.php
++++ b/src/Plugin/WebformHandler/DebugWebformHandler.php
+@@ -3,7 +3,10 @@
+ namespace Drupal\webform\Plugin\WebformHandler;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\Utility\WebformElementHelper;
+ use Drupal\webform\Utility\WebformYaml;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -11,17 +14,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Webform submission debug handler.
+- *
+- * @WebformHandler(
+- *   id = "debug",
+- *   label = @Translation("Debug"),
+- *   category = @Translation("Development"),
+- *   description = @Translation("Debug webform submission."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_SINGLE,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_PROCESSED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
+- * )
+  */
++#[WebformHandler(
++  id: 'debug',
++  label: new TranslatableMarkup('Debug'),
++  category: new TranslatableMarkup('Development'),
++  description: new TranslatableMarkup('Debug webform submission.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_SINGLE,
++  results: WebformHandlerInterface::RESULTS_PROCESSED,
++  submission: WebformHandlerInterface::SUBMISSION_OPTIONAL,
++)]
+ class DebugWebformHandler extends WebformHandlerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformHandler/EmailWebformHandler.php b/src/Plugin/WebformHandler/EmailWebformHandler.php
+index 9833491274e7e8599037bb92929fc65ec0c34078..a9bbdd9abc5906a639b3360c7c135cd1e517f5be 100644
+--- a/src/Plugin/WebformHandler/EmailWebformHandler.php
++++ b/src/Plugin/WebformHandler/EmailWebformHandler.php
+@@ -8,13 +8,16 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Form\OptGroup;
+ use Drupal\Core\Render\Markup;
+ use Drupal\Core\StringTranslation\ByteSizeMarkup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Url;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Element\WebformAjaxElementTrait;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Element\WebformMessage;
+ use Drupal\webform\Element\WebformSelectOther;
+ use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\Plugin\WebformHandlerMessageInterface;
+ use Drupal\webform\Twig\WebformTwigExtension;
+ use Drupal\webform\Utility\WebformElementHelper;
+@@ -26,18 +29,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Emails a webform submission.
+- *
+- * @WebformHandler(
+- *   id = "email",
+- *   label = @Translation("Email"),
+- *   category = @Translation("Notification"),
+- *   description = @Translation("Sends a webform submission via an email."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_PROCESSED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
+- *   tokens = TRUE,
+- * )
+  */
++#[WebformHandler(
++  id: 'email',
++  label: new TranslatableMarkup('Email'),
++  category: new TranslatableMarkup('Notification'),
++  description: new TranslatableMarkup('Sends a webform submission via an email.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_PROCESSED,
++  tokens: TRUE,
++  submission: WebformHandlerInterface::SUBMISSION_OPTIONAL
++)]
+ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMessageInterface {
+ 
+   use WebformAjaxElementTrait;
+diff --git a/src/Plugin/WebformHandler/RemotePostWebformHandler.php b/src/Plugin/WebformHandler/RemotePostWebformHandler.php
+index fb5cd8954c79078566e16444d12472ade95aecad..13ca2baf33c47edb41f4f29f7b78f868d472bb65 100644
+--- a/src/Plugin/WebformHandler/RemotePostWebformHandler.php
++++ b/src/Plugin/WebformHandler/RemotePostWebformHandler.php
+@@ -11,8 +11,10 @@ use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Messenger\MessengerInterface;
+ use Drupal\Core\Routing\TrustedRedirectResponse;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Url;
+ use Drupal\file\Entity\File;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Element\WebformMessage;
+ use Drupal\webform\Plugin\WebformElement\BooleanBase;
+ use Drupal\webform\Plugin\WebformElement\NumericBase;
+@@ -20,6 +22,7 @@ use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
+ use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
+ use Drupal\webform\Plugin\WebformElementInterface;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\WebformInterface;
+ use Drupal\webform\WebformMessageManagerInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -29,7 +32,7 @@ use Psr\Http\Message\ResponseInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Webform submission remote HTTP operation handler.
++ * Webform submission remote post handler.
+  *
+  * @WebformHandler(
+  *   id = "remote_post",
+@@ -42,6 +45,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *   tokens = TRUE,
+  * )
+  */
++#[WebformHandler(
++  id: 'remote_post',
++  label: new TranslatableMarkup('Remote post'),
++  category: new TranslatableMarkup('External'),
++  description: new TranslatableMarkup('Posts webform submissions to a URL.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_PROCESSED,
++  tokens: TRUE,
++  submission: WebformHandlerInterface::SUBMISSION_OPTIONAL
++)]
+ class RemotePostWebformHandler extends WebformHandlerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformHandler/SettingsWebformHandler.php b/src/Plugin/WebformHandler/SettingsWebformHandler.php
+index 81b568f05943be0a27ca4b35f1ea96da975d548f..2cfafb4583d13f5d3d957c88362f4fa129fcbb6f 100644
+--- a/src/Plugin/WebformHandler/SettingsWebformHandler.php
++++ b/src/Plugin/WebformHandler/SettingsWebformHandler.php
+@@ -4,8 +4,11 @@ namespace Drupal\webform\Plugin\WebformHandler;
+ 
+ use Drupal\Component\Utility\Unicode;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformHandler;
+ use Drupal\webform\Entity\Webform;
+ use Drupal\webform\Plugin\WebformHandlerBase;
++use Drupal\webform\Plugin\WebformHandlerInterface;
+ use Drupal\webform\Utility\WebformArrayHelper;
+ use Drupal\webform\WebformInterface;
+ use Drupal\webform\WebformSubmissionInterface;
+@@ -13,18 +16,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Webform submission settings handler.
+- *
+- * @WebformHandler(
+- *   id = "settings",
+- *   label = @Translation("Settings"),
+- *   category = @Translation("Settings"),
+- *   description = @Translation("Allows Webform settings to be overridden based on submission data, source entity fields, and conditions."),
+- *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+- *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_PROCESSED,
+- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
+- *   tokens = TRUE,
+- * )
+  */
++#[WebformHandler(
++  id: 'settings',
++  label: new TranslatableMarkup('Settings'),
++  category: new TranslatableMarkup('Settings'),
++  description: new TranslatableMarkup('Allows Webform settings to be overridden based on submission data, source entity fields and conditions.'),
++  cardinality: WebformHandlerInterface::CARDINALITY_UNLIMITED,
++  results: WebformHandlerInterface::RESULTS_PROCESSED,
++  tokens: TRUE,
++  submission: WebformHandlerInterface::SUBMISSION_OPTIONAL
++)]
+ class SettingsWebformHandler extends WebformHandlerBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformHandlerManager.php b/src/Plugin/WebformHandlerManager.php
+index 49cf23ad4ddb8facfe8f22ab9f3adf6dda762f68..ae901fc395eb6caeb8553a5d5e4a1d8f649b83a6 100644
+--- a/src/Plugin/WebformHandlerManager.php
++++ b/src/Plugin/WebformHandlerManager.php
+@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
+ use Drupal\Core\Plugin\DefaultPluginManager;
++use Drupal\webform\Attribute\WebformHandler;
+ 
+ /**
+  * Manages webform handler plugins.
+@@ -45,7 +46,7 @@ class WebformHandlerManager extends DefaultPluginManager implements WebformHandl
+    *   The configuration object factory.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory) {
+-    parent::__construct('Plugin/WebformHandler', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformHandlerInterface', 'Drupal\webform\Annotation\WebformHandler');
++    parent::__construct('Plugin/WebformHandler', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformHandlerInterface', WebformHandler::class, 'Drupal\webform\Annotation\WebformHandler');
+     $this->configFactory = $config_factory;
+ 
+     $this->alterInfo('webform_handler_info');
+diff --git a/src/Plugin/WebformSourceEntity/QueryStringWebformSourceEntity.php b/src/Plugin/WebformSourceEntity/QueryStringWebformSourceEntity.php
+index 35a2baa6c2fa56110de2434cd65d663bbaf3b331..4397fc59d9dcc75f6fe5438fbf25bf5dab9296e1 100644
+--- a/src/Plugin/WebformSourceEntity/QueryStringWebformSourceEntity.php
++++ b/src/Plugin/WebformSourceEntity/QueryStringWebformSourceEntity.php
+@@ -3,20 +3,21 @@
+ namespace Drupal\webform\Plugin\WebformSourceEntity;
+ 
+ use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\TypedData\TranslatableInterface;
++use Drupal\webform\Attribute\WebformSourceEntity;
+ use Drupal\webform\Plugin\WebformSourceEntityBase;
+ use Drupal\webform\WebformInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Detect source entity by examining query string.
+- *
+- * @WebformSourceEntity(
+- *   id = "query_string",
+- *   label = @Translation("Query string"),
+- *   weight = 0
+- * )
+  */
++#[WebformSourceEntity(
++  id: 'query_string',
++  label: new TranslatableMarkup('Query string'),
++  weight: 0
++)]
+ class QueryStringWebformSourceEntity extends WebformSourceEntityBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformSourceEntity/RouteParametersWebformSourceEntity.php b/src/Plugin/WebformSourceEntity/RouteParametersWebformSourceEntity.php
+index a0ef8a41a8f2ea8083e8a838d514c093f312a5e7..cf6f23eb8251431415212c90062bf108f3b23dcc 100644
+--- a/src/Plugin/WebformSourceEntity/RouteParametersWebformSourceEntity.php
++++ b/src/Plugin/WebformSourceEntity/RouteParametersWebformSourceEntity.php
+@@ -3,18 +3,19 @@
+ namespace Drupal\webform\Plugin\WebformSourceEntity;
+ 
+ use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformSourceEntity;
+ use Drupal\webform\Plugin\WebformSourceEntityBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Detect source entity by examining route parameters.
+- *
+- * @WebformSourceEntity(
+- *   id = "route_parameters",
+- *   label = @Translation("Route parameters"),
+- *   weight = 100
+- * )
+  */
++#[WebformSourceEntity(
++  id: 'route_parameters',
++  label: new TranslatableMarkup('Route parameters'),
++  weight: 100
++)]
+ class RouteParametersWebformSourceEntity extends WebformSourceEntityBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformSourceEntityManager.php b/src/Plugin/WebformSourceEntityManager.php
+index fa02c3f9062bcebe486cd22f66cd9cb4a2b72bec..1c21a6254780ee9b710779015b5bf00a026fda99 100644
+--- a/src/Plugin/WebformSourceEntityManager.php
++++ b/src/Plugin/WebformSourceEntityManager.php
+@@ -8,6 +8,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
++use Drupal\webform\Attribute\WebformSourceEntity;
+ 
+ /**
+  * Webform source entity plugin manager.
+@@ -26,7 +27,7 @@ class WebformSourceEntityManager extends DefaultPluginManager implements Webform
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/WebformSourceEntity', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformSourceEntityInterface', 'Drupal\webform\Annotation\WebformSourceEntity');
++    parent::__construct('Plugin/WebformSourceEntity', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformSourceEntityInterface', WebformSourceEntity::class, 'Drupal\webform\Annotation\WebformSourceEntity');
+     $this->alterInfo('webform_source_entity_info');
+     $this->setCacheBackend($cache_backend, 'webform_source_entity_info_plugins');
+   }
+@@ -84,7 +85,7 @@ class WebformSourceEntityManager extends DefaultPluginManager implements Webform
+     }
+ 
+     foreach ($this->getDefinitions() as $plugin_id => $definition) {
+-      /** @var WebformSourceEntityInterface $instance */
++      /** @var \Drupal\webform\Plugin\WebformSourceEntityInterface $instance */
+       $instance = $this->createInstance($plugin_id);
+       $source_entity = $instance->getSourceEntity($ignored_types);
+       if ($source_entity) {
+diff --git a/src/Plugin/WebformVariant/BrokenWebformVariant.php b/src/Plugin/WebformVariant/BrokenWebformVariant.php
+index 169fa89936ba5cdfa7df0aed3532bf55be86b622..48d6ed1e9022c7b487723fe7792d23f29e50eac3 100644
+--- a/src/Plugin/WebformVariant/BrokenWebformVariant.php
++++ b/src/Plugin/WebformVariant/BrokenWebformVariant.php
+@@ -2,18 +2,19 @@
+ 
+ namespace Drupal\webform\Plugin\WebformVariant;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformVariant;
+ use Drupal\webform\Plugin\WebformVariantBase;
+ 
+ /**
+  * Defines a fallback plugin for missing webform variant plugins.
+- *
+- * @WebformVariant(
+- *   id = "broken",
+- *   label = @Translation("Broken/Missing"),
+- *   category = @Translation("Broken"),
+- *   description = @Translation("Broken/missing webform variant plugin.")
+- * )
+  */
++#[WebformVariant(
++  id: 'broken',
++  label: new TranslatableMarkup('Broken/Missing'),
++  category: new TranslatableMarkup('Broken'),
++  description: new TranslatableMarkup('Broken/missing webform variant plugin.')
++)]
+ class BrokenWebformVariant extends WebformVariantBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformVariant/OverrideWebformVariant.php b/src/Plugin/WebformVariant/OverrideWebformVariant.php
+index 5fd292443d650e63bc4bc99e06d97dc7d3c5f162..e2bd45d4c24aba06e6a8f183030289c6f0d90a0c 100644
+--- a/src/Plugin/WebformVariant/OverrideWebformVariant.php
++++ b/src/Plugin/WebformVariant/OverrideWebformVariant.php
+@@ -4,6 +4,8 @@ namespace Drupal\webform\Plugin\WebformVariant;
+ 
+ use Drupal\Component\Serialization\Yaml;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\webform\Attribute\WebformVariant;
+ use Drupal\webform\Element\WebformHtmlEditor;
+ use Drupal\webform\Plugin\WebformVariantBase;
+ use Drupal\webform\Utility\WebformElementHelper;
+@@ -12,14 +14,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Webform override variant.
+- *
+- * @WebformVariant(
+- *   id = "override",
+- *   label = @Translation("Override"),
+- *   category = @Translation("Override"),
+- *   description = @Translation("Override a webform's settings, elements, and handlers."),
+- * )
+  */
++#[WebformVariant(
++  id: 'override',
++  label: new TranslatableMarkup('Override'),
++  category: new TranslatableMarkup('Override'),
++  description: new TranslatableMarkup("Override a webform's settings, elements, and handlers.")
++)]
+ class OverrideWebformVariant extends WebformVariantBase {
+ 
+   /**
+diff --git a/src/Plugin/WebformVariantManager.php b/src/Plugin/WebformVariantManager.php
+index 7d4cc3e4fc5a2142d488602ff5ce8573d6b393d6..d8c0717567e0f5b5e6cc81cd2babcd0d6221ffdb 100644
+--- a/src/Plugin/WebformVariantManager.php
++++ b/src/Plugin/WebformVariantManager.php
+@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
+ use Drupal\Core\Plugin\DefaultPluginManager;
++use Drupal\webform\Attribute\WebformVariant;
+ 
+ /**
+  * Manages webform variant plugins.
+@@ -45,7 +46,7 @@ class WebformVariantManager extends DefaultPluginManager implements WebformVaria
+    *   The configuration object factory.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory) {
+-    parent::__construct('Plugin/WebformVariant', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformVariantInterface', 'Drupal\webform\Annotation\WebformVariant');
++    parent::__construct('Plugin/WebformVariant', $namespaces, $module_handler, 'Drupal\webform\Plugin\WebformVariantInterface', WebformVariant::class, 'Drupal\webform\Annotation\WebformVariant');
+     $this->configFactory = $config_factory;
+ 
+     $this->alterInfo('webform_variant_info');

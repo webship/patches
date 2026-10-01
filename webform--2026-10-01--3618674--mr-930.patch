@@ -1,0 +1,52 @@
+diff --git a/src/Entity/WebformSubmission.php b/src/Entity/WebformSubmission.php
+index 457b07c6bd700f48e985192a7a2fb496503c84b5..1b21f031edb85385122420400df9ce426cedda53 100644
+--- a/src/Entity/WebformSubmission.php
++++ b/src/Entity/WebformSubmission.php
+@@ -875,9 +875,12 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
+     // cache we have to reset it for the original webform submission entity.
+     // @see \Drupal\Core\Entity\EntityStorageBase::doPreSave
+     // @see \Drupal\Core\Entity\ContentEntityStorageBase::getFromPersistentCache
+-    if (isset($this->original)) {
+-      $this->original->setData($this->originalData);
+-      $this->original->setOriginalData($this->original->getData());
++    // See the note in WebformEntityStorage::doPostSave() on why both paths
++    // are needed while this branch supports ^10.3 || ^11.
++    $original = method_exists($this, 'getOriginal') ? $this->getOriginal() : ($this->original ?? NULL);
++    if ($original !== NULL) {
++      $original->setData($this->originalData);
++      $original->setOriginalData($original->getData());
+     }
+ 
+     $request_time = \Drupal::time()->getRequestTime();
+diff --git a/src/Hook/WebformEditorHooks.php b/src/Hook/WebformEditorHooks.php
+index 71a87b63d291a7a1dfd1df1504598961d74ff3d0..93c0a0c955a7dca04b1bbfbd9f77b9664a02494d 100644
+--- a/src/Hook/WebformEditorHooks.php
++++ b/src/Hook/WebformEditorHooks.php
+@@ -41,7 +41,9 @@ class WebformEditorHooks {
+    */
+   #[Hook('webform_update')]
+   public function webformUpdate(WebformInterface $webform) {
+-    $original_uuids = _webform_get_config_entity_file_uuids($webform->original);
++    // See the note in WebformEntityStorage::doPostSave().
++    $original = method_exists($webform, 'getOriginal') ? $webform->getOriginal() : ($webform->original ?? NULL);
++    $original_uuids = _webform_get_config_entity_file_uuids($original);
+     $uuids = _webform_get_config_entity_file_uuids($webform);
+     // Detect file usages that should be incremented.
+     $added_files = array_diff($uuids, $original_uuids);
+diff --git a/src/WebformEntityStorage.php b/src/WebformEntityStorage.php
+index ad5bce9cff228b37ae8f120cd0ef7e319ee7adb9..94a9be640f70b7a670ee62a90fcd08105fb903d3 100644
+--- a/src/WebformEntityStorage.php
++++ b/src/WebformEntityStorage.php
+@@ -98,7 +98,11 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
+    * {@inheritdoc}
+    */
+   protected function doPostSave(EntityInterface $entity, $update) {
+-    if ($update && $entity->getAccessRules() !== $entity->original->getAccessRules()) {
++    // getOriginal() exists from Drupal 11.2; the magic ->original property it
++    // replaces is removed in Drupal 12. This branch supports ^10.3 || ^11, so
++    // both paths are needed until it drops Drupal 10.
++    $original = method_exists($entity, 'getOriginal') ? $entity->getOriginal() : ($entity->original ?? NULL);
++    if ($update && $original && $entity->getAccessRules() !== $original->getAccessRules()) {
+       // Invalidate webform_submission listing cache tags because due to the
+       // change in access rules of this webform, some listings might have
+       // changed for users.

@@ -1,0 +1,500 @@
+diff --git a/src/Attribute/KeyInput.php b/src/Attribute/KeyInput.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..3700d34109653a2efa9922f09c2beb893ac6c279
+--- /dev/null
++++ b/src/Attribute/KeyInput.php
+@@ -0,0 +1,31 @@
++<?php
++
++namespace Drupal\key\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines the Key Input attribute.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class KeyInput extends Plugin {
++
++  /**
++   * Contructs a KeyInput attribute.
++   *
++   * @param string $id
++   *   The plugin ID of the key input.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the key input.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $description
++   *   The description of the key input.
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly TranslatableMarkup $description,
++  ) {
++  }
++
++}
+diff --git a/src/Attribute/KeyProvider.php b/src/Attribute/KeyProvider.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..07e6d8b7361ebcba51d06815072848dd4f4de4c6
+--- /dev/null
++++ b/src/Attribute/KeyProvider.php
+@@ -0,0 +1,44 @@
++<?php
++
++namespace Drupal\key\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines the Key Provider attribute.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class KeyProvider extends Plugin {
++
++  /**
++   * Contructs a KeyInput attribute.
++   *
++   * @param string $id
++   *   The plugin ID of the key provider.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the key provider.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $description
++   *   The description of the key provider.
++   * @param array $tags
++   *   The key provider tags, used for classification and filtering.
++   *   This should be a list of tags as strings.
++   * @param array $key_value
++   *   The settings for inputting a key value.
++   *
++   *   This is used to indicate to the key input plugin if this provider
++   *   accepts a key value and if it requires one.
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly TranslatableMarkup $description,
++    public readonly array $tags = [],
++    public readonly array $key_value = [
++      'accepted' => FALSE,
++      'required' => FALSE,
++    ],
++  ) {
++  }
++
++}
+diff --git a/src/Attribute/KeyType.php b/src/Attribute/KeyType.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..4f751b1262a2ff38a36e2973678984a67bfbce68
+--- /dev/null
++++ b/src/Attribute/KeyType.php
+@@ -0,0 +1,67 @@
++<?php
++
++namespace Drupal\key\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines the Key Type attribute.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class KeyType extends Plugin {
++
++  /**
++   * Contructs a KeyInput attribute.
++   *
++   * @param string $id
++   *   The plugin ID of the key type.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $label
++   *   The human-readable name of the key type.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $description
++   *   The description of the key type.
++   * @param string $group
++   *   The group to which this key type belongs.
++   *
++   *   This is the general category of this type of key. Examples include
++   *   "authentication" and "encryption". The default group is "none".
++   * @param array $key_value
++   *   The settings to use when a key value can be submitted.
++   *
++   *   This is used to indicate which key input plugin should be used
++   *   to receive the key value (if the provider accepts a key value).
++   *   The default key input plugin is text_field.
++   * @param array $multivalue
++   *   The fields available in keys with multiple values.
++   *
++   *   This is used to indicate if a key type supports multiple values and,
++   *   if so, information about its fields. Fields can be defined in either
++   *   of the following two formats.
++   *
++   *   Simple:
++   *   "username" => new TranslatableMarkup("User name")
++   *
++   *   Complex:
++   *   "password" = [
++   *    "label" => new TranslatableMarkup("Password"),
++   *    "required" => FALSE
++   *   ]
++   *
++   *   Fields are assumed to be required, unless otherwise specified.
++   **/
++  public function __construct(
++    public readonly string $id,
++    public readonly TranslatableMarkup $label,
++    public readonly TranslatableMarkup $description,
++    public readonly string $group = 'none',
++    public readonly array $key_value = [
++      'plugin' => 'text_field',
++    ],
++    public readonly array $multivalue = [
++      'enabled' => FALSE,
++      'fields' => [],
++    ],
++  ) {
++  }
++
++}
+diff --git a/src/Plugin/KeyInput/GenerateKeyInput.php b/src/Plugin/KeyInput/GenerateKeyInput.php
+index 5260d87eced0fdf1abc59ea0c2ba407f41cfed3e..defdeb7abaacb4798bb30dc80a7e5df12b03f5e9 100644
+--- a/src/Plugin/KeyInput/GenerateKeyInput.php
++++ b/src/Plugin/KeyInput/GenerateKeyInput.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyInput;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyInput;
+ use Drupal\key\Plugin\KeyInputBase;
+ 
+ /**
+@@ -14,6 +16,11 @@ use Drupal\key\Plugin\KeyInputBase;
+  *   description = @Translation("A key input that generates a key value.")
+  * )
+  */
++#[KeyInput(
++  id: "generate",
++  label: new TranslatableMarkup("Generate"),
++  description: new TranslatableMarkup("A key input that generates a key value."),
++)]
+ class GenerateKeyInput extends KeyInputBase {
+ 
+   /**
+diff --git a/src/Plugin/KeyInput/NoneKeyInput.php b/src/Plugin/KeyInput/NoneKeyInput.php
+index 24028e05f5dbe0dcd03433e8d88592af28f9cd46..5da65943202e2ac3616bd3d01189f0eea8f0119d 100644
+--- a/src/Plugin/KeyInput/NoneKeyInput.php
++++ b/src/Plugin/KeyInput/NoneKeyInput.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyInput;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyInput;
+ use Drupal\key\Plugin\KeyInputBase;
+ 
+ /**
+@@ -14,6 +16,11 @@ use Drupal\key\Plugin\KeyInputBase;
+  *   description = @Translation("A key input for providers that don't accept a value.")
+  * )
+  */
++#[KeyInput(
++  id: "none",
++  label: new TranslatableMarkup("None"),
++  description: new TranslatableMarkup("A key input for providers that don't accept a value."),
++)]
+ class NoneKeyInput extends KeyInputBase {
+ 
+   /**
+diff --git a/src/Plugin/KeyInput/TextFieldKeyInput.php b/src/Plugin/KeyInput/TextFieldKeyInput.php
+index 36652df2632cecbb6aeb21e6dde252cb5697cd45..5ec79bb854f73ad6c4152f4c68648197f1f457d6 100644
+--- a/src/Plugin/KeyInput/TextFieldKeyInput.php
++++ b/src/Plugin/KeyInput/TextFieldKeyInput.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyInput;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyInput;
+ use Drupal\key\Plugin\KeyInputBase;
+ 
+ /**
+@@ -14,6 +16,11 @@ use Drupal\key\Plugin\KeyInputBase;
+  *   description = @Translation("A simple text field.")
+  * )
+  */
++#[KeyInput(
++  id: "text_field",
++  label: new TranslatableMarkup("Text field"),
++  description: new TranslatableMarkup("A simple text field."),
++)]
+ class TextFieldKeyInput extends KeyInputBase {
+ 
+   /**
+diff --git a/src/Plugin/KeyInput/TextareaFieldKeyInput.php b/src/Plugin/KeyInput/TextareaFieldKeyInput.php
+index d8af7bfe63ed9ebe864ad50c7e93fe189842ae57..03b4c357a9821838032cb19daeb3dbb3f8b1f26e 100644
+--- a/src/Plugin/KeyInput/TextareaFieldKeyInput.php
++++ b/src/Plugin/KeyInput/TextareaFieldKeyInput.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyInput;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyInput;
+ 
+ /**
+  * Defines a key input that provides a simple text field.
+@@ -13,6 +15,11 @@ use Drupal\Core\Form\FormStateInterface;
+  *   description = @Translation("A simple textarea field.")
+  * )
+  */
++#[KeyInput(
++  id: "textarea_field",
++  label: new TranslatableMarkup("Textarea field"),
++  description: new TranslatableMarkup("A simple textarea field."),
++)]
+ class TextareaFieldKeyInput extends TextFieldKeyInput {
+ 
+   /**
+diff --git a/src/Plugin/KeyPluginManager.php b/src/Plugin/KeyPluginManager.php
+index 21e9a41c0bf695e796e8e52b714b956180ba60f1..12d8167671a37b5a61cbd921cd43a86893a80dc8 100644
+--- a/src/Plugin/KeyPluginManager.php
++++ b/src/Plugin/KeyPluginManager.php
+@@ -37,6 +37,11 @@ class KeyPluginManager extends DefaultPluginManager {
+       'key_provider' => 'Drupal\key\Annotation\KeyProvider',
+       'key_input' => 'Drupal\key\Annotation\KeyInput',
+     ];
++    $type_attributes = [
++      'key_type' => 'Drupal\key\Attribute\KeyType',
++      'key_provider' => 'Drupal\key\Attribute\KeyProvider',
++      'key_input' => 'Drupal\key\Attribute\KeyInput',
++    ];
+     $plugin_interfaces = [
+       'key_type' => 'Drupal\key\Plugin\KeyTypeInterface',
+       'key_provider' => 'Drupal\key\Plugin\KeyProviderInterface',
+@@ -46,7 +51,14 @@ class KeyPluginManager extends DefaultPluginManager {
+     $this->pluginType = $type;
+     $this->subdir = 'Plugin/' . str_replace(' ', '', ucwords(str_replace('_', ' ', $type)));
+ 
+-    parent::__construct($this->subdir, $namespaces, $module_handler, $plugin_interfaces[$type], $type_annotations[$type]);
++    parent::__construct(
++      $this->subdir,
++      $namespaces,
++      $module_handler,
++      $plugin_interfaces[$type],
++      $type_attributes[$type],
++      $type_annotations[$type],
++    );
+     $this->alterInfo($type . '_info');
+     $this->setCacheBackend($cache_backend, $type, ['key_plugins']);
+   }
+diff --git a/src/Plugin/KeyProvider/ConfigKeyProvider.php b/src/Plugin/KeyProvider/ConfigKeyProvider.php
+index f01a72b3d1ff76628cf9403c1a9b5f88dd2541b1..8f2401c483dd655e6ee2d6191e7a62479be1065a 100644
+--- a/src/Plugin/KeyProvider/ConfigKeyProvider.php
++++ b/src/Plugin/KeyProvider/ConfigKeyProvider.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyProvider;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyProvider;
+ use Drupal\key\Exception\KeyValueNotSetException;
+ use Drupal\key\Plugin\KeyProviderBase;
+ use Drupal\key\Plugin\KeyPluginFormInterface;
+@@ -25,6 +27,16 @@ use Drupal\key\KeyInterface;
+  *   }
+  * )
+  */
++#[KeyProvider(
++  id: "config",
++  label: new TranslatableMarkup("Configuration"),
++  description: new TranslatableMarkup("The Configuration key provider stores the key in Drupal's configuration system."),
++  tags: ["config"],
++  key_value:  [
++    "accepted" => TRUE,
++    "required" => FALSE,
++  ],
++)]
+ class ConfigKeyProvider extends KeyProviderBase implements KeyPluginFormInterface, KeyProviderSettableValueInterface {
+ 
+   /**
+diff --git a/src/Plugin/KeyProvider/EnvKeyProvider.php b/src/Plugin/KeyProvider/EnvKeyProvider.php
+index 0bde51691d3631a0874902c4e5cbfd618fab1f93..7e0c5e6b722fc23a2ebe6f36109e802814c59f3f 100644
+--- a/src/Plugin/KeyProvider/EnvKeyProvider.php
++++ b/src/Plugin/KeyProvider/EnvKeyProvider.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyProvider;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyProvider;
+ use Drupal\key\Plugin\KeyProviderBase;
+ use Drupal\key\Plugin\KeyPluginFormInterface;
+ use Drupal\key\KeyInterface;
+@@ -23,6 +25,16 @@ use Drupal\key\KeyInterface;
+  *   }
+  * )
+  */
++#[KeyProvider(
++  id: "env",
++  label: new TranslatableMarkup("Environment"),
++  description: new TranslatableMarkup("The Environment key provider allows a key to be retrieved from an environment variable."),
++  tags: ["env"],
++  key_value:  [
++    "accepted" => FALSE,
++    "required" => FALSE,
++  ],
++)]
+ class EnvKeyProvider extends KeyProviderBase implements KeyPluginFormInterface {
+ 
+   /**
+diff --git a/src/Plugin/KeyProvider/FileKeyProvider.php b/src/Plugin/KeyProvider/FileKeyProvider.php
+index 996aa78b8dbee2df471ed40e6a93ee3f899f0db6..de62c1e6b170ef171bdcacb5b3863c5fd3540d0b 100644
+--- a/src/Plugin/KeyProvider/FileKeyProvider.php
++++ b/src/Plugin/KeyProvider/FileKeyProvider.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyProvider;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyProvider;
+ use Drupal\key\Plugin\KeyProviderBase;
+ use Drupal\key\Plugin\KeyPluginFormInterface;
+ use Drupal\key\KeyInterface;
+@@ -23,6 +25,16 @@ use Drupal\key\KeyInterface;
+  *   }
+  * )
+  */
++#[KeyProvider(
++  id: "file",
++  label: new TranslatableMarkup("File"),
++  description: new TranslatableMarkup("The File key provider allows a key to be stored in a file, preferably outside of the web root."),
++  tags: ["file"],
++  key_value:  [
++    "accepted" => FALSE,
++    "required" => FALSE,
++  ],
++)]
+ class FileKeyProvider extends KeyProviderBase implements KeyPluginFormInterface {
+ 
+   /**
+diff --git a/src/Plugin/KeyType/AuthenticationKeyType.php b/src/Plugin/KeyType/AuthenticationKeyType.php
+index 13f500125be87efa8bac1e39628f87384089c501..91c5be63ae69503b8be3b494c3bde83f900dd675 100644
+--- a/src/Plugin/KeyType/AuthenticationKeyType.php
++++ b/src/Plugin/KeyType/AuthenticationKeyType.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyType;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyType;
+ use Drupal\key\Plugin\KeyTypeBase;
+ 
+ /**
+@@ -18,6 +20,13 @@ use Drupal\key\Plugin\KeyTypeBase;
+  *   }
+  * )
+  */
++#[KeyType(
++  id: "authentication",
++  label: new TranslatableMarkup("Authentication"),
++  description: new TranslatableMarkup("A generic key type to use for a password or API key that does not belong to any other defined key type."),
++  group: "authentication",
++  key_value: ["plugin" => "text_field"],
++)]
+ class AuthenticationKeyType extends KeyTypeBase {
+ 
+   /**
+diff --git a/src/Plugin/KeyType/AuthenticationMultivalueKeyType.php b/src/Plugin/KeyType/AuthenticationMultivalueKeyType.php
+index 7aa888aff968b319e4a0e42d4071ae59383e6e17..4dbd2bc227e5b17ba8aa4d87acf824b754e39cff 100644
+--- a/src/Plugin/KeyType/AuthenticationMultivalueKeyType.php
++++ b/src/Plugin/KeyType/AuthenticationMultivalueKeyType.php
+@@ -4,6 +4,8 @@ namespace Drupal\key\Plugin\KeyType;
+ 
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyType;
+ use Drupal\key\Plugin\KeyTypeBase;
+ use Drupal\key\Plugin\KeyTypeMultivalueInterface;
+ 
+@@ -24,6 +26,17 @@ use Drupal\key\Plugin\KeyTypeMultivalueInterface;
+  *   }
+  * )
+  */
++#[KeyType(
++  id: "authentication_multivalue",
++  label: new TranslatableMarkup("Authentication (Multivalue)"),
++  description: new TranslatableMarkup("A generic key type to use for an authentication key that contains multiple values."),
++  group: "authentication",
++  key_value: ["plugin" => "textarea_field"],
++  multivalue: [
++    "enabled" => TRUE,
++    "fields" => [],
++  ],
++)]
+ class AuthenticationMultivalueKeyType extends KeyTypeBase implements KeyTypeMultivalueInterface {
+ 
+   /**
+diff --git a/src/Plugin/KeyType/EncryptionKeyType.php b/src/Plugin/KeyType/EncryptionKeyType.php
+index 6bf6619a85c180cd9fe8a2af440988f1c0600185..07076c121b60b495048fad71063984f0449fd209 100644
+--- a/src/Plugin/KeyType/EncryptionKeyType.php
++++ b/src/Plugin/KeyType/EncryptionKeyType.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\key\Plugin\KeyType;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyType;
+ use Drupal\key\Plugin\KeyTypeBase;
+ use Drupal\key\Plugin\KeyPluginFormInterface;
+ 
+@@ -19,6 +21,13 @@ use Drupal\key\Plugin\KeyPluginFormInterface;
+  *   }
+  * )
+  */
++#[KeyType(
++  id: "encryption",
++  label: new TranslatableMarkup("Encryption"),
++  description: new TranslatableMarkup("A generic key type to use for an encryption key that does not belong to any other defined key type."),
++  group: "encryption",
++  key_value: ["plugin" => "text_field"],
++)]
+ class EncryptionKeyType extends KeyTypeBase implements KeyPluginFormInterface {
+ 
+   /**
+diff --git a/src/Plugin/KeyType/UserPasswordKeyType.php b/src/Plugin/KeyType/UserPasswordKeyType.php
+index 8d9d9f8809dd2ce435633e77ad38b0c8ef7ffd8c..eaf650650bc387af0eb30f9ccae74f41a25bf8ba 100644
+--- a/src/Plugin/KeyType/UserPasswordKeyType.php
++++ b/src/Plugin/KeyType/UserPasswordKeyType.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\key\Plugin\KeyType;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\key\Attribute\KeyType;
++
+ /**
+  * Defines a key that combines a user name and password.
+  *
+@@ -22,4 +25,18 @@ namespace Drupal\key\Plugin\KeyType;
+  *   }
+  * )
+  */
++#[KeyType(
++  id: "user_password",
++  label: new TranslatableMarkup("User/password"),
++  description: new TranslatableMarkup("A key type to store a user/password pair."),
++  group: "authentication",
++  key_value: ["plugin" => "textarea_field"],
++  multivalue: [
++    "enabled" => TRUE,
++    "fields" => [
++      "username" => new TranslatableMarkup("User name"),
++      "password" => new TranslatableMarkup("Password"),
++    ],
++  ],
++)]
+ class UserPasswordKeyType extends AuthenticationMultivalueKeyType {}

@@ -1,0 +1,196 @@
+diff --git a/captcha.install b/captcha.install
+index c68361abebedda4b5168ad83ddd77b3692bb975f..587e170fa19d75be34c249e44e82e499535a6fed 100755
+--- a/captcha.install
++++ b/captcha.install
+@@ -5,7 +5,10 @@
+  * Install, update and uninstall functions for the CAPTCHA module.
+  */
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Hook\Attribute\LegacyRequirementsHook;
+ use Drupal\captcha\Constants\CaptchaConstants;
++use Drupal\captcha\Hook\CaptchaRequirementsHooks;
+ 
+ /**
+  * Implements hook_schema().
+@@ -87,24 +90,18 @@ function captcha_schema() {
+ 
+ /**
+  * Implements hook_requirements().
++ *
++ * Drupal 12 dispatches runtime requirements through the OOP
++ * hook_runtime_requirements() implementation in
++ * \Drupal\captcha\Hook\CaptchaRequirementsHooks. This wrapper is only used by
++ * core older than 11.2.
+  */
++#[LegacyRequirementsHook]
+ function captcha_requirements($phase) {
+-  $requirements = [];
+-  $config = \Drupal::config('captcha.settings');
+-
+-  if ($phase == 'runtime' && $config->get('enable_stats')) {
+-    // Show the wrong response counter in the status report.
+-    $requirements['captcha_wrong_response_counter'] = [
+-      'title' => \Drupal::translation()->translate('CAPTCHA'),
+-      'value' => \Drupal::translation()->formatPlural(
+-        \Drupal::state()->get('captcha.wrong_response_counter', 0),
+-        'Already 1 blocked form submission',
+-        'Already @count blocked form submissions'
+-      ),
+-      'severity' => REQUIREMENT_INFO,
+-    ];
++  if ($phase !== 'runtime') {
++    return [];
+   }
+-  return $requirements;
++  return \Drupal::service(CaptchaRequirementsHooks::class)->runtimeRequirements();
+ }
+ 
+ /**
+@@ -116,7 +113,7 @@ function captcha_install() {
+     $form_ids = [];
+     $label = [];
+     // Add form_ids of all currently known node types too.
+-    foreach (node_type_get_names() as $type => $name) {
++    foreach (DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.3.0', fn() => \Drupal::service('entity_type.bundle.info')->getBundleLabels('node'), fn() => node_type_get_names()) as $type => $name) {
+       $form_ids[] = 'node_' . $type . '_form';
+       $label[] = 'node_' . $type . '_form';
+     }
+@@ -225,7 +222,7 @@ function captcha_update_8905() {
+   $captchaConfig = \Drupal::configFactory()->getEditable('captcha.settings');
+   if ($captchaConfig->get('title') === NULL) {
+     // Set the title in config, if it wasn't existing before:
+-    $captchaConfig->set('title', 'CAPTCHA')->save(TRUE);
++    $captchaConfig->set('title', 'CAPTCHA')->save();
+   }
+ }
+ 
+diff --git a/modules/image_captcha/image_captcha.install b/modules/image_captcha/image_captcha.install
+index 462c93db5f533243c49e6b324516418f74dfd36e..d0f5a6c00adff74d010c762d79427c468fddb01d 100644
+--- a/modules/image_captcha/image_captcha.install
++++ b/modules/image_captcha/image_captcha.install
+@@ -1,5 +1,12 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * @file
+  * Installation/uninstallation related functions for the image_captcha module.
+@@ -32,7 +39,7 @@ function image_captcha_requirements($phase) {
+           ->translate('The Image CAPTCHA module can not be installed because your PHP setup does not provide the <a href="!gddoc">GD library</a>, which is required to generate images.',
+               ['!gddoc' => 'http://www.php.net/manual/en/book.image.php']
+         ),
+-        'severity' => REQUIREMENT_ERROR,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Error, fn() => REQUIREMENT_ERROR),
+       ];
+     }
+   }
+@@ -48,7 +55,7 @@ function image_captcha_install() {
+   $config->set('image_captcha_fonts', [
+     hash('sha256', $module_path . '/fonts/Tesox/tesox.ttf'),
+     hash('sha256', $module_path . '/fonts/Tuffy/Tuffy.ttf'),
+-  ])->save(TRUE);
++  ])->save();
+ }
+ 
+ /**
+@@ -62,7 +69,7 @@ function image_captcha_update_8001() {
+       $config->set('image_captcha_fonts.' . $index, hash('sha256', $font));
+     }
+   }
+-  $config->save(TRUE);
++  $config->save();
+ }
+ 
+ /**
+@@ -75,7 +82,7 @@ function image_captcha_update_9001(&$sandbox) {
+   $config->set('image_captcha_fonts', [
+     hash('sha256', $module_path . '/fonts/Tesox/tesox.ttf'),
+     hash('sha256', $module_path . '/fonts/Tuffy/Tuffy.ttf'),
+-  ])->save(TRUE);
++  ])->save();
+ }
+ 
+ /**
+@@ -83,7 +90,7 @@ function image_captcha_update_9001(&$sandbox) {
+  */
+ function image_captcha_update_9002(&$sandbox) {
+   $config = \Drupal::configFactory()->getEditable('image_captcha.settings');
+-  $config->set('title', 'CAPTCHA')->save(TRUE);
++  $config->set('title', 'CAPTCHA')->save();
+ }
+ 
+ /**
+@@ -91,5 +98,5 @@ function image_captcha_update_9002(&$sandbox) {
+  */
+ function image_captcha_update_9003(&$sandbox) {
+   $imageCaptchaConfig = \Drupal::configFactory()->getEditable('image_captcha.settings');
+-  $imageCaptchaConfig->clear('title')->save(TRUE);
++  $imageCaptchaConfig->clear('title')->save();
+ }
+diff --git a/src/Hook/CaptchaRequirementsHooks.php b/src/Hook/CaptchaRequirementsHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..f8d3fac4dc56e947155d0d9d44502aae0bfba462
+--- /dev/null
++++ b/src/Hook/CaptchaRequirementsHooks.php
+@@ -0,0 +1,54 @@
++<?php
++
++namespace Drupal\captcha\Hook;
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Config\ConfigFactoryInterface;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\State\StateInterface;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++use Drupal\Core\StringTranslation\TranslationInterface;
++
++/**
++ * Runtime requirements for the CAPTCHA module.
++ */
++class CaptchaRequirementsHooks {
++
++  use StringTranslationTrait;
++
++  public function __construct(
++    protected ConfigFactoryInterface $configFactory,
++    protected StateInterface $state,
++    TranslationInterface $string_translation,
++  ) {
++    $this->stringTranslation = $string_translation;
++  }
++
++  /**
++   * Implements hook_runtime_requirements().
++   *
++   * @return array
++   *   The requirements array.
++   */
++  #[Hook('runtime_requirements')]
++  public function runtimeRequirements(): array {
++    $requirements = [];
++
++    if ($this->configFactory->get('captcha.settings')->get('enable_stats')) {
++      // Show the wrong response counter in the status report.
++      $requirements['captcha_wrong_response_counter'] = [
++        'title' => $this->t('CAPTCHA'),
++        'value' => $this->formatPlural(
++          $this->state->get('captcha.wrong_response_counter', 0),
++          'Already 1 blocked form submission',
++          'Already @count blocked form submissions'
++        ),
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Info, fn() => REQUIREMENT_INFO),
++      ];
++    }
++
++    return $requirements;
++  }
++
++}

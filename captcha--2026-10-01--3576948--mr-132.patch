@@ -1,0 +1,136 @@
+diff --git a/modules/image_captcha/src/Controller/CaptchaFontPreviewController.php b/modules/image_captcha/src/Controller/CaptchaFontPreviewController.php
+index b0093895d4059336d4d10fe9f54b9a8bcf5a111b..f98e2d336b71c169005591cae33bcfa9516445b3 100644
+--- a/modules/image_captcha/src/Controller/CaptchaFontPreviewController.php
++++ b/modules/image_captcha/src/Controller/CaptchaFontPreviewController.php
+@@ -38,7 +38,7 @@ class CaptchaFontPreviewController implements ContainerInjectionInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     return new static(
+       $container->get('config.factory')->get('image_captcha.settings'),
+       $container->get('page_cache_kill_switch')
+diff --git a/modules/image_captcha/src/Controller/CaptchaImageGeneratorController.php b/modules/image_captcha/src/Controller/CaptchaImageGeneratorController.php
+index 57768f64193cf92920b190a6fd1cd3552ab9ceb7..96a1951af8e4cd3421a1731888587591cbfba8cc 100644
+--- a/modules/image_captcha/src/Controller/CaptchaImageGeneratorController.php
++++ b/modules/image_captcha/src/Controller/CaptchaImageGeneratorController.php
+@@ -76,7 +76,7 @@ class CaptchaImageGeneratorController implements ContainerInjectionInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     return new static(
+       $container->get('config.factory')->get('image_captcha.settings'),
+       $container->get('logger.factory')->get('captcha'),
+diff --git a/modules/image_captcha/src/Controller/CaptchaImageRefreshController.php b/modules/image_captcha/src/Controller/CaptchaImageRefreshController.php
+index e41592c03fc7ebcac12f68b3a054bada4503b61b..5abf3e67df61fa4d08eeaf72b7b5ae6e224cb38f 100644
+--- a/modules/image_captcha/src/Controller/CaptchaImageRefreshController.php
++++ b/modules/image_captcha/src/Controller/CaptchaImageRefreshController.php
+@@ -40,7 +40,7 @@ class CaptchaImageRefreshController extends ControllerBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     return new static(
+       $container->get('datetime.time')
+     );
+diff --git a/modules/image_captcha/src/Form/ImageCaptchaSettingsForm.php b/modules/image_captcha/src/Form/ImageCaptchaSettingsForm.php
+index d13bb96125fbd0cee709964ac569805483f7a9db..be5b11816ba1fd2d4a6cec3ffe0745997889413a 100644
+--- a/modules/image_captcha/src/Form/ImageCaptchaSettingsForm.php
++++ b/modules/image_captcha/src/Form/ImageCaptchaSettingsForm.php
+@@ -33,7 +33,7 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     $instance = parent::create($container);
+     $instance->languageManager = $container->get('language_manager');
+     $instance->fileSystem = $container->get('file_system');
+diff --git a/src/Element/Captcha.php b/src/Element/Captcha.php
+index ab58e7c74ff24bf9586095b4120ac7c5ba10bdba..7c7eefba780755736e273d6d5f7908fa80de22c3 100644
+--- a/src/Element/Captcha.php
++++ b/src/Element/Captcha.php
+@@ -6,8 +6,8 @@ use Drupal\Component\Utility\Crypt;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+-use Drupal\Core\Render\Element\FormElement;
+ use Drupal\captcha\Constants\CaptchaConstants;
++use Drupal\Core\Render\Element\FormElementBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *
+  * @FormElement("captcha")
+  */
+-class Captcha extends FormElement implements ContainerFactoryPluginInterface {
++class Captcha extends FormElementBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+    * The config factory.
+@@ -44,7 +44,7 @@ class Captcha extends FormElement implements ContainerFactoryPluginInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
++  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+     return new static(
+       $configuration,
+       $plugin_id,
+diff --git a/src/Form/CaptchaExamplesForm.php b/src/Form/CaptchaExamplesForm.php
+index 73971d636afd12bcb10e57b99df9afbb1019bc45..d04e88d6eab4def6f2b4daeabbad302cfc24850d 100755
+--- a/src/Form/CaptchaExamplesForm.php
++++ b/src/Form/CaptchaExamplesForm.php
+@@ -34,7 +34,7 @@ class CaptchaExamplesForm extends FormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     return new static(
+       $container->get('module_handler')
+     );
+diff --git a/src/Form/CaptchaPointForm.php b/src/Form/CaptchaPointForm.php
+index d2f37c2d0d9397aded76c76504d7d95e8cf566a1..79cc9577c01164c7458e806c01fa60d9d50621e7 100755
+--- a/src/Form/CaptchaPointForm.php
++++ b/src/Form/CaptchaPointForm.php
+@@ -48,7 +48,7 @@ class CaptchaPointForm extends EntityForm {
+    *
+    * @return static
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     return new static(
+       $container->get('request_stack'),
+       $container->get('captcha.helper')
+diff --git a/src/Form/CaptchaSettingsForm.php b/src/Form/CaptchaSettingsForm.php
+index 65bdd588a895cac5c7ecca1cc17ba15e10650061..d56513e4de2ade7ed0e5c01c34b61c413f63e2ba 100755
+--- a/src/Form/CaptchaSettingsForm.php
++++ b/src/Form/CaptchaSettingsForm.php
+@@ -44,7 +44,7 @@ class CaptchaSettingsForm extends ConfigFormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container) {
++  public static function create(ContainerInterface $container): static {
+     $instance = parent::create($container);
+     $instance->cacheBackend = $container->get('cache.default');
+     $instance->moduleHandler = $container->get('module_handler');
+diff --git a/src/Plugin/migrate/source/CaptchaPoints.php b/src/Plugin/migrate/source/CaptchaPoints.php
+index 3f3932f2d12675a194671c6394268d360d2dfac9..281ea790a4140a644180388d92bb842a0f01e8b1 100644
+--- a/src/Plugin/migrate/source/CaptchaPoints.php
++++ b/src/Plugin/migrate/source/CaptchaPoints.php
+@@ -19,7 +19,7 @@ class CaptchaPoints extends DrupalSqlBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, ?MigrationInterface $migration = NULL) {
++  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, ?MigrationInterface $migration = NULL): static {
+     return new static(
+       $configuration,
+       $plugin_id,

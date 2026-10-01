@@ -1,0 +1,32 @@
+diff --git a/ai_translate.install b/ai_translate.install
+index fea8237a2bd6fd997f6934e5b688a54b41ab9271..e614451a2dafb4cff4351f626ac0f022862cb9fb 100644
+--- a/ai_translate.install
++++ b/ai_translate.install
+@@ -4,7 +4,8 @@
+  * @file
+  * Install, update and uninstall functions for the ai_translate module.
+  */
+-
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
+ use Drupal\Core\Config\FileStorage;
+ use Drupal\Core\Url;
+ 
+@@ -29,7 +30,7 @@ function ai_translate_requirements($phase) {
+         'value' => t('Please provide a default provider for the text translation'),
+         'description' => t('The AI Translate module needs the default Translate Text provider to be configured in the <a href=":url">AI module settings</a>. Please configure a default Chat AI system.',
+           [':url' => Url::fromRoute('ai.settings_form')->toString()]),
+-        'severity' => REQUIREMENT_ERROR,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Error, fn() => REQUIREMENT_ERROR),
+       ];
+     }
+     if (empty($defaultProvider) && empty(\Drupal::service('ai.provider')
+@@ -39,7 +40,7 @@ function ai_translate_requirements($phase) {
+         'value' => t('Please provide a default Chat AI provider'),
+         'description' => t('The AI Translate module needs a default Chat provider to be setup to be able to proxy translation requests. This can be configured in the <a href=":url">AI module settings</a>.',
+           [':url' => Url::fromRoute('ai.settings_form')->toString()]),
+-        'severity' => REQUIREMENT_WARNING,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+       ];
+     }
+   }

@@ -1,0 +1,128 @@
+diff --git a/src/Plugin/WebformElementManager.php b/src/Plugin/WebformElementManager.php
+index 0914ccca482f6c4e352f195a43b7dc0739358d65..a94f789cd6e83c962dd37c81c8650ddc9f3436f2 100644
+--- a/src/Plugin/WebformElementManager.php
++++ b/src/Plugin/WebformElementManager.php
+@@ -273,19 +273,19 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
+   /**
+    * {@inheritdoc}
+    */
+-  public function getSortedDefinitions(?array $definitions = NULL, $sort_by = 'label') {
++  public function getSortedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
+     $definitions = $definitions ?? $this->getDefinitions();
+ 
+-    switch ($sort_by) {
++    switch ($label_key) {
+       case 'category':
+-        uasort($definitions, function ($a, $b) use ($sort_by) {
+-          return strnatcasecmp($a['category'] . '-' . $a[$sort_by], $b['category'] . '-' . $b[$sort_by]);
++        uasort($definitions, function ($a, $b) use ($label_key) {
++          return strnatcasecmp($a['category'] . '-' . $a[$label_key], $b['category'] . '-' . $b[$label_key]);
+         });
+         break;
+ 
+       default:
+-        uasort($definitions, function ($a, $b) use ($sort_by) {
+-          return strnatcasecmp($a[$sort_by], $b[$sort_by]);
++        uasort($definitions, function ($a, $b) use ($label_key) {
++          return strnatcasecmp($a[$label_key], $b[$label_key]);
+         });
+         break;
+     }
+@@ -296,7 +296,7 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
+   /**
+    * {@inheritdoc}
+    */
+-  public function getGroupedDefinitions(?array $definitions = NULL, $label_key = 'label') {
++  public function getGroupedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
+     $definitions = $this->getSortedDefinitions($definitions ?? $this->getDefinitions(), $label_key);
+ 
+     // Organize grouped definition with basic and advanced first and other last.
+diff --git a/src/Plugin/WebformElementManagerInterface.php b/src/Plugin/WebformElementManagerInterface.php
+index 4d9532a253413ecbe3c8bc3d03dd8dc67ce173a7..87c17648e3b8637c020ed4a4c4ef2f1a845ffc99 100644
+--- a/src/Plugin/WebformElementManagerInterface.php
++++ b/src/Plugin/WebformElementManagerInterface.php
+@@ -129,14 +129,14 @@ interface WebformElementManagerInterface extends PluginManagerInterface, CachedD
+    * @param array[]|null $definitions
+    *   (optional) The plugin definitions to sort. If omitted, all plugin
+    *   definitions are used.
+-   * @param string $sort_by
++   * @param string $label_key
+    *   The property to sort plugin definitions by. Only 'label' and 'category'
+    *   are supported. Defaults to label.
+    *
+    * @return array[]
+    *   An array of plugin definitions, sorted by category and label.
+    */
+-  public function getSortedDefinitions(?array $definitions = NULL, $sort_by = 'label');
++  public function getSortedDefinitions(?array $definitions = NULL, string $label_key = 'label');
+ 
+   /**
+    * Get all translatable properties from all elements.
+diff --git a/src/Plugin/WebformExporterManager.php b/src/Plugin/WebformExporterManager.php
+index ea820ff72958238138a4236dcab75b48816f8d23..8b32cac74be87e5652470a17cbd45ffd189fe2f9 100644
+--- a/src/Plugin/WebformExporterManager.php
++++ b/src/Plugin/WebformExporterManager.php
+@@ -54,9 +54,9 @@ class WebformExporterManager extends DefaultPluginManager implements WebformExpo
+   /**
+    * {@inheritdoc}
+    */
+-  public function getSortedDefinitions(?array $definitions = NULL, $sort_by = 'label') {
++  public function getSortedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
+     // Sort the plugins first by category, then by label.
+-    $definitions = $this->traitGetSortedDefinitions($definitions, $sort_by);
++    $definitions = $this->traitGetSortedDefinitions($definitions, $label_key);
+     return $definitions;
+   }
+ 
+diff --git a/src/Plugin/WebformHandlerManager.php b/src/Plugin/WebformHandlerManager.php
+index 49cf23ad4ddb8facfe8f22ab9f3adf6dda762f68..a8e19e1aa4b270eb4a81849261edd91e56b62cc3 100644
+--- a/src/Plugin/WebformHandlerManager.php
++++ b/src/Plugin/WebformHandlerManager.php
+@@ -55,17 +55,17 @@ class WebformHandlerManager extends DefaultPluginManager implements WebformHandl
+   /**
+    * {@inheritdoc}
+    */
+-  public function getSortedDefinitions(?array $definitions = NULL, $sort_by = 'label') {
++  public function getSortedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
+     // Sort the plugins first by category, then by label.
+-    $definitions = $this->traitGetSortedDefinitions($definitions, $sort_by);
++    $definitions = $this->traitGetSortedDefinitions($definitions, $label_key);
+     return $definitions;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getGroupedDefinitions(?array $definitions = NULL) {
+-    $definitions = $this->traitGetGroupedDefinitions($definitions);
++  public function getGroupedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
++    $definitions = $this->traitGetGroupedDefinitions($definitions, $label_key);
+     // Do not display the 'broken' plugin in the UI.
+     unset($definitions[$this->t('Broken')]['broken']);
+     return $definitions;
+diff --git a/src/Plugin/WebformVariantManager.php b/src/Plugin/WebformVariantManager.php
+index 7d4cc3e4fc5a2142d488602ff5ce8573d6b393d6..eca3616bab6cd269742f3c9b3c47cd5c5fe12f82 100644
+--- a/src/Plugin/WebformVariantManager.php
++++ b/src/Plugin/WebformVariantManager.php
+@@ -55,17 +55,17 @@ class WebformVariantManager extends DefaultPluginManager implements WebformVaria
+   /**
+    * {@inheritdoc}
+    */
+-  public function getSortedDefinitions(?array $definitions = NULL, $sort_by = 'label') {
++  public function getSortedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
+     // Sort the plugins first by category, then by label.
+-    $definitions = $this->traitGetSortedDefinitions($definitions, $sort_by);
++    $definitions = $this->traitGetSortedDefinitions($definitions, $label_key);
+     return $definitions;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getGroupedDefinitions(?array $definitions = NULL) {
+-    $definitions = $this->traitGetGroupedDefinitions($definitions);
++  public function getGroupedDefinitions(?array $definitions = NULL, string $label_key = 'label') {
++    $definitions = $this->traitGetGroupedDefinitions($definitions, $label_key);
+     // Do not display the 'broken' plugin in the UI.
+     unset($definitions[$this->t('Broken')]['broken']);
+     return $definitions;

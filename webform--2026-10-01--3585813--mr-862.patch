@@ -1,0 +1,189 @@
+diff --git a/modules/webform_cards/webform_cards.module b/modules/webform_cards/webform_cards.module
+index 5adb1962f677120aa0aff076e916650a3de4fe1f..5c293f2afdbb2969c41a9862d349113e3d843a8a 100644
+--- a/modules/webform_cards/webform_cards.module
++++ b/modules/webform_cards/webform_cards.module
+@@ -102,7 +102,7 @@ function webform_cards_form_webform_edit_form_alter(array &$form, FormStateInter
+ 
+   /** @var \Drupal\webform\WebformInterface $webform */
+   $webform = $form_object->getEntity();
+-  $wrapper_format = \Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT);
++  $wrapper_format = \Drupal::request()->query->get(MainContentViewSubscriber::WRAPPER_FORMAT);
+   $is_ajax_request = ($wrapper_format === 'drupal_ajax');
+   if ($webform->hasWizardPages() && !$is_ajax_request) {
+     $form['webform_cards_convert'] = [
+diff --git a/modules/webform_entity_print/src/Hook/WebformEntityPrintHooks.php b/modules/webform_entity_print/src/Hook/WebformEntityPrintHooks.php
+index f7a5ffe911e10452eea6e407a0bc97e659319421..e1e33d7f052145c78c3cf6209a96076532c5046a 100644
+--- a/modules/webform_entity_print/src/Hook/WebformEntityPrintHooks.php
++++ b/modules/webform_entity_print/src/Hook/WebformEntityPrintHooks.php
+@@ -67,7 +67,7 @@ class WebformEntityPrintHooks {
+     }
+     // Match signature element.
+     if ($signature_elements && preg_match_all('#/webform/' . $webform_id . '/(' . implode('|', $signature_elements) . ')/#', $uri, $matches)) {
+-      $webform_entity_print_token = \Drupal::request()->get('webform_entity_print_itok');
++      $webform_entity_print_token = \Drupal::request()->query->get('webform_entity_print_itok');
+       $encrypt_token = _webform_entity_print_token_generate(\Drupal::service('file_url_generator')->generateAbsoluteString($uri));
+       if ($webform_entity_print_token === $encrypt_token) {
+         /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+diff --git a/modules/webform_entity_print/webform_entity_print.module b/modules/webform_entity_print/webform_entity_print.module
+index e99ee401a39ab0b8cc6775676505ff743caa7376..ac6b3aaed0d0a0976727327c4ea304a103f2cbe5 100644
+--- a/modules/webform_entity_print/webform_entity_print.module
++++ b/modules/webform_entity_print/webform_entity_print.module
+@@ -157,7 +157,7 @@ function _webform_entity_print_webform_submission_links(array &$build, EntityInt
+     ];
+     $route_options = ['query' => ['view_mode' => $view_mode]];
+     // Attach the URL's token query parameter used to grant view permission.
+-    $token = \Drupal::request()->get('token');
++    $token = \Drupal::request()->query->get('token');
+     if ($token && $token === $entity->getToken()) {
+       $route_options['query']['token'] = $token;
+     }
+diff --git a/modules/webform_templates/src/Controller/WebformTemplatesController.php b/modules/webform_templates/src/Controller/WebformTemplatesController.php
+index 7542977ff3f69ba2d066242d93ef455f40d57e06..bc248e581f4d4806bb307750408b68467846614a 100644
+--- a/modules/webform_templates/src/Controller/WebformTemplatesController.php
++++ b/modules/webform_templates/src/Controller/WebformTemplatesController.php
+@@ -59,8 +59,8 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
+    *   response to a selected webform via the filter's autocomplete.
+    */
+   public function index(Request $request, $manage = FALSE) {
+-    $keys = $request->get('search');
+-    $category = $request->get('category');
++    $keys = $request->query->get('search');
++    $category = $request->query->get('category');
+ 
+     // Handler autocomplete redirect.
+     if ($keys && preg_match('#\(([^)]+)\)$#', $keys, $match)) {
+diff --git a/modules/webform_ui/src/Form/WebformUiElementAddForm.php b/modules/webform_ui/src/Form/WebformUiElementAddForm.php
+index 5068eb540b2f646ae158f7c8f866b1462d9bf170..021ac737fcb956938cd382fe63684afdd6394b9a 100644
+--- a/modules/webform_ui/src/Form/WebformUiElementAddForm.php
++++ b/modules/webform_ui/src/Form/WebformUiElementAddForm.php
+@@ -24,7 +24,7 @@ class WebformUiElementAddForm extends WebformUiElementFormBase {
+     $this->element['#type'] = $type;
+     $this->action = $this->t('created');
+ 
+-    $parent_key = $this->getRequest()->get('parent');
++    $parent_key = $this->getRequest()->query->get('parent');
+     if ($parent_key) {
+       $parent_element = $webform->getElement($parent_key);
+       if (!$parent_element) {
+diff --git a/modules/webform_ui/src/Form/WebformUiElementEditForm.php b/modules/webform_ui/src/Form/WebformUiElementEditForm.php
+index 773a648193bfe27efe4aeda8301d0a479f0e6b7f..dea693d68dca79436b41aeebedecee9a4dd786ee 100644
+--- a/modules/webform_ui/src/Form/WebformUiElementEditForm.php
++++ b/modules/webform_ui/src/Form/WebformUiElementEditForm.php
+@@ -30,7 +30,7 @@ class WebformUiElementEditForm extends WebformUiElementFormBase {
+     }
+ 
+     // Handler changing element type.
+-    if ($type = $this->getRequest()->get('type')) {
++    if ($type = $this->getRequest()->query->get('type')) {
+       $webform_element = $this->getWebformElementPlugin();
+       $related_types = $webform_element->getRelatedTypes($this->element);
+       if (!isset($related_types[$type])) {
+diff --git a/src/Controller/WebformEntityController.php b/src/Controller/WebformEntityController.php
+index a53e38ff78137a9e67a985760643141d874ae0aa..805dc38ec4698b9d7bb6da07e31db93bedee8bbb 100644
+--- a/src/Controller/WebformEntityController.php
++++ b/src/Controller/WebformEntityController.php
+@@ -230,7 +230,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
+       $source_entity = $this->requestHandler->getCurrentSourceEntity('webform');
+     }
+ 
+-    if ($token = $request->get('token')) {
++    if ($token = $request->query->get('token')) {
+       /** @var \Drupal\webform\WebformSubmissionStorageInterface $webform_submission_storage */
+       $webform_submission_storage = $this->entityTypeManager()->getStorage('webform_submission');
+       if ($entities = $webform_submission_storage->loadByProperties(['token' => $token])) {
+diff --git a/src/Entity/Webform.php b/src/Entity/Webform.php
+index 4c80b9d1f4e1bf5daa711260eeba77b2220a979d..308653765203de4cac8b5e956c7a114ba7482a71 100644
+--- a/src/Entity/Webform.php
++++ b/src/Entity/Webform.php
+@@ -2156,7 +2156,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
+     // If template being used to create a new webform, clear description
+     // and remove the template flag.
+     // @see \Drupal\webform_templates\Controller\WebformTemplatesController::index
+-    $is_template_duplicate = \Drupal::request()->get('template');
++    $is_template_duplicate = \Drupal::request()->query->get('template');
+     if ($duplicate->isTemplate() && !$is_template_duplicate) {
+       $duplicate->set('description', '');
+       $duplicate->set('template', FALSE);
+diff --git a/src/Form/WebformAjaxFormTrait.php b/src/Form/WebformAjaxFormTrait.php
+index 5a3531d038429619b65938051037315a78daa4c3..faef309ee4f0708bf4f32560b54856d4d568bef4 100644
+--- a/src/Form/WebformAjaxFormTrait.php
++++ b/src/Form/WebformAjaxFormTrait.php
+@@ -73,7 +73,7 @@ trait WebformAjaxFormTrait {
+    *   TRUE if the current request is for an Ajax modal/dialog.
+    */
+   protected function isDialog() {
+-    $wrapper_format = $this->getRequest()
++    $wrapper_format = $this->getRequest()->query
+       ->get(MainContentViewSubscriber::WRAPPER_FORMAT);
+     return (in_array($wrapper_format, [
+       'drupal_ajax',
+@@ -90,7 +90,7 @@ trait WebformAjaxFormTrait {
+    *   TRUE if the current request is for an off canvas dialog.
+    */
+   protected function isOffCanvasDialog() {
+-    $wrapper_format = $this->getRequest()
++    $wrapper_format = $this->getRequest()->query
+       ->get(MainContentViewSubscriber::WRAPPER_FORMAT);
+     return (in_array($wrapper_format, [
+       'drupal_dialog.off_canvas',
+@@ -361,7 +361,7 @@ trait WebformAjaxFormTrait {
+    */
+   protected function getFormStateRedirectUrl(FormStateInterface $form_state) {
+     // Always check the ?destination which is used by the off-canvas/system tray.
+-    if ($this->getRequest()->get('destination')) {
++    if ($this->getRequest()->query->get('destination')) {
+       $destination = $this->getRedirectDestination()->get();
+       return str_starts_with($destination, $destination) ? $destination : base_path() . $destination;
+     }
+diff --git a/src/Hook/WebformMaillogHooks.php b/src/Hook/WebformMaillogHooks.php
+index b12e1a2e306e3604229da985849a8f563b38aa77..70fe9400da319541dd456c5dd4287f544c9113cc 100644
+--- a/src/Hook/WebformMaillogHooks.php
++++ b/src/Hook/WebformMaillogHooks.php
+@@ -26,7 +26,7 @@ class WebformMaillogHooks {
+       return;
+     }
+     // Never display Maillog message via dialogs or Ajax requests.
+-    $wrapper_format = \Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT);
++    $wrapper_format = \Drupal::request()->query->get(MainContentViewSubscriber::WRAPPER_FORMAT);
+     if ($wrapper_format) {
+       return;
+     }
+diff --git a/src/Plugin/WebformElement/WebformManagedFileBase.php b/src/Plugin/WebformElement/WebformManagedFileBase.php
+index 90eacb7b7a88e1907aa1e6446757326d07e27b0c..d5c35bf4b8ce778af3813e94fddb55fbf499e4f5 100644
+--- a/src/Plugin/WebformElement/WebformManagedFileBase.php
++++ b/src/Plugin/WebformElement/WebformManagedFileBase.php
+@@ -1000,7 +1000,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
+     }
+ 
+     // Only validate file limits for ajax uploads.
+-    $wrapper_format = \Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT);
++    $wrapper_format = \Drupal::request()->query->get(MainContentViewSubscriber::WRAPPER_FORMAT);
+     if (!$wrapper_format || !in_array($wrapper_format, ['drupal_ajax', 'drupal_modal', 'drupal_dialog'])) {
+       return;
+     }
+diff --git a/src/WebformRequest.php b/src/WebformRequest.php
+index 632d70d2b640e8d756f9836d25208e70eae85ae4..53a74af56b6aeafed1bcb43ccea5b0b1e727f22a 100644
+--- a/src/WebformRequest.php
++++ b/src/WebformRequest.php
+@@ -220,7 +220,7 @@ class WebformRequest implements WebformRequestInterface {
+    * {@inheritdoc}
+    */
+   public function isAjax() {
+-    return $this->request->get(AjaxResponseSubscriber::AJAX_REQUEST_PARAMETER) ? TRUE : FALSE;
++    return $this->request->query->get(AjaxResponseSubscriber::AJAX_REQUEST_PARAMETER) ? TRUE : FALSE;
+   }
+ 
+   /**
+diff --git a/src/WebformSubmissionForm.php b/src/WebformSubmissionForm.php
+index 8f33cbf4f528876ed7e81d5607564dc9a6517b8d..60987cdfb0cf223f21b7014efadcb9cf41462ce0 100644
+--- a/src/WebformSubmissionForm.php
++++ b/src/WebformSubmissionForm.php
+@@ -1989,7 +1989,7 @@ class WebformSubmissionForm extends ContentEntityForm {
+       // On update, rebuild and display message unless ?destination= is set.
+       // @see \Drupal\webform\WebformSubmissionForm::setConfirmation
+       if ($state === WebformSubmissionInterface::STATE_UPDATED) {
+-        if (!$this->getRequest()->get('destination')) {
++        if (!$this->getRequest()->query->get('destination')) {
+           $this->rebuild($form, $form_state);
+         }
+       }

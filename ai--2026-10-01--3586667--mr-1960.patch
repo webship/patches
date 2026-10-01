@@ -1,0 +1,100 @@
+diff --git a/docs/developers/function_call.md b/docs/developers/function_call.md
+index 12192c4bdae70fb023abc786f81188ca23fd27a4..1cb5a9b45eec566a5bb965bf8f890260ee2cd421 100644
+--- a/docs/developers/function_call.md
++++ b/docs/developers/function_call.md
+@@ -56,7 +56,7 @@ class HelloWorld extends FunctionCallBase implements ExecutableFunctionCallInter
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     $name = $this->getContextValue('name');
+     $this->setOutput("Hello, $name! Welcome to Drupal.");
+   }
+@@ -117,8 +117,10 @@ You can add constraints to parameters to limit what the LLM can pass. See [Funct
+ 
+ This is where your logic goes. Use `$this->getContextValue('parameter_name')` to read the values provided by the LLM, and `$this->setOutput()` to set the text result that will be returned.
+ 
++Declare `?object $object = NULL` even if you don't use it. Drupal 12 adds this argument to `ExecutableInterface::execute()`, and the deprecation check matches on the parameter name, so it must be `$object`. Most plugins ignore it and read input via `getContextValue()`.
++
+ ```php
+-public function execute() {
++public function execute(?object $object = NULL) {
+   $name = $this->getContextValue('name');
+   // Your logic here...
+   $this->setOutput("Hello, $name!");
+@@ -144,7 +146,7 @@ use Drupal\ai\Service\FunctionCalling\StructuredExecutableFunctionCallInterface;
+ 
+ class MyPlugin extends FunctionCallBase implements StructuredExecutableFunctionCallInterface {
+ 
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     $city = $this->getContextValue('city');
+     $this->setOutput("The weather in $city is 20°C.");
+   }
+diff --git a/modules/ai_automators/src/Plugin/Action/RunAutomatorAction.php b/modules/ai_automators/src/Plugin/Action/RunAutomatorAction.php
+index 6daaa2912a7545769b6fcbe136256a7bb9258bdb..eb927aaba26acd5de13b0c30fb1fbe192ceddd4b 100644
+--- a/modules/ai_automators/src/Plugin/Action/RunAutomatorAction.php
++++ b/modules/ai_automators/src/Plugin/Action/RunAutomatorAction.php
+@@ -59,7 +59,8 @@ class RunAutomatorAction extends EntityActionBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute($entity = NULL) {
++  public function execute(?object $object = NULL) {
++    $entity = $object;
+     if (!$entity) {
+       throw new \RuntimeException('RunAutomatorAction::execute() called without an entity.');
+     }
+diff --git a/modules/ai_automators/src/Plugin/AiFunctionCall/AutomatorPluginBase.php b/modules/ai_automators/src/Plugin/AiFunctionCall/AutomatorPluginBase.php
+index e82aa37069dbedca56a9c22ce69846537e46c8e4..6ef027bd81a5304d7fbe3976e72d8a8cc8109cee 100644
+--- a/modules/ai_automators/src/Plugin/AiFunctionCall/AutomatorPluginBase.php
++++ b/modules/ai_automators/src/Plugin/AiFunctionCall/AutomatorPluginBase.php
+@@ -71,7 +71,7 @@ class AutomatorPluginBase extends FunctionCallBase implements StructuredExecutab
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     // Load the automator tool.
+     try {
+       /** @var \Drupal\ai_automators\Entity\AutomatorsTool $tool */
+diff --git a/modules/ai_search/src/Plugin/AiFunctionCall/RagTool.php b/modules/ai_search/src/Plugin/AiFunctionCall/RagTool.php
+index 60598489b817bbb8df96fee209dcbadf0646cd13..9f154731443e99da9f42b5961e835c00a01fad61 100644
+--- a/modules/ai_search/src/Plugin/AiFunctionCall/RagTool.php
++++ b/modules/ai_search/src/Plugin/AiFunctionCall/RagTool.php
+@@ -106,7 +106,7 @@ class RagTool extends FunctionCallBase implements StructuredExecutableFunctionCa
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     // Collect the context values.
+     $this->index = $this->getContextValue('index');
+     $this->searchString = $this->getContextValue('search_string');
+diff --git a/src/Plugin/AiFunctionCall/ActionPluginBase.php b/src/Plugin/AiFunctionCall/ActionPluginBase.php
+index 34c618afe75d5955a416e64f8c53046ef52d9a02..3fe7beeb95a0a34f4fac75cdac25695de60bec3a 100644
+--- a/src/Plugin/AiFunctionCall/ActionPluginBase.php
++++ b/src/Plugin/AiFunctionCall/ActionPluginBase.php
+@@ -107,7 +107,7 @@ class ActionPluginBase extends FunctionCallBase implements ExecutableFunctionCal
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     try {
+       $action_plugin = $this->getPluginCollection()->get($this->getDerivativeId());
+ 
+diff --git a/src/Plugin/AiFunctionCall/HtmlToMarkdown.php b/src/Plugin/AiFunctionCall/HtmlToMarkdown.php
+index 8e91a0b7e28b26a207f3c297ab2d637f5867371e..aff92de0e0824f87faa0c3a0da446f8acd4f4c09 100644
+--- a/src/Plugin/AiFunctionCall/HtmlToMarkdown.php
++++ b/src/Plugin/AiFunctionCall/HtmlToMarkdown.php
+@@ -48,7 +48,7 @@ class HtmlToMarkdown extends FunctionCallBase implements ExecutableFunctionCallI
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     $content = $this->getContextValue('content');
+     $content = $this->htmlToMarkdownConverter->convert($content);
+     $this->setOutput($content);

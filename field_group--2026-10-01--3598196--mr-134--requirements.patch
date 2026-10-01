@@ -1,0 +1,26 @@
+diff --git a/modules/field_group_accordion/field_group_accordion.install b/modules/field_group_accordion/field_group_accordion.install
+index 065799811d36ddd51ab8a92e1990da5f165b69cf..70feee06516d42b96a58875fcdf3a4b88791cf3d 100644
+--- a/modules/field_group_accordion/field_group_accordion.install
++++ b/modules/field_group_accordion/field_group_accordion.install
+@@ -1,5 +1,12 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * @file
+  * Update hooks for the Field Group module.
+@@ -16,7 +23,7 @@ function field_group_accordion_requirements($phase) {
+       'title' => t('Field Group'),
+       'value' => t('jQuery UI Accordion is deprecated'),
+       'description' => t('This module is deprecated, as the Jquery UI library is EOL.'),
+-      'severity' => REQUIREMENT_WARNING,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+     ];
+   }
+ 

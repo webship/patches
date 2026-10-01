@@ -1,0 +1,23 @@
+diff --git a/friendlycaptcha.install b/friendlycaptcha.install
+index 483c59d..420a9d9 100644
+--- a/friendlycaptcha.install
++++ b/friendlycaptcha.install
+@@ -5,6 +5,9 @@
+  * Install, update and uninstall functions for the friendlycaptcha module.
+  */
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * Add api_endpoint to config.
+  */
+@@ -32,7 +35,7 @@ function friendlycaptcha_requirements($phase) {
+   if (!$library_file_finder->find('friendly-challenge')) {
+     $requirements['friendlycaptcha_plugin'] = [
+       'title' => t('Friendly Captcha plugin'),
+-      'severity' => REQUIREMENT_WARNING,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+       'value' => t('Missing local library'),
+       'description' => _friendlycaptcha_get_library_missing_message(),
+     ];
