@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the Redirect patch for [#3602388](https://www.drupal.org/i/3602388) (MR !196): Composer Patches can apply it before the [#2879648](https://www.drupal.org/i/2879648) patch it was re-rolled on, and both append to `redirect.services.yml`, so the install fails where only `git apply` is available. The `core_version_requirement` patch for Redirect stays.
+
 ## [12.0.2] - 2026-10-01
 
 - Add the Drupal 12 compatibility patches for 64 contrib modules: the Project Update Bot (or issue) MR where it applies to the installed release, and a `core_version_requirement` patch where it does not

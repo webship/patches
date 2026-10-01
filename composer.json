@@ -208,7 +208,6 @@
             },
             "drupal/redirect": {
                 "Issue #2879648: Redirects from aliased paths aren't triggered (Drupal 11.4, RedirectPathProcessorManager approach)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/redirect--2026-07-05--2879648--mr-202.patch",
-                "Issue #3602388: Automated Drupal 12 compatibility fixes for redirect 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/redirect--2026-10-01--3602388--mr-196.patch",
                 "Issue #3602388: Automated Drupal 12 compatibility fixes for redirect 1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/redirect--2026-10-01--3602388--info-yml.patch"
             },
             "drupal/restui": {
