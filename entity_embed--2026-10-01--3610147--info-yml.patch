@@ -1,0 +1,13 @@
+diff --git a/entity_embed.info.yml b/entity_embed.info.yml
+index 68c50d3..3175251 100644
+--- a/entity_embed.info.yml
++++ b/entity_embed.info.yml
+@@ -1,7 +1,7 @@
+ name: Entity Embed
+ type: module
+ description: 'Allows entities to be embedded using a text editor.'
+-core_version_requirement: '>=10.5 <11.0 || ^11.2'
++core_version_requirement: '>=10.5 <11.0 || ^11.2 || ^12'
+ package: Filters
+ dependencies:
+   - drupal:editor

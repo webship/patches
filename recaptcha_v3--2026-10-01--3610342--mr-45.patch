@@ -1,0 +1,434 @@
+diff --git a/recaptcha_v3.module b/recaptcha_v3.module
+index 1c4699c56cdfb56c3eb43db59726bf094bc91553..e07519f793a853cff9cc5b6cb9d55d1f01185ff7 100644
+--- a/recaptcha_v3.module
++++ b/recaptcha_v3.module
+@@ -5,12 +5,12 @@
+  * Contains recaptcha_v3.module.
+  */
+ 
+-use Drupal\Component\Utility\Html;
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\recaptcha_v3\Hook\RecaptchaV3Hooks;
+ use Drupal\Core\Ajax\AjaxResponse;
+ use Drupal\Core\Ajax\ReplaceCommand;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+-use Drupal\Core\Url;
+ use Drupal\recaptcha_v3\Entity\ReCaptchaV3Action;
+ use Drupal\recaptcha_v3\ReCaptchaV3ActionInterface;
+ use ReCaptcha\ReCaptcha;
+@@ -19,45 +19,25 @@ use ReCaptcha\RequestMethod\CurlPost;
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function recaptcha_v3_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    // Main module help for the recaptcha_v3 module.
+-    case 'help.page.recaptcha_v3':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('reCAPTCHA v3 returns a score for each request without user friction. The score is based on interactions with your site and enables you to take an appropriate action for your site.') . '</p>';
+-      $output .= '<h3>' . t('Configuration') . '</h3>';
+-      $output .= '<p>' . t('At first you need to create at least one action: populate action name<sup>1</sup>, choose score threshold<sup>2</sup> and select action on user verification fail<sup>3</sup>.') . '</p>';
+-      $output .= '<ol>';
+-      $output .= '<li>' . t('reCAPTCHA v3 introduces a new concept: actions. Actions name will be displayed in detailed break-down of data for your top ten actions in the <a href=":url" target="_blank">admin console</a>', [':url' => 'https://www.google.com/recaptcha/admin']) . '</li>';
+-      $output .= '<li>' . t('reCAPTCHA v3 returns a score (1.0 is very likely a good interaction, 0.0 is very likely a bot). Based on the score, you can take variable action in the context of your site.') . '</li>';
+-      $output .= '<li>' . t('You could specify additional validation challenge, for failed recaptcha v3 validations. If you leave empty "Default challenge type" and "Challenge" for concrete action, user could not submit form if his validation failed.') . '</li>';
+-      $output .= '</ol>';
+-      return $output;
+-  }
++  return \Drupal::service(RecaptchaV3Hooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function recaptcha_v3_theme() {
+-  return [
+-    'captcha__recaptcha_v3' => [
+-      'base hook' => 'captcha',
+-    ],
+-  ];
++  return \Drupal::service(RecaptchaV3Hooks::class)->theme();
+ }
+ 
+ /**
+  * Implements hook_theme_suggestions_HOOK().
+  */
++#[LegacyHook]
+ function recaptcha_v3_theme_suggestions_captcha(array $variables) {
+-  $suggestions = [];
+-  if (!empty($variables['element']['captcha_widgets']['captcha_response']['#recaptcha_v3'])) {
+-    $suggestions[] = 'captcha__recaptcha_v3';
+-  }
+-
+-  return $suggestions;
++  return \Drupal::service(RecaptchaV3Hooks::class)->themeSuggestionsCaptcha($variables);
+ }
+ 
+ /**
+@@ -67,48 +47,9 @@ function recaptcha_v3_theme_suggestions_captcha(array $variables) {
+  * with the correct `hl` parameter. This is required so that the v2 fallback
+  * (checkbox) renders in the current page language when v3 fails.
+  */
++#[LegacyHook]
+ function recaptcha_v3_library_info_build() {
+-  $libraries = [];
+-
+-  $language_manager = \Drupal::service('language_manager');
+-  $languages = $language_manager->getLanguages();
+-
+-  $config = \Drupal::config('recaptcha_v3.settings');
+-  $site_key = $config->get('site_key');
+-
+-  if ($site_key) {
+-    $recaptcha_src = 'https://www.google.com/recaptcha/api.js';
+-    if ($config->get('library_use_recaptcha_net')) {
+-      $recaptcha_src = 'https://www.recaptcha.net/recaptcha/api.js';
+-    }
+-
+-    foreach ($languages as $langcode => $language) {
+-      $url = Url::fromUri($recaptcha_src, [
+-        'query' => [
+-          'render' => $site_key,
+-          'hl' => $langcode,
+-        ],
+-        'absolute' => TRUE,
+-      ])->toString();
+-
+-      $libraries['google.recaptcha_' . $langcode] = [
+-        'version' => '1.x',
+-        'header' => TRUE,
+-        'js' => [
+-          $url => [
+-            'type' => 'external',
+-            'minified' => TRUE,
+-            'attributes' => [
+-              'async' => TRUE,
+-              'defer' => TRUE,
+-            ],
+-          ],
+-        ],
+-      ];
+-    }
+-  }
+-
+-  return $libraries;
++  return \Drupal::service(RecaptchaV3Hooks::class)->libraryInfoBuild();
+ }
+ 
+ /**
+@@ -121,9 +62,9 @@ function recaptcha_v3_library_info_build() {
+  * Add one more process function to the end to display recaptcha_v3 error if
+  * happens.
+  */
++#[LegacyHook]
+ function recaptcha_v3_element_info_alter(array &$info) {
+-  array_unshift($info['captcha']['#process'], 'recaptcha_v3_pre_captcha_element_process');
+-  $info['captcha']['#process'][] = 'recaptcha_v3_post_captcha_element_process';
++  \Drupal::service(RecaptchaV3Hooks::class)->elementInfoAlter($info);
+ }
+ 
+ /**
+@@ -176,53 +117,9 @@ function recaptcha_v3_pre_captcha_element_process(array &$element, FormStateInte
+ /**
+  * Implements hook_captcha().
+  */
++#[LegacyHook]
+ function recaptcha_v3_captcha($op, $captcha_type = '', $captcha_sid = NULL) {
+-  switch ($op) {
+-    case 'list':
+-      return array_keys(ReCaptchaV3Action::loadMultiple());
+-
+-    case 'generate':
+-      $captcha = [];
+-      if ($recaptcha_v3_action = ReCaptchaV3Action::load($captcha_type)) {
+-        $config = \Drupal::config('recaptcha_v3.settings');
+-        $captcha['form']['captcha_response'] = [
+-          '#type' => 'hidden',
+-          '#default_value' => '',
+-          '#recaptcha_v3' => TRUE,
+-          '#attributes' => [
+-            // Need add id, because element should have id or
+-            // 'selector' property should exist in #ajax array
+-            // to attaching event for triggering ajax request.
+-            'id' => Html::getUniqueId('recaptcha_v3_token'),
+-            'class' => ['recaptcha-v3-token'],
+-            'data-recaptcha-v3-action' => $recaptcha_v3_action->id(),
+-            'data-recaptcha-v3-site-key' => $config->get('site_key'),
+-          ],
+-          '#attached' => [
+-            'library' => [
+-              'recaptcha_v3/google.recaptcha_' . \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+-              'recaptcha_v3/recaptcha_v3',
+-            ],
+-          ],
+-          '#ajax' => [
+-            'callback' => 'recaptcha_v3_ajax_callback',
+-            'event' => 'change',
+-          ],
+-        ];
+-        // Flag that indicates that current captcha element is recaptcha_v3.
+-        $captcha['form']['is_recaptcha_v3'] = [
+-          '#type' => 'hidden',
+-          '#value' => 1,
+-        ];
+-        if ($config->get('hide_badge')) {
+-          $captcha['form']['captcha_response']['#attached']['library'][] = 'recaptcha_v3/recaptcha_v3_no_badge';
+-        }
+-        $captcha['solution'] = TRUE;
+-        $captcha['captcha_validate'] = 'recaptcha_v3_validate';
+-        $captcha['cacheable'] = (bool) $config->get('cacheable');
+-      }
+-      return $captcha;
+-  }
++  return \Drupal::service(RecaptchaV3Hooks::class)->captcha($op, $captcha_type, $captcha_sid);
+ }
+ 
+ /**
+diff --git a/recaptcha_v3.services.yml b/recaptcha_v3.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ef382ed292534da59e824a5b638f952353a9b13
+--- /dev/null
++++ b/recaptcha_v3.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\recaptcha_v3\Hook\RecaptchaV3Hooks:
++    class: Drupal\recaptcha_v3\Hook\RecaptchaV3Hooks
++    autowire: true
+diff --git a/src/Hook/RecaptchaV3Hooks.php b/src/Hook/RecaptchaV3Hooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..041a91e1dd3830bd15aea6f8c6073a757c4f07e8
+--- /dev/null
++++ b/src/Hook/RecaptchaV3Hooks.php
+@@ -0,0 +1,183 @@
++<?php
++
++namespace Drupal\recaptcha_v3\Hook;
++
++use Drupal\Component\Utility\Html;
++use Drupal\recaptcha_v3\Entity\ReCaptchaV3Action;
++use Drupal\Core\Url;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for recaptcha_v3.
++ */
++class RecaptchaV3Hooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      // Main module help for the recaptcha_v3 module.
++      case 'help.page.recaptcha_v3':
++        $output = '';
++        $output .= '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t('reCAPTCHA v3 returns a score for each request without user friction. The score is based on interactions with your site and enables you to take an appropriate action for your site.') . '</p>';
++        $output .= '<h3>' . $this->t('Configuration') . '</h3>';
++        $output .= '<p>' . $this->t('At first you need to create at least one action: populate action name<sup>1</sup>, choose score threshold<sup>2</sup> and select action on user verification fail<sup>3</sup>.') . '</p>';
++        $output .= '<ol>';
++        $output .= '<li>' . $this->t('reCAPTCHA v3 introduces a new concept: actions. Actions name will be displayed in detailed break-down of data for your top ten actions in the <a href=":url" target="_blank">admin console</a>', [
++          ':url' => 'https://www.google.com/recaptcha/admin',
++        ]) . '</li>';
++        $output .= '<li>' . $this->t('reCAPTCHA v3 returns a score (1.0 is very likely a good interaction, 0.0 is very likely a bot). Based on the score, you can take variable action in the context of your site.') . '</li>';
++        $output .= '<li>' . $this->t('You could specify additional validation challenge, for failed recaptcha v3 validations. If you leave empty "Default challenge type" and "Challenge" for concrete action, user could not submit form if his validation failed.') . '</li>';
++        $output .= '</ol>';
++        return $output;
++    }
++  }
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme() {
++    return [
++      'captcha__recaptcha_v3' => [
++        'base hook' => 'captcha',
++      ],
++    ];
++  }
++
++  /**
++   * Implements hook_theme_suggestions_HOOK().
++   */
++  #[Hook('theme_suggestions_captcha')]
++  public function themeSuggestionsCaptcha(array $variables) {
++    $suggestions = [];
++    if (!empty($variables['element']['captcha_widgets']['captcha_response']['#recaptcha_v3'])) {
++      $suggestions[] = 'captcha__recaptcha_v3';
++    }
++    return $suggestions;
++  }
++
++  /**
++   * Implements hook_library_info_build().
++   *
++   * Build language-specific Google reCAPTCHA API libraries so the API is loaded
++   * with the correct `hl` parameter. This is required so that the v2 fallback
++   * (checkbox) renders in the current page language when v3 fails.
++   */
++  #[Hook('library_info_build')]
++  public function libraryInfoBuild() {
++    $libraries = [];
++    $language_manager = \Drupal::service('language_manager');
++    $languages = $language_manager->getLanguages();
++    $config = \Drupal::config('recaptcha_v3.settings');
++    $site_key = $config->get('site_key');
++    if ($site_key) {
++      $recaptcha_src = 'https://www.google.com/recaptcha/api.js';
++      if ($config->get('library_use_recaptcha_net')) {
++        $recaptcha_src = 'https://www.recaptcha.net/recaptcha/api.js';
++      }
++      foreach ($languages as $langcode => $language) {
++        $url = Url::fromUri($recaptcha_src, [
++          'query' => [
++            'render' => $site_key,
++            'hl' => $langcode,
++          ],
++          'absolute' => TRUE,
++        ])->toString();
++        $libraries['google.recaptcha_' . $langcode] = [
++          'version' => '1.x',
++          'header' => TRUE,
++          'js' => [
++            $url => [
++              'type' => 'external',
++              'minified' => TRUE,
++              'attributes' => [
++                'async' => TRUE,
++                'defer' => TRUE,
++              ],
++            ],
++          ],
++        ];
++      }
++    }
++    return $libraries;
++  }
++
++  /**
++   * Implements hook_element_info_alter().
++   *
++   * Place recaptcha v3 preprocess function at the beginning, so in this way
++   * it is possible to verify captcha and in case of fail, replace it by
++   * fallback captcha challenge.
++   *
++   * Add one more process function to the end to display recaptcha_v3 error if
++   * happens.
++   */
++  #[Hook('element_info_alter')]
++  public function elementInfoAlter(array &$info) {
++    array_unshift($info['captcha']['#process'], 'recaptcha_v3_pre_captcha_element_process');
++    $info['captcha']['#process'][] = 'recaptcha_v3_post_captcha_element_process';
++  }
++
++  /**
++   * Implements hook_captcha().
++   */
++  #[Hook('captcha')]
++  public function captcha($op, $captcha_type = '', $captcha_sid = NULL) {
++    switch ($op) {
++      case 'list':
++        return array_keys(ReCaptchaV3Action::loadMultiple());
++
++      case 'generate':
++        $captcha = [];
++        if ($recaptcha_v3_action = ReCaptchaV3Action::load($captcha_type)) {
++          $config = \Drupal::config('recaptcha_v3.settings');
++          $captcha['form']['captcha_response'] = [
++            '#type' => 'hidden',
++            '#default_value' => '',
++            '#recaptcha_v3' => TRUE,
++            '#attributes' => [
++                    // Need add id, because element should have id or
++                    // 'selector' property should exist in #ajax array
++                    // to attaching event for triggering ajax request.
++              'id' => Html::getUniqueId('recaptcha_v3_token'),
++              'class' => [
++                'recaptcha-v3-token',
++              ],
++              'data-recaptcha-v3-action' => $recaptcha_v3_action->id(),
++              'data-recaptcha-v3-site-key' => $config->get('site_key'),
++            ],
++            '#attached' => [
++              'library' => [
++                'recaptcha_v3/google.recaptcha_' . \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
++                'recaptcha_v3/recaptcha_v3',
++              ],
++            ],
++            '#ajax' => [
++              'callback' => 'recaptcha_v3_ajax_callback',
++              'event' => 'change',
++            ],
++          ];
++          // Flag that indicates that current captcha element is recaptcha_v3.
++          $captcha['form']['is_recaptcha_v3'] = [
++            '#type' => 'hidden',
++            '#value' => 1,
++          ];
++          if ($config->get('hide_badge')) {
++            $captcha['form']['captcha_response']['#attached']['library'][] = 'recaptcha_v3/recaptcha_v3_no_badge';
++          }
++          $captcha['solution'] = TRUE;
++          $captcha['captcha_validate'] = 'recaptcha_v3_validate';
++          $captcha['cacheable'] = (bool) $config->get('cacheable');
++        }
++        return $captcha;
++    }
++  }
++
++}
+diff --git a/tests/src/Functional/ReCaptchaActionListBuilderTest.php b/tests/src/Functional/ReCaptchaActionListBuilderTest.php
+index aa6cad2c5b45653e96aab8c31de7a2060098afdb..1d3e6e57fc20c8a119cc8922d0920fdc13addb93 100644
+--- a/tests/src/Functional/ReCaptchaActionListBuilderTest.php
++++ b/tests/src/Functional/ReCaptchaActionListBuilderTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\recaptcha_v3\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Url;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -12,6 +14,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group recaptcha_v3
+  */
++#[Group('recaptcha_v3')]
++#[RunTestsInSeparateProcesses]
+ class ReCaptchaActionListBuilderTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/ReCaptchaSettingsFormTest.php b/tests/src/Functional/ReCaptchaSettingsFormTest.php
+index 26488e9ebc15486ba7e77582125231138688e37c..20a58ddd912acbfb5be8e2208f622586cf482e93 100644
+--- a/tests/src/Functional/ReCaptchaSettingsFormTest.php
++++ b/tests/src/Functional/ReCaptchaSettingsFormTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\recaptcha_v3\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -9,6 +11,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group recaptcha_v3
+  */
++#[Group('recaptcha_v3')]
++#[RunTestsInSeparateProcesses]
+ class ReCaptchaSettingsFormTest extends BrowserTestBase {
+ 
+   /**

@@ -1,0 +1,885 @@
+diff --git a/field_validation.module b/field_validation.module
+index 4c69231c871fe4d73262bb7ab0b876d4ff3f7d64..280def83f8885e21573a9c24516ac64b1affc162 100644
+--- a/field_validation.module
++++ b/field_validation.module
+@@ -4,65 +4,25 @@
+  * @file
+  * Field validation.
+  */
+-
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\field_validation\Hook\FieldValidationHooks;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\field_validation\ConstraintFieldValidationRuleBase;
+ 
+ /**
+  * Implements hook_entity_bundle_field_info_alter().
+  */
+-function field_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+-
+-  $ruleset_name = $entity_type->id() . '_' . $bundle;
+-  $ruleset = \Drupal::entityTypeManager()->getStorage('field_validation_rule_set')->load($ruleset_name);
+-
+-  if ($ruleset) {
+-
+-    $rules = $ruleset->getFieldValidationRules();
+-    foreach ($rules as $field_validation_rule) {
+-      $field_name = $field_validation_rule->getFieldName();
+-      if (isset($fields[$field_name])) {
+-        $is_constraint_rule = ($field_validation_rule instanceof ConstraintFieldValidationRuleBase);
+-        $validate_mode = $field_validation_rule->getConfiguration()['data']['validate_mode'] ?? "default";
+-        // \Drupal::logger('field_validation')->notice("is_constraint_rule:" . var_export($is_constraint_rule,true));
+-        // \Drupal::logger('field_validation')->notice("validate_mode:" . var_export($validate_mode,true));		
+-        if ($is_constraint_rule && $validate_mode == "direct") {
+-          $constraint_name = $field_validation_rule->getConstraintName();
+-          $constraint_options = $field_validation_rule->getConstraintOptions();
+-          if ($field_validation_rule->isPropertyConstraint()) {
+-            $property = $field_validation_rule->getColumn() ?? "value";
+-            $fields[$field_name]->addPropertyConstraints($property, [$constraint_name => $constraint_options]);
+-          } else {
+-            $fields[$field_name]->addConstraint($constraint_name, $constraint_options);
+-		  }
+-           
+-        } else {
+-          $fields[$field_name]->addConstraint('FieldValidationConstraint', [
+-            'ruleset_name' => $ruleset_name,
+-            'rule_uuid' => '',
+-          ]);
+-        }
+-      }
+-    }
+-  }
+-
++#[LegacyHook]
++function field_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle)
++{
++    \Drupal::service(FieldValidationHooks::class)->entityBundleFieldInfoAlter($fields, $entity_type, $bundle);
+ }
+ 
+ /**
+  * Implements hook_entity_base_field_info_alter().
+  */
+-function field_validation_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+-  $rulesets = \Drupal::entityTypeManager()->getStorage('field_validation_rule_set')->loadByProperties(['entity_type' => $entity_type->id()]);
+-  foreach ($rulesets as $ruleset_name => $ruleset) {
+-    $rules = $ruleset->getFieldValidationRules();
+-    foreach ($rules as $field_validation_rule) {
+-      $field_name = $field_validation_rule->getFieldName();
+-      if (isset($fields[$field_name])) {
+-        $fields[$field_name]->addConstraint('FieldValidationConstraint', [
+-          'ruleset_name' => $ruleset_name,
+-          'rule_uuid' => '',
+-        ]);
+-      }
+-    }
+-  }
++#[LegacyHook]
++function field_validation_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type)
++{
++    \Drupal::service(FieldValidationHooks::class)->entityBaseFieldInfoAlter($fields, $entity_type);
+ }
+diff --git a/field_validation.services.yml b/field_validation.services.yml
+index f3fe694018064689da4ed8cb7e06d1d09fc91398..c76608b39f0665512fbfc1f32ee614c8ebb20ccc 100644
+--- a/field_validation.services.yml
++++ b/field_validation.services.yml
+@@ -2,3 +2,11 @@ services:
+   plugin.manager.field_validation.field_validation_rule:
+     class: Drupal\field_validation\FieldValidationRuleManager
+     parent: default_plugin_manager
++
++  Drupal\field_validation\Hook\FieldValidationHooks:
++    class: Drupal\field_validation\Hook\FieldValidationHooks
++    autowire: true
++
++  Drupal\field_validation\Hook\FieldValidationTokensHooks:
++    class: Drupal\field_validation\Hook\FieldValidationTokensHooks
++    autowire: true
+diff --git a/field_validation.tokens.inc b/field_validation.tokens.inc
+index ea4ef8e9e0a91b43d50f33927a67b8560f4fe3cb..862496ef84746cbdafcb31fe63e7bdf12afc5c03 100644
+--- a/field_validation.tokens.inc
++++ b/field_validation.tokens.inc
+@@ -6,73 +6,24 @@
+  *
+  * This file handles tokens for the 'current-field' tokens.
+  */
+-
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\field_validation\Hook\FieldValidationTokensHooks;
+ use Drupal\Core\Render\BubbleableMetadata;
+ 
+ /**
+  * Implements hook_token_info().
+  */
+-function field_validation_token_info() {
+-  $types['current-field'] = [
+-    'name' => t("Current field"),
+-    'description' => t("Tokens related to the current field."),
+-  ];
+-
+-  // Site-wide global tokens.
+-  $current_field['entity-type'] = [
+-    'name' => t("Entity type"),
+-    'description' => t("The entity type that current field belong."),
+-  ];
+-  $current_field['bundle'] = [
+-    'name' => t("Bundle"),
+-    'description' => t("The bundle that current field belong."),
+-  ];
+-  $current_field['field-name'] = [
+-    'name' => t("Field name"),
+-    'description' => t("The name of current field."),
+-  ];
+-  $current_field['value'] = [
+-    'name' => t("Value"),
+-    'description' => t("The property value of current field."),
+-  ];
+-
+-  return [
+-    'types' => $types,
+-    'tokens' => [
+-      'current-field' => $current_field,
+-    ],
+-  ];
++#[LegacyHook]
++function field_validation_token_info()
++{
++    return \Drupal::service(FieldValidationTokensHooks::class)->tokenInfo();
+ }
+ 
+ /**
+  * Implements hook_tokens().
+  */
+-function field_validation_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+-
+-  $replacements = [];
+-
+-  if ($type == 'current-field' && !empty($data['current_field'])) {
+-    $current_field = $data['current_field'];
+-    foreach ($tokens as $name => $original) {
+-      switch ($name) {
+-        case 'entity-type':
+-          $replacements[$original] = $current_field['entity_type'] ?? $original;
+-          break;
+-
+-        case 'bundle':
+-          $replacements[$original] = $current_field['bundle'] ?? $original;
+-          break;
+-
+-        case 'field-name':
+-          $replacements[$original] = $current_field['field_name'] ?? $original;
+-          break;
+-
+-        case 'value':
+-          $replacements[$original] = $current_field['value'] ?? $original;
+-          break;
+-      }
+-    }
+-  }
+-
+-  return $replacements;
++#[LegacyHook]
++function field_validation_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata)
++{
++    return \Drupal::service(FieldValidationTokensHooks::class)->tokens($type, $tokens, $data, $options, $bubbleable_metadata);
+ }
+diff --git a/modules/field_validation_legacy/src/Plugin/FieldValidationRule/NumericFieldValidationRule.php b/modules/field_validation_legacy/src/Plugin/FieldValidationRule/NumericFieldValidationRule.php
+index ad09f80b311ac902114a82d42dffac348143c188..8aae6c2f6c3ef98646d38f8209cd3d8a310e6089 100644
+--- a/modules/field_validation_legacy/src/Plugin/FieldValidationRule/NumericFieldValidationRule.php
++++ b/modules/field_validation_legacy/src/Plugin/FieldValidationRule/NumericFieldValidationRule.php
+@@ -154,7 +154,7 @@ class NumericFieldValidationRule extends ConfigurableFieldValidationRuleBase {
+    * @see http://opensource.apple.com/source/WebCore/WebCore-1298/html/NumberInputType.cpp
+    */
+   public function valid_number_step($value, $step, $offset = 0.0) {
+-    $double_value = (double) abs($value - $offset);
++    $double_value = (float) abs($value - $offset);
+ 
+     // The fractional part of a double has 53 bits.
+     // The greatest number that could
+@@ -172,14 +172,14 @@ class NumericFieldValidationRule extends ConfigurableFieldValidationRuleBase {
+     }
+ 
+     // Now compute that remainder of a division by $step.
+-    $remainder = (double) abs($double_value - $step * round($double_value / $step));
++    $remainder = (float) abs($double_value - $step * round($double_value / $step));
+ 
+     // $remainder is a double precision floating point number.
+     // Remainders that can't be represented with single precision
+     // floats are acceptable. The fractional part of a float has 24 bits.
+     // That means remainders smaller than
+     // $step * 2^-24 are acceptable.
+-    $computed_acceptable_error = (double) ($step / pow(2.0, 24));
++    $computed_acceptable_error = (float) ($step / pow(2.0, 24));
+ 
+     return $computed_acceptable_error >= $remainder || $remainder >= ($step - $computed_acceptable_error);
+   }
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/BlockListFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/BlockListFieldValidationRuleTest.php
+index 404f432d39d1216100ff8e484140d4355b6d3650..3a998a478f38102c575c7ffd7cc5b15abe5c923a 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/BlockListFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/BlockListFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests BlocklistFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class BlockListFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/DateRangeFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/DateRangeFieldValidationRuleTest.php
+index 52c2694fae6c9c6c63c96e47fd424e4b7619212d..d5de2815a8ac7bce214275313524f311b1ce02fc 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/DateRangeFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/DateRangeFieldValidationRuleTest.php
+@@ -2,6 +2,10 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
++
+ /**
+  * Tests DateRangeFieldValidationRule.
+  *
+@@ -9,6 +13,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class DateRangeFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+@@ -97,6 +103,7 @@ class DateRangeFieldValidationRuleTest extends FieldValidationRuleBase {
+    *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
++  #[DataProvider('dateValidProvider')]
+   public function testValidDateRangeRule(
+     string $cycle,
+     string $date_string,
+@@ -138,6 +145,7 @@ class DateRangeFieldValidationRuleTest extends FieldValidationRuleBase {
+    *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
++  #[DataProvider('dateInvalidProvider')]
+   public function testInvalidDateRangeRule(
+     string $cycle,
+     string $date_string,
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EmailFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EmailFieldValidationRuleTest.php
+index 992edacd424852b41497ac081c784c3bd014c1cc..49cf12e308052e528720b813ee3faf1dc6550bc7 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EmailFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EmailFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests EmailFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class EmailFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EqualValuesValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EqualValuesValidationRuleTest.php
+index 2f3a48c8c8aeb009fce9cfbb67b7dbee45b443cb..0f5e55aad6236a24b6ecd125b53fade8c36fca52 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EqualValuesValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/EqualValuesValidationRuleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ 
+@@ -12,6 +14,8 @@ use Drupal\field\Entity\FieldStorageConfig;
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class EqualValuesValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IntegerFieldValidationTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IntegerFieldValidationTest.php
+index 8b3bd6457bcaeb7cc2a6a11a49853e6e12e28752..8121d4fdfe44854a6b2b75001fd97a1d5211c11f 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IntegerFieldValidationTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IntegerFieldValidationTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests IntegerFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class IntegerFieldValidationTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IpFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IpFieldValidationRuleTest.php
+index edb728a2899dbb97fc47f5b5b700a7fcf99c2619..dd95eeefdeb42b8923d578d0ec81d53a4fa02026 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IpFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/IpFieldValidationRuleTest.php
+@@ -2,6 +2,10 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
++
+ /**
+  * Tests IpFieldValidationRule.
+  *
+@@ -9,6 +13,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class IpFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+@@ -90,6 +96,7 @@ class IpFieldValidationRuleTest extends FieldValidationRuleBase {
+    *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
++  #[DataProvider('ipValidProvider')]
+   public function testValidIpRule(string $version, string $value) {
+     $this->ruleSet = $this->updateSettings(
+       ['version' => $version],
+@@ -113,6 +120,7 @@ class IpFieldValidationRuleTest extends FieldValidationRuleBase {
+    *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
++  #[DataProvider('ipInvalidProvider')]
+   public function testInvalidIpRule(string $version, string $value) {
+     $this->ruleSet = $this->updateSettings(
+       ['version' => $version],
+@@ -139,6 +147,7 @@ class IpFieldValidationRuleTest extends FieldValidationRuleBase {
+    *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
++  #[DataProvider('ipMalformedAndEmptyProvider')]
+   public function testMaloformedAndEmptyIp(string $version) {
+     $this->ruleSet = $this->updateSettings(
+       ['version' => $version],
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/ItemCountFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/ItemCountFieldValidationRuleTest.php
+index dce5a7f97e123842b36739f272dddb43d887cef4..6a920e1ed7a836851f17e6fb301efc9f2bf669c6 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/ItemCountFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/ItemCountFieldValidationRuleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\node\Entity\NodeType;
+@@ -14,6 +16,8 @@ use Drupal\field_validation_legacy\Plugin\Validation\Constraint\FieldValidationC
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class ItemCountFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/LengthFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/LengthFieldValidationRuleTest.php
+index ea8d21d56fba86e4e7239be896fbe4bc7b025274..cb8c19f1bdce15995f05a175647d3f9e899fc564 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/LengthFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/LengthFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests LengthFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class LengthFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MatchFieldFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MatchFieldFieldValidationRuleTest.php
+index 9f62d10ed65176a4e2c2cfaee3a1c9b8732ee45d..374d8b955d0cfce7d8d85c50789cb4f4f34690a8 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MatchFieldFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MatchFieldFieldValidationRuleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\node\Entity\NodeType;
+@@ -12,6 +14,8 @@ use Drupal\node\Entity\NodeType;
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class MatchFieldFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MustBeEmptyFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MustBeEmptyFieldValidationRuleTest.php
+index ea57d6479e7f5b47139378daf3d34fab2bb6937b..2348c4c48ea260960d4d350009df4f6a01b719a5 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MustBeEmptyFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/MustBeEmptyFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests MustBeEmptyFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class MustBeEmptyFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/NumericFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/NumericFieldValidationRuleTest.php
+index a25cf39ab3124d6a45952c9546c8d8e67d120ba0..2485455484201dcb9dadee0ccaf48c074a207f27 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/NumericFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/NumericFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests NumericFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class NumericFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/OneOfSeveralValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/OneOfSeveralValidationRuleTest.php
+index 9d6f832820744b23c53cb04b4158ebd45a6c2660..c9018f0f805927b9a9894b7e22f12832a5634c32 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/OneOfSeveralValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/OneOfSeveralValidationRuleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\field_validation\Plugin\Validation\Constraint\FieldValidationConstraint;
+@@ -13,6 +15,8 @@ use Drupal\field_validation\Plugin\Validation\Constraint\FieldValidationConstrai
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class OneOfSeveralValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PatternFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PatternFieldValidationRuleTest.php
+index f780d59257a36ae555ac9985e1275b5f2bccd141..9494941883f14f83e1a647f5da853085826f5f2b 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PatternFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PatternFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests PatternFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class PatternFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PhoneFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PhoneFieldValidationRuleTest.php
+index e995dc430d119b10228d5a6138b65d8d1e417501..8c4d9d6ee4f7eda800a119300d1330ac2b72727d 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PhoneFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PhoneFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests PhoneFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class PhoneFieldValidationRuleTest extends FieldValidationRuleBase {
+   /**
+    * Stores mock ruleset.
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PlainTextFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PlainTextFieldValidationRuleTest.php
+index 27114d6bd8924a791da1f7b0ebf9a54bc4092462..ac5c48549993f4831dc01ceb72114c27671fb763 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PlainTextFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/PlainTextFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests PlainTextFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class PlainTextFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/RegexFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/RegexFieldValidationRuleTest.php
+index e9b62fefce42724a5e9499f47c0570ba4c4f3398..4653a3fb47794f2b0a97e69f6ef0bc7313d11bb6 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/RegexFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/RegexFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests RegexFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class RegexFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/SpecificValueFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/SpecificValueFieldValidationRuleTest.php
+index 0b8a1faa62ae656d49d010085912cfa340f41583..1a7b220b65930a62f0232a56148bedc27a932197 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/SpecificValueFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/SpecificValueFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests SpecificValueFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class SpecificValueFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UniqueFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UniqueFieldValidationRuleTest.php
+index 1127408bc9930dc908133e03e5816f8714dfc815..2f7db3aa4d1848f8bfcb096b2f1b91d136e1a2da 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UniqueFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UniqueFieldValidationRuleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\node\Entity\NodeType;
+ 
+@@ -12,6 +14,8 @@ use Drupal\node\Entity\NodeType;
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class UniqueFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UrlFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UrlFieldValidationRuleTest.php
+index dc6e216f51fbd6cc36a7e47dd9e1e85e39be975b..b2f78277fcf4287f835bab72b2d6df34bab0c302 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UrlFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/UrlFieldValidationRuleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Url;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Core\Url;
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class UrlFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/WordsFieldValidationRuleTest.php b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/WordsFieldValidationRuleTest.php
+index f688c30c4b564d0bae463b0ff267a4edebf1b08d..a199c7739885ebc7b2bdba6a0b3d8194ff88380e 100644
+--- a/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/WordsFieldValidationRuleTest.php
++++ b/modules/field_validation_legacy/tests/src/Kernel/Plugin/FieldValidationRule/WordsFieldValidationRuleTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests WordsFieldValidationRule.
+  *
+@@ -9,6 +12,8 @@ namespace Drupal\Tests\field_validation_legacy\Kernel\Plugin\FieldValidationRule
+  *
+  * @package Drupal\Tests\field_validation_legacy\Kernel
+  */
++#[Group('field_validation')]
++#[RunTestsInSeparateProcesses]
+ class WordsFieldValidationRuleTest extends FieldValidationRuleBase {
+ 
+   /**
+diff --git a/src/Hook/FieldValidationHooks.php b/src/Hook/FieldValidationHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..86aad9daf5cff4964b37cd97794000257bf8aa00
+--- /dev/null
++++ b/src/Hook/FieldValidationHooks.php
+@@ -0,0 +1,73 @@
++<?php
++
++namespace Drupal\field_validation\Hook;
++
++use Drupal\Core\Entity\EntityTypeInterface;
++use Drupal\field_validation\ConstraintFieldValidationRuleBase;
++use Drupal\Core\Hook\Attribute\Hook;
++/**
++ * Hook implementations for field_validation.
++ */
++class FieldValidationHooks
++{
++    /**
++     * Implements hook_entity_bundle_field_info_alter().
++     */
++    #[Hook('entity_bundle_field_info_alter')]
++    public function entityBundleFieldInfoAlter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle)
++    {
++        $ruleset_name = $entity_type->id() . '_' . $bundle;
++        $ruleset = \Drupal::entityTypeManager()->getStorage('field_validation_rule_set')->load($ruleset_name);
++        if ($ruleset) {
++            $rules = $ruleset->getFieldValidationRules();
++            foreach ($rules as $field_validation_rule) {
++                $field_name = $field_validation_rule->getFieldName();
++                if (isset($fields[$field_name])) {
++                    $is_constraint_rule = $field_validation_rule instanceof \Drupal\field_validation\ConstraintFieldValidationRuleBase;
++                    $validate_mode = $field_validation_rule->getConfiguration()['data']['validate_mode'] ?? "default";
++                    // \Drupal::logger('field_validation')->notice("is_constraint_rule:" . var_export($is_constraint_rule,true));
++                    // \Drupal::logger('field_validation')->notice("validate_mode:" . var_export($validate_mode,true));		
++                    if ($is_constraint_rule && $validate_mode == "direct") {
++                        $constraint_name = $field_validation_rule->getConstraintName();
++                        $constraint_options = $field_validation_rule->getConstraintOptions();
++                        if ($field_validation_rule->isPropertyConstraint()) {
++                            $property = $field_validation_rule->getColumn() ?? "value";
++                            $fields[$field_name]->addPropertyConstraints($property, [
++                                $constraint_name => $constraint_options,
++                            ]);
++                        } else {
++                            $fields[$field_name]->addConstraint($constraint_name, $constraint_options);
++                        }
++                    } else {
++                        $fields[$field_name]->addConstraint('FieldValidationConstraint', [
++                            'ruleset_name' => $ruleset_name,
++                            'rule_uuid' => '',
++                        ]);
++                    }
++                }
++            }
++        }
++    }
++    /**
++     * Implements hook_entity_base_field_info_alter().
++     */
++    #[Hook('entity_base_field_info_alter')]
++    public function entityBaseFieldInfoAlter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type)
++    {
++        $rulesets = \Drupal::entityTypeManager()->getStorage('field_validation_rule_set')->loadByProperties([
++            'entity_type' => $entity_type->id(),
++        ]);
++        foreach ($rulesets as $ruleset_name => $ruleset) {
++            $rules = $ruleset->getFieldValidationRules();
++            foreach ($rules as $field_validation_rule) {
++                $field_name = $field_validation_rule->getFieldName();
++                if (isset($fields[$field_name])) {
++                    $fields[$field_name]->addConstraint('FieldValidationConstraint', [
++                        'ruleset_name' => $ruleset_name,
++                        'rule_uuid' => '',
++                    ]);
++                }
++            }
++        }
++    }
++}
+diff --git a/src/Hook/FieldValidationTokensHooks.php b/src/Hook/FieldValidationTokensHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..4dace4e55181df3bfba76673fb0eabadb1be7893
+--- /dev/null
++++ b/src/Hook/FieldValidationTokensHooks.php
+@@ -0,0 +1,77 @@
++<?php
++
++namespace Drupal\field_validation\Hook;
++
++use Drupal\Core\Render\BubbleableMetadata;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++/**
++ * Hook implementations for field_validation.
++ */
++class FieldValidationTokensHooks
++{
++    use StringTranslationTrait;
++    /**
++     * Implements hook_token_info().
++     */
++    #[Hook('token_info')]
++    public function tokenInfo()
++    {
++        $types['current-field'] = [
++            'name' => $this->t("Current field"),
++            'description' => $this->t("Tokens related to the current field."),
++        ];
++        // Site-wide global tokens.
++        $current_field['entity-type'] = [
++            'name' => $this->t("Entity type"),
++            'description' => $this->t("The entity type that current field belong."),
++        ];
++        $current_field['bundle'] = [
++            'name' => $this->t("Bundle"),
++            'description' => $this->t("The bundle that current field belong."),
++        ];
++        $current_field['field-name'] = [
++            'name' => $this->t("Field name"),
++            'description' => $this->t("The name of current field."),
++        ];
++        $current_field['value'] = [
++            'name' => $this->t("Value"),
++            'description' => $this->t("The property value of current field."),
++        ];
++        return [
++            'types' => $types,
++            'tokens' => [
++                'current-field' => $current_field,
++            ],
++        ];
++    }
++    /**
++     * Implements hook_tokens().
++     */
++    #[Hook('tokens')]
++    public function tokens($type, $tokens, array $data, array $options, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata)
++    {
++        $replacements = [
++        ];
++        if ($type == 'current-field' && !empty($data['current_field'])) {
++            $current_field = $data['current_field'];
++            foreach ($tokens as $name => $original) {
++                switch ($name) {
++                    case 'entity-type':
++                        $replacements[$original] = $current_field['entity_type'] ?? $original;
++                        break;
++                    case 'bundle':
++                        $replacements[$original] = $current_field['bundle'] ?? $original;
++                        break;
++                    case 'field-name':
++                        $replacements[$original] = $current_field['field_name'] ?? $original;
++                        break;
++                    case 'value':
++                        $replacements[$original] = $current_field['value'] ?? $original;
++                        break;
++                }
++            }
++        }
++        return $replacements;
++    }
++}
+diff --git a/src/Plugin/Validation/Constraint/FieldValidationConstraintValidator.php b/src/Plugin/Validation/Constraint/FieldValidationConstraintValidator.php
+index 07607c8e3b95c53754f77ba8e77373564590f193..430e2f1df634ceeb2270c4774bfa8667feded6af 100644
+--- a/src/Plugin/Validation/Constraint/FieldValidationConstraintValidator.php
++++ b/src/Plugin/Validation/Constraint/FieldValidationConstraintValidator.php
+@@ -15,7 +15,7 @@ class FieldValidationConstraintValidator extends ConstraintValidator {
+   /**
+    * {@inheritdoc}
+    */
+-  public function validate($items, Constraint $constraint) {
++  public function validate(mixed $items, Constraint $constraint): void {
+     $ruleset_name = $constraint->ruleset_name;
+     $ruleset = \Drupal::entityTypeManager()->getStorage('field_validation_rule_set')->load($ruleset_name);
+     if (empty($ruleset)) {

@@ -1,0 +1,245 @@
+diff --git a/embed.install b/embed.install
+index 9db74e74569f654d44130941d8468382f8bc6ef4..843dfe743fa5b3d6274594f420664bed173640c3 100644
+--- a/embed.install
++++ b/embed.install
+@@ -1,5 +1,12 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * @file
+  * Install, update and uninstall functions for the embed module.
+@@ -32,7 +39,7 @@ function embed_requirements($phase): array {
+             '#theme' => 'item_list',
+             '#items' => $button_icons_not_svg,
+           ],
+-          'severity' => REQUIREMENT_ERROR,
++          'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Error, fn() => REQUIREMENT_ERROR),
+         ];
+       }
+     }
+diff --git a/embed.module b/embed.module
+index 936c93a0e6bfaddf2287c515a6cd943aad9fc515..f8658cb0fa3ecf39dd179941af275f021d2aac3a 100644
+--- a/embed.module
++++ b/embed.module
+@@ -5,8 +5,9 @@
+  * Framework for creating embed buttons for WYSIWYG editors.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\embed\Hook\EmbedHooks;
+ use Drupal\Component\Serialization\Json;
+-use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+@@ -22,9 +23,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
+  * @see https://www.drupal.org/node/3467748
+  */
+ // @phpcs:disable
+-function ckeditor_form_embed_button_add_form_alter(array &$form, FormStateInterface $form_state): void {
+-  @trigger_error(__FUNCTION__ . '() is deprecated in embed:8.x-1.9 and is removed from embed:2.0.0. There is no replacement. See https://www.drupal.org/node/3467748', E_USER_DEPRECATED);
+-  $form['#validate'][] = 'ckeditor_form_embed_button_add_form_validate';
++#[LegacyHook]
++function ckeditor_form_embed_button_add_form_alter(array &$form, FormStateInterface $form_state): void
++{
++    \Drupal::service(EmbedHooks::class)->ckeditorFormEmbedButtonAddFormAlter($form, $form_state);
+ }
+ 
+ /**
+@@ -59,15 +61,17 @@ function ckeditor_form_embed_button_add_form_validate(array &$form, FormStateInt
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function embed_form_filter_format_edit_form_alter(array &$form) {
+-  $form['#validate'][] = 'embed_filter_format_edit_form_validate';
++  \Drupal::service(EmbedHooks::class)->formFilterFormatEditFormAlter($form);
+ }
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function embed_form_filter_format_add_form_alter(array &$form) {
+-  $form['#validate'][] = 'embed_filter_format_edit_form_validate';
++  \Drupal::service(EmbedHooks::class)->formFilterFormatAddFormAlter($form);
+ }
+ 
+ /**
+@@ -141,14 +145,7 @@ function embed_filter_format_edit_form_validate($form, FormStateInterface $form_
+ /**
+  * Implements hook_ENTITY_TYPE_presave().
+  */
++#[LegacyHook]
+ function embed_embed_button_presave(EntityInterface $entity) {
+-  // Invalidate the CKEditor 5 plugin cache, so new toolbar items will appear
+-  // based on which Embed Buttons are configured.
+-  /** @var \Drupal\ckeditor5\Plugin\CKEditor5PluginManagerInterface $ckeditor5_plugin_manager */
+-  if (\Drupal::hasService('plugin.manager.ckeditor5.plugin')) {
+-    $ckeditor5_plugin_manager = \Drupal::service('plugin.manager.ckeditor5.plugin');
+-    $ckeditor5_plugin_manager->clearCachedDefinitions();
+-    // @see entity_embed_library_info_alter()
+-    Cache::invalidateTags(['library_info']);
+-  }
++  \Drupal::service(EmbedHooks::class)->embedButtonPresave($entity);
+ }
+diff --git a/embed.services.yml b/embed.services.yml
+index fc0895efd91bdf0239c0b9e9aa65bfe95945364a..c9dc4dd519db05fcb51982b439513d704263699e 100644
+--- a/embed.services.yml
++++ b/embed.services.yml
+@@ -6,3 +6,7 @@ services:
+   plugin.manager.embed.type:
+     class: Drupal\embed\EmbedType\EmbedTypeManager
+     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
++
++  Drupal\embed\Hook\EmbedHooks:
++    class: Drupal\embed\Hook\EmbedHooks
++    autowire: true
+diff --git a/src/Hook/EmbedHooks.php b/src/Hook/EmbedHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..de4a1386c3cfce08535faae9010865abeeab14df
+--- /dev/null
++++ b/src/Hook/EmbedHooks.php
+@@ -0,0 +1,66 @@
++<?php
++
++namespace Drupal\embed\Hook;
++
++use Drupal\Core\Cache\Cache;
++use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for embed.
++ */
++class EmbedHooks {
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   *
++   * This hook is implemented on behalf of ckeditor.module.
++   *
++   * @deprecated in embed:8.x-1.9 and is removed from embed:2.0.0. There is no
++   *   replacement.
++   *
++   * @see https://www.drupal.org/node/3467748
++   */
++    // @phpcs:disable
++    #[Hook('form_embed_button_add_form_alter', module: 'ckeditor')]
++    public static function ckeditorFormEmbedButtonAddFormAlter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void
++    {
++        @trigger_error('ckeditor_form_embed_button_add_form_alter' . '() is deprecated in embed:8.x-1.9 and is removed from embed:2.0.0. There is no replacement. See https://www.drupal.org/node/3467748', E_USER_DEPRECATED);
++        $form['#validate'][] = 'ckeditor_form_embed_button_add_form_validate';
++    }
++    /**
++     * Implements hook_form_FORM_ID_alter().
++     */
++    #[Hook('form_filter_format_edit_form_alter')]
++    public static function formFilterFormatEditFormAlter(array &$form)
++    {
++        $form['#validate'][] = 'embed_filter_format_edit_form_validate';
++    }
++    /**
++     * Implements hook_form_FORM_ID_alter().
++     */
++    #[Hook('form_filter_format_add_form_alter')]
++    public static function formFilterFormatAddFormAlter(array &$form)
++    {
++        $form['#validate'][] = 'embed_filter_format_edit_form_validate';
++    }
++    // @phpcs:enable
++
++  /**
++   * Implements hook_ENTITY_TYPE_presave().
++   */
++  #[Hook('embed_button_presave')]
++  public static function embedButtonPresave(EntityInterface $entity) {
++    // Invalidate the CKEditor 5 plugin cache, so new toolbar items will appear
++    // based on which Embed Buttons are configured.
++    /** @var \Drupal\ckeditor5\Plugin\CKEditor5PluginManagerInterface $ckeditor5_plugin_manager */
++    if (\Drupal::hasService('plugin.manager.ckeditor5.plugin')) {
++      $ckeditor5_plugin_manager = \Drupal::service('plugin.manager.ckeditor5.plugin');
++      $ckeditor5_plugin_manager->clearCachedDefinitions();
++      // @see entity_embed_library_info_alter()
++      Cache::invalidateTags([
++        'library_info',
++      ]);
++    }
++  }
++
++}
+diff --git a/tests/embed_test/embed_test.module b/tests/embed_test/embed_test.module
+index 0064fdefb4f686d3b2d45dc0287e1fbcc0b84c5e..8f5c0999e69cbcfd1b7c266ee943589cf1cec875 100644
+--- a/tests/embed_test/embed_test.module
++++ b/tests/embed_test/embed_test.module
+@@ -1,5 +1,12 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\embed_test\Hook\EmbedTestHooks;
++
+ /**
+  * @file
+  * Contains support code for testing Embed.
+@@ -8,7 +15,7 @@
+ /**
+  * Implements hook_ENTITY_TYPE_view_alter().
+  */
++#[LegacyHook]
+ function embed_test_node_view_alter(array &$build) {
+-  // @see \Drupal\Tests\embed\Functional\EmbedPreviewTest::testPreview
+-  $build['#attached']['library'][] = 'core/jquery';
++  \Drupal::service(EmbedTestHooks::class)->nodeViewAlter($build);
+ }
+diff --git a/tests/embed_test/embed_test.services.yml b/tests/embed_test/embed_test.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..8b1799988fd3bcbc165155560239ad7e47379bbf
+--- /dev/null
++++ b/tests/embed_test/embed_test.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\embed_test\Hook\EmbedTestHooks:
++    class: Drupal\embed_test\Hook\EmbedTestHooks
++    autowire: true
+diff --git a/tests/embed_test/src/Hook/EmbedTestHooks.php b/tests/embed_test/src/Hook/EmbedTestHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..303fe33d661e891e4038398ef0ec983bf69f1ecd
+--- /dev/null
++++ b/tests/embed_test/src/Hook/EmbedTestHooks.php
+@@ -0,0 +1,25 @@
++<?php
++
++namespace Drupal\embed_test\Hook;
++
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for embed_test.
++ */
++class EmbedTestHooks {
++  /**
++   * @file
++   * Contains support code for testing Embed.
++   */
++
++  /**
++   * Implements hook_ENTITY_TYPE_view_alter().
++   */
++  #[Hook('node_view_alter')]
++  public static function nodeViewAlter(array &$build) {
++    // @see \Drupal\Tests\embed\Functional\EmbedPreviewTest::testPreview
++    $build['#attached']['library'][] = 'core/jquery';
++  }
++
++}

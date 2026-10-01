@@ -1,0 +1,100 @@
+diff --git a/ai_playwright.info.yml b/ai_playwright.info.yml
+index c282293b1af424c479634c738b8eb761a9ad2795..4476178939b4808fdfc8716d1e3bd0adf8eb0638 100644
+--- a/ai_playwright.info.yml
++++ b/ai_playwright.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Playwright'
+ type: module
+ description: 'Gives Drupal AI Agents eyes on a rendered page: a Playwright browser tool that opens a page of this site in headless Chromium and returns a screenshot, title, visible text and console errors, so the Drupal Canvas AI assistant can see and verify what it builds. Config-driven and framework-agnostic.'
+ package: 'AI'
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ dependencies:
+   - ai:ai
+   - ai_agents:ai_agents
+diff --git a/composer.json b/composer.json
+index 3c029aff1afa529b2f9ae418084f40fa1d30b91a..b70cad628876ee170f29ecb97b62a17eec0d4092 100644
+--- a/composer.json
++++ b/composer.json
+@@ -26,9 +26,9 @@
+     },
+     "require": {
+         "php": ">=8.3",
+-        "drupal/core": "^11",
+         "drupal/ai": "^1",
+-        "drupal/ai_agents": "^1"
++        "drupal/ai_agents": "^1",
++        "drupal/core": "^11.0 || ^12"
+     },
+     "suggest": {
+         "ext-node": "Node.js 18+ with Playwright (npm install playwright && npx playwright install --with-deps chromium) is required on the server for the browser tool to run."
+diff --git a/src/PlaywrightRunner.php b/src/PlaywrightRunner.php
+index 0bccf35efe4ed34e2a1d2bca79cc9adf2f97b069..7f3f0d0d87132eede98a3cd6c929966d2c4c32e7 100644
+--- a/src/PlaywrightRunner.php
++++ b/src/PlaywrightRunner.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\ai_playwright;
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\user\OneTimeAuthentication;
+ use Drupal\Component\Datetime\TimeInterface;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+@@ -201,7 +203,7 @@ class PlaywrightRunner {
+       $url = Url::fromRoute('user.reset.login', [
+         'uid' => $account->id(),
+         'timestamp' => $timestamp,
+-        'hash' => user_pass_rehash($account, $timestamp),
++        'hash' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => \Drupal::service(OneTimeAuthentication::class)->generateHmac($account, $timestamp), fn() => user_pass_rehash($account, $timestamp)),
+       ], ['absolute' => TRUE])->toString();
+       $path = parse_url($url, PHP_URL_PATH) ?: '';
+       $query = parse_url($url, PHP_URL_QUERY);
+diff --git a/tests/src/Kernel/InstallTest.php b/tests/src/Kernel/InstallTest.php
+index abb4efa2c920dae8e1d5c6591430946fc7c3bcbc..a0fcbbd3b00e95bde75f00da0e20d6f393e685cb 100644
+--- a/tests/src/Kernel/InstallTest.php
++++ b/tests/src/Kernel/InstallTest.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\ai_playwright\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\KernelTests\KernelTestBase;
+ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+@@ -21,6 +22,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+  * @group ai_playwright
+  */
+ #[RunTestsInSeparateProcesses]
++#[Group('ai_playwright')]
+ class InstallTest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Unit/ResolveUrlTest.php b/tests/src/Unit/ResolveUrlTest.php
+index 0ff6c7fed3165a48575b75ab795cc2cfa722b19d..1b32c776e44fa52b60e7e6c549bb13df30c97bea 100644
+--- a/tests/src/Unit/ResolveUrlTest.php
++++ b/tests/src/Unit/ResolveUrlTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\ai_playwright\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\ai_playwright\PlaywrightRunner;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Config\ImmutableConfig;
+@@ -16,6 +18,7 @@ use Drupal\Tests\UnitTestCase;
+  *
+  * @group ai_playwright
+  */
++#[Group('ai_playwright')]
+ class ResolveUrlTest extends UnitTestCase {
+ 
+   /**
+@@ -61,6 +64,7 @@ class ResolveUrlTest extends UnitTestCase {
+    *
+    * @dataProvider resolveProvider
+    */
++  #[DataProvider('resolveProvider')]
+   public function testResolveUrl(string $base, bool $allowExternal, string $input, ?string $expected): void {
+     $this->assertSame($expected, $this->runner($base, $allowExternal)->resolveUrl($input));
+   }

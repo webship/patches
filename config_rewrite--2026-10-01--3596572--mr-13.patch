@@ -1,0 +1,242 @@
+diff --git a/composer.json b/composer.json
+index fae22fcc49851c9c7f419679760a74f6b6e503f3..ffdf78ad7619b0685a7d812af8731cce9b4d137f 100644
+--- a/composer.json
++++ b/composer.json
+@@ -18,6 +18,6 @@
+   },
+   "require": {
+     "php": ">=7.1",
+-    "drupal/core": "^8.6 || ^9 || ^10 || ^11"
++    "drupal/core": "^10.1 || ^11 || ^12"
+   }
+ }
+diff --git a/config_rewrite.info.yml b/config_rewrite.info.yml
+index acfa20c1d36c6729afd68e1de6c40b7adde2964d..bc272064816be2ffc33e514392d00ab2d95359e3 100644
+--- a/config_rewrite.info.yml
++++ b/config_rewrite.info.yml
+@@ -2,5 +2,5 @@ name: Configuration Rewrite
+ type: module
+ description: Rewrites existing configuration on module installation via using a "rewrite" folder in the config directory.
+ php: 7.1
+-core_version_requirement: ^8.7.7 || ^9 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ package: Configuration
+diff --git a/config_rewrite.module b/config_rewrite.module
+index 868ce82bb122235a3b9509b0c2297c1fd248c60e..e79c7cc2e27cd6bd38af5596acbc80ff86b40876 100644
+--- a/config_rewrite.module
++++ b/config_rewrite.module
+@@ -5,6 +5,8 @@
+  * Allows modules to rewrite configuration provided by other extensions.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\config_rewrite\Hook\ConfigRewriteHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+@@ -12,29 +14,15 @@ use Drupal\Core\Routing\RouteMatchInterface;
+  *
+  * Allow config to be rewritten before a module is installed.
+  */
++#[LegacyHook]
+ function config_rewrite_module_preinstall($module) {
+-  global $install_state;
+-  // Rewrite config only the site is not being installed from configuration.
+-  if (empty($install_state['config_install_path'])) {
+-    \Drupal::service('config_rewrite.config_rewriter')->rewriteModuleConfig($module);
+-  }
++  \Drupal::service(ConfigRewriteHooks::class)->modulePreinstall($module);
+ }
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function config_rewrite_help($route_name, RouteMatchInterface $arg) {
+-  switch ($route_name) {
+-    case 'help.page.config_rewrite':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('The Configuration Rewrite module rewrites existing configuration on module installation via using a "rewrite" folder
+-in the config directory. Stops with an error, if you are going to rewrite config without having the original config in your database.
+-
+-This can be handy, if you like to rewrite existing configuration (like admin user email address) without the need to
+-use install or update hooks. You can just place your configuration YAML files into the config/rewrite directory in your
+-module folder. Afterwards the existing configuration will be rewritten on module installation. For more information, see the project page for <a href=":documentation" target="_blank" title="Online Documentation">Configuration Rewrite</a>.', [':documentation' => 'https://www.drupal.org/project/config_rewrite']) . '</p>';
+-
+-      return $output;
+-  }
++  return \Drupal::service(ConfigRewriteHooks::class)->help($route_name, $arg);
+ }
+diff --git a/config_rewrite.services.yml b/config_rewrite.services.yml
+index 3f35370f6747c5597c137ca673d9562397e94ab9..0f58f0a623b2be5e986b88f8416779d54ab39037 100644
+--- a/config_rewrite.services.yml
++++ b/config_rewrite.services.yml
+@@ -6,3 +6,7 @@ services:
+     class: Drupal\Core\Logger\LoggerChannel
+     factory: logger.factory:get
+     arguments: ['config_rewrite']
++
++  Drupal\config_rewrite\Hook\ConfigRewriteHooks:
++    class: Drupal\config_rewrite\Hook\ConfigRewriteHooks
++    autowire: true
+diff --git a/src/Hook/ConfigRewriteHooks.php b/src/Hook/ConfigRewriteHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..bcf3a38fc0ee04cce981f48d43d284191c8e9331
+--- /dev/null
++++ b/src/Hook/ConfigRewriteHooks.php
+@@ -0,0 +1,49 @@
++<?php
++
++namespace Drupal\config_rewrite\Hook;
++
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++/**
++ * Hook implementations for config_rewrite.
++ */
++class ConfigRewriteHooks
++{
++    use StringTranslationTrait;
++    /**
++     * Implements hook_module_preinstall().
++     *
++     * Allow config to be rewritten before a module is installed.
++     */
++    #[Hook('module_preinstall')]
++    public function modulePreinstall($module)
++    {
++        global $install_state;
++        // Rewrite config only the site is not being installed from configuration.
++        if (empty($install_state['config_install_path'])) {
++            \Drupal::service('config_rewrite.config_rewriter')->rewriteModuleConfig($module);
++        }
++    }
++    /**
++     * Implements hook_help().
++     */
++    #[Hook('help')]
++    public function help($route_name, \Drupal\Core\Routing\RouteMatchInterface $arg)
++    {
++        switch ($route_name) {
++            case 'help.page.config_rewrite':
++                $output = '';
++                $output .= '<h3>' . $this->t('About') . '</h3>';
++                $output .= '<p>' . $this->t('The Configuration Rewrite module rewrites existing configuration on module installation via using a "rewrite" folder
++in the config directory. Stops with an error, if you are going to rewrite config without having the original config in your database.
++
++This can be handy, if you like to rewrite existing configuration (like admin user email address) without the need to
++use install or update hooks. You can just place your configuration YAML files into the config/rewrite directory in your
++module folder. Afterwards the existing configuration will be rewritten on module installation. For more information, see the project page for <a href=":documentation" target="_blank" title="Online Documentation">Configuration Rewrite</a>.', [
++                    ':documentation' => 'https://www.drupal.org/project/config_rewrite',
++                ]) . '</p>';
++                return $output;
++        }
++    }
++}
+diff --git a/tests/modules/config_rewrite_nonexisting/config_rewrite_nonexisting.info.yml b/tests/modules/config_rewrite_nonexisting/config_rewrite_nonexisting.info.yml
+index 5a96bcebdef4ee21d6d19f134a9c2ae8a72d540d..47c80e2bbf25bc79f1a163e321428813811a6c8d 100644
+--- a/tests/modules/config_rewrite_nonexisting/config_rewrite_nonexisting.info.yml
++++ b/tests/modules/config_rewrite_nonexisting/config_rewrite_nonexisting.info.yml
+@@ -1,7 +1,7 @@
+ name: Configuration Rewrite Nonexisting
+ type: module
+ description: 'Test module for Configuration Rewrite testing. Provides a rewrite the intent to rewrite nonexistent config.'
+-core_version_requirement: ^8.7.7 || ^9 || ^10.1 || ^11
++core_version_requirement: ^8.7.7 || ^9 || ^10.1 || ^11 || ^12
+ package: Testing
+ dependencies:
+  - config_rewrite
+diff --git a/tests/modules/config_rewrite_test/config_rewrite_test.info.yml b/tests/modules/config_rewrite_test/config_rewrite_test.info.yml
+index 4e01b01c7ac8e1bfc6861cc379a8750f9cc7fd72..2ae6bba09b858299ed3e892dd3bae005a32a7132 100644
+--- a/tests/modules/config_rewrite_test/config_rewrite_test.info.yml
++++ b/tests/modules/config_rewrite_test/config_rewrite_test.info.yml
+@@ -1,7 +1,7 @@
+ name: Configuration Rewrite Test
+ type: module
+ description: 'Support module for Configuration Rewrite testing. Provides a content type.'
+-core_version_requirement: ^8.7.7 || ^9 || ^10.1 || ^11
++core_version_requirement: ^8.7.7 || ^9 || ^10.1 || ^11 || ^12
+ package: Testing
+ dependencies:
+  - node
+diff --git a/tests/modules/config_rewrite_test_rewrite/config_rewrite_test_rewrite.info.yml b/tests/modules/config_rewrite_test_rewrite/config_rewrite_test_rewrite.info.yml
+index 39cc00674fedf1b9bde1f6570db9fef0e4714118..76adaf8142c4c4d2946ed817148c37c0edb415fb 100644
+--- a/tests/modules/config_rewrite_test_rewrite/config_rewrite_test_rewrite.info.yml
++++ b/tests/modules/config_rewrite_test_rewrite/config_rewrite_test_rewrite.info.yml
+@@ -1,7 +1,7 @@
+ name: Configuration Rewrite Test Rewrite
+ type: module
+ description: 'Support module for Configuration Rewrite testing. Provides a rewrite for a content type.'
+-core_version_requirement: ^8.7.7 || ^9 || ^10.1 || ^11
++core_version_requirement: ^8.7.7 || ^9 || ^10.1 || ^11 || ^12
+ package: Testing
+ dependencies:
+  - config_rewrite
+diff --git a/tests/src/Kernel/ConfigRewriteTest.php b/tests/src/Kernel/ConfigRewriteTest.php
+index 1c00dd671d13cb42a2f265cfa9e0c924c4f49a96..febc25f7c893343cb0d77841a3fea1e2ffbe48a7 100644
+--- a/tests/src/Kernel/ConfigRewriteTest.php
++++ b/tests/src/Kernel/ConfigRewriteTest.php
+@@ -2,12 +2,16 @@
+ 
+ namespace Drupal\Tests\config_rewrite\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+ /**
+  * @coversDefaultClass \Drupal\config_rewrite\ConfigRewriter
+  * @group config_rewrite
+  */
++#[Group('config_rewrite')]
++#[RunTestsInSeparateProcesses]
+ class ConfigRewriteTest extends KernelTestBase {
+ 
+   /**
+@@ -136,10 +140,10 @@ class ConfigRewriteTest extends KernelTestBase {
+     // Test a rewrite where config_rewrite.replace contains keys.
+     // Test that data is rewritten as expected.
+     $expected_rewritten_data = [
+-      //rewritten
++      // Rewritten.
+       'label' => 'Test 5 rewritten & replaced',
+-      //removed.
+-      //'is_admin' => FALSE,
++      // removed.
++      // 'is_admin' => FALSE,
+       // Replaced.
+       'permissions' => [
+         'change own username',
+diff --git a/tests/src/Kernel/NonexistentInitialConfigTest.php b/tests/src/Kernel/NonexistentInitialConfigTest.php
+index 584771c8e634709ec125255e1c900bf2130f7d0e..70db8dcd99ce06b450564b5b68d3686a2247b323 100644
+--- a/tests/src/Kernel/NonexistentInitialConfigTest.php
++++ b/tests/src/Kernel/NonexistentInitialConfigTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_rewrite\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\config_rewrite\Exception\NonexistentInitialConfigException;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+@@ -9,6 +11,8 @@ use Drupal\KernelTests\KernelTestBase;
+  * @coversDefaultClass \Drupal\config_rewrite\ConfigRewriter
+  * @group config_rewrite
+  */
++#[Group('config_rewrite')]
++#[RunTestsInSeparateProcesses]
+ class NonexistentInitialConfigTest extends KernelTestBase {
+ 
+   /**
+@@ -55,7 +59,7 @@ class NonexistentInitialConfigTest extends KernelTestBase {
+    * @covers ::rewriteModuleConfig
+    * @covers ::rewriteConfig
+    */
+-  function testConfigRewrite() {
++  public function testConfigRewrite() {
+     $this->expectException(NonexistentInitialConfigException::class);
+     $this->configRewriter->rewriteModuleConfig('config_rewrite_nonexisting');
+   }

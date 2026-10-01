@@ -1,0 +1,39 @@
+diff --git a/xmlsitemap.info.yml b/xmlsitemap.info.yml
+index d2888d7..7ebca82 100644
+--- a/xmlsitemap.info.yml
++++ b/xmlsitemap.info.yml
+@@ -2,7 +2,7 @@ name: XML Sitemap
+ type: module
+ description: 'Creates an XML Sitemap conforming to the <a href="http://sitemaps.org/">sitemaps.org protocol</a>.'
+ package: 'XML Sitemap'
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: xmlsitemap.admin_search
+ test_dependencies:
+   - metatag:metatag
+diff --git a/xmlsitemap_custom/xmlsitemap_custom.info.yml b/xmlsitemap_custom/xmlsitemap_custom.info.yml
+index e6b9861..06a7197 100644
+--- a/xmlsitemap_custom/xmlsitemap_custom.info.yml
++++ b/xmlsitemap_custom/xmlsitemap_custom.info.yml
+@@ -2,7 +2,7 @@ name: XML Sitemap Custom
+ type: module
+ description: 'Adds user configurable links to the sitemap.'
+ package: 'XML Sitemap'
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: xmlsitemap_custom.list
+ dependencies:
+   - xmlsitemap:xmlsitemap
+diff --git a/xmlsitemap_engines/xmlsitemap_engines.info.yml b/xmlsitemap_engines/xmlsitemap_engines.info.yml
+index 51d9055..e24a09f 100644
+--- a/xmlsitemap_engines/xmlsitemap_engines.info.yml
++++ b/xmlsitemap_engines/xmlsitemap_engines.info.yml
+@@ -2,7 +2,7 @@ name: XML Sitemap Engines
+ type: module
+ description: 'Submit the sitemap to search engines.'
+ package: 'XML Sitemap'
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: xmlsitemap_engines.settings
+ dependencies:
+   - xmlsitemap:xmlsitemap

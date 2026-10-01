@@ -1,0 +1,212 @@
+diff --git a/composer.json b/composer.json
+index 10924e256b486c92cdcccf6d595d14078d9fa287..ebfb05d0d33f2a51fbf7e5bae24edd24131e9493 100644
+--- a/composer.json
++++ b/composer.json
+@@ -15,7 +15,7 @@
+         "source": "https://cgit.drupalcode.org/user_redirect"
+     },
+     "require": {
+-        "drupal/core": "^9.5 || ^10 || ^11"
++        "drupal/core": "^10.1 || ^11 || ^12"
+     },
+     "license": "GPL-2.0-or-later"
+ }
+diff --git a/src/Hook/UserRedirectHooks.php b/src/Hook/UserRedirectHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..ecf50715ecdbe3ed44795d97a1b6553abb2da5bd
+--- /dev/null
++++ b/src/Hook/UserRedirectHooks.php
+@@ -0,0 +1,54 @@
++<?php
++
++namespace Drupal\user_redirect\Hook;
++
++use Drupal\Core\Session\AccountInterface;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for user_redirect.
++ */
++class UserRedirectHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      // Main module help for the user_redirect module.
++      case 'help.page.user_redirect':
++        $output = '';
++        $output .= '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t('Module provides ability:') . '</p>';
++        $output .= '<ul>';
++        $output .= '<li>' . $this->t('Redirect user to internal/external URL on Log in') . '</li>';
++        $output .= '<li>' . $this->t('Redirect user to internal/external URL on Log out') . '</li>';
++        $output .= '</ul><br>';
++        $output .= $this->t('In case of multiple assigned roles to an individual user, priority decide user redirection.<br>For example: You set roles ordering as:<br>+ Administrator<br>+ Architect<br>it means that when some user log in/log out, module will pick up the Redirect URL path of Administrator.');
++        return $output;
++
++      default:
++    }
++  }
++
++  /**
++   * Implements hook_user_login().
++   */
++  #[Hook('user_login')]
++  public function userLogin(AccountInterface $account) {
++    \Drupal::service('user_redirect.service')->setLoginRedirection($account);
++  }
++
++  /**
++   * Implements hook_user_logout().
++   */
++  #[Hook('user_logout')]
++  public function userLogout(AccountInterface $account) {
++    \Drupal::service('user_redirect.service')->setLogoutRedirection($account);
++  }
++
++}
+diff --git a/src/UserRedirect.php b/src/UserRedirect.php
+index 10f0177dddca5ddabd8dbb63184fd4244cd708e6..f50a8dda3ccc85c542ce89a35c81d5fba655a863 100644
+--- a/src/UserRedirect.php
++++ b/src/UserRedirect.php
+@@ -82,7 +82,7 @@ class UserRedirect implements UserRedirectInterface {
+     AccountProxyInterface $current_user,
+     CurrentPathStack $current_path,
+     AliasManagerInterface $path_alias_manager,
+-    PathMatcherInterface $path_matcher
++    PathMatcherInterface $path_matcher,
+   ) {
+     $this->currentRequest = $request_stack->getCurrentRequest();
+     $this->config = $config_factory->get('user_redirect.settings');
+@@ -95,7 +95,7 @@ class UserRedirect implements UserRedirectInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public function setLoginRedirection(AccountInterface $account = NULL) {
++  public function setLoginRedirection(?AccountInterface $account = NULL) {
+     if (($ignore = $this->config->get('ignore')) && $this->config->get('ignore_for.login')) {
+       foreach ($ignore as $path) {
+         $current_path = $this->currentPath->getPath();
+@@ -112,7 +112,7 @@ class UserRedirect implements UserRedirectInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public function setLogoutRedirection(AccountInterface $account = NULL) {
++  public function setLogoutRedirection(?AccountInterface $account = NULL) {
+     if (($ignore = $this->config->get('ignore')) && $this->config->get('ignore_for.logout')) {
+       foreach ($ignore as $path) {
+         $current_path = $this->currentPath->getPath();
+@@ -134,7 +134,7 @@ class UserRedirect implements UserRedirectInterface {
+    * @param \Drupal\Core\Session\AccountInterface|null $account
+    *   User account to set destination for.
+    */
+-  protected function prepareDestination($key, AccountInterface $account = NULL) {
++  protected function prepareDestination($key, ?AccountInterface $account = NULL) {
+     $loggedin_user_roles = array_reverse($this->currentUser->getRoles());
+ 
+     // Loop through user roles and find the first role with a valid redirect.
+diff --git a/src/UserRedirectInterface.php b/src/UserRedirectInterface.php
+index de4f98722b8e0149b869590337425d2126fd8f7f..e129ebf24fc472a2ec5f500bdd2ddf245ef3843c 100644
+--- a/src/UserRedirectInterface.php
++++ b/src/UserRedirectInterface.php
+@@ -25,7 +25,7 @@ interface UserRedirectInterface {
+    * @param \Drupal\Core\Session\AccountInterface|null $account
+    *   User account to set destination for.
+    */
+-  public function setLoginRedirection(AccountInterface $account = NULL);
++  public function setLoginRedirection(?AccountInterface $account = NULL);
+ 
+   /**
+    * Set Logout destination parameter to do redirect.
+@@ -33,6 +33,6 @@ interface UserRedirectInterface {
+    * @param \Drupal\Core\Session\AccountInterface|null $account
+    *   User account to set destination for.
+    */
+-  public function setLogoutRedirection(AccountInterface $account = NULL);
++  public function setLogoutRedirection(?AccountInterface $account = NULL);
+ 
+ }
+diff --git a/user_redirect.info.yml b/user_redirect.info.yml
+index 5cad66feb0d21abf2733b5a281e023d49752ca10..38f7228939676b8246a228fae7e3d642cabf890b 100644
+--- a/user_redirect.info.yml
++++ b/user_redirect.info.yml
+@@ -2,7 +2,7 @@ name: "User Redirect"
+ description: "This module helps user to redirect after login/logout."
+ package: users
+ type: module
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ 
+ dependencies:
+   - drupal:user
+diff --git a/user_redirect.module b/user_redirect.module
+index 51abc49e99730afb9225f80296e58b8412a1c480..d52a96d824ae61521c00ca7cf44d840097e84f69 100644
+--- a/user_redirect.module
++++ b/user_redirect.module
+@@ -5,40 +5,31 @@
+  * Module file for the User Redirect module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\user_redirect\Hook\UserRedirectHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Session\AccountInterface;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function user_redirect_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    // Main module help for the user_redirect module.
+-    case 'help.page.user_redirect':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('Module provides ability:') . '</p>';
+-      $output .= '<ul>';
+-      $output .= '<li>' . t('Redirect user to internal/external URL on Log in') . '</li>';
+-      $output .= '<li>' . t('Redirect user to internal/external URL on Log out') . '</li>';
+-      $output .= '</ul><br>';
+-      $output .= t('In case of multiple assigned roles to an individual user, priority decide user redirection.<br>For example: You set roles ordering as:<br>+ Administrator<br>+ Architect<br>it means that when some user log in/log out, module will pick up the Redirect URL path of Administrator.');
+-      return $output;
+-
+-    default:
+-  }
++  return \Drupal::service(UserRedirectHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+  * Implements hook_user_login().
+  */
++#[LegacyHook]
+ function user_redirect_user_login(AccountInterface $account) {
+-  \Drupal::service('user_redirect.service')->setLoginRedirection($account);
++  \Drupal::service(UserRedirectHooks::class)->userLogin($account);
+ }
+ 
+ /**
+  * Implements hook_user_logout().
+  */
++#[LegacyHook]
+ function user_redirect_user_logout(AccountInterface $account) {
+-  \Drupal::service('user_redirect.service')->setLogoutRedirection($account);
++  \Drupal::service(UserRedirectHooks::class)->userLogout($account);
+ }
+diff --git a/user_redirect.services.yml b/user_redirect.services.yml
+index adb781a35284d87851c53722f9b01013b31c54e6..0ad0d78a33cd274aafabd8582e51272f9e40cd85 100644
+--- a/user_redirect.services.yml
++++ b/user_redirect.services.yml
+@@ -2,3 +2,7 @@ services:
+   user_redirect.service:
+     class: Drupal\user_redirect\UserRedirect
+     arguments: ['@request_stack', '@config.factory', '@current_user', '@path.current', '@path_alias.manager', '@path.matcher']
++
++  Drupal\user_redirect\Hook\UserRedirectHooks:
++    class: Drupal\user_redirect\Hook\UserRedirectHooks
++    autowire: true

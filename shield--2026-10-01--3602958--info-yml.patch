@@ -1,0 +1,13 @@
+diff --git a/shield.info.yml b/shield.info.yml
+index 2910779..3fdd3da 100644
+--- a/shield.info.yml
++++ b/shield.info.yml
+@@ -3,7 +3,7 @@ description: 'Creates a general shield for the site.'
+ package: 'Administration'
+ 
+ type: module
+-core_version_requirement: ^9.2 || ^10 || ^11
++core_version_requirement: ^9.2 || ^10 || ^11 || ^12
+ dependencies:
+   - drupal:path_alias
+ 

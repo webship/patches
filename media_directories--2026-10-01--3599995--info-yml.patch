@@ -1,0 +1,26 @@
+diff --git a/modules/media_directories_editor/media_directories_editor.info.yml b/modules/media_directories_editor/media_directories_editor.info.yml
+index 3e26caa..177a8a7 100644
+--- a/modules/media_directories_editor/media_directories_editor.info.yml
++++ b/modules/media_directories_editor/media_directories_editor.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Media Directories Editor'
+ description: 'Integrate media browser UI with CKEditor.'
+ type: module
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ package: Media Directories
+ lifecycle: deprecated
+ lifecycle_link: 'https://www.drupal.org/project/media_directories'
+diff --git a/modules/media_directories_ui/media_directories_ui.info.yml b/modules/media_directories_ui/media_directories_ui.info.yml
+index 38dc99d..5e02761 100644
+--- a/modules/media_directories_ui/media_directories_ui.info.yml
++++ b/modules/media_directories_ui/media_directories_ui.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Media Directories UI'
+ description: 'Provides alternative UI for media management.'
+ type: module
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ package: Media Directories
+ lifecycle: deprecated
+ lifecycle_link: 'https://www.drupal.org/project/media_directories'

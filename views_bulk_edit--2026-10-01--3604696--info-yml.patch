@@ -1,0 +1,13 @@
+diff --git a/views_bulk_edit.info.yml b/views_bulk_edit.info.yml
+index a294a94..e4fcd23 100644
+--- a/views_bulk_edit.info.yml
++++ b/views_bulk_edit.info.yml
+@@ -2,7 +2,7 @@ type: module
+ name: 'Views Bulk Edit'
+ description: 'Allows bulk edition of entity field values.'
+ package: 'Views Bulk Operations'
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ test_dependencies:
+   - drupal:views_bulk_operations
+ 

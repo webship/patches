@@ -1,0 +1,119 @@
+diff --git a/src/Hook/ViewsBulkEditHooks.php b/src/Hook/ViewsBulkEditHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..9c1891f496eea2959d71d36ac47adca3328fa6ea
+--- /dev/null
++++ b/src/Hook/ViewsBulkEditHooks.php
+@@ -0,0 +1,29 @@
++<?php
++
++namespace Drupal\views_bulk_edit\Hook;
++
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for views_bulk_edit.
++ */
++class ViewsBulkEditHooks {
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      case 'help.page.views_bulk_edit':
++        $filepath = dirname(__FILE__) . '/README.txt';
++        if (file_exists($filepath)) {
++          $readme = file_get_contents($filepath);
++          $output = '<pre>' . $readme . '</pre>';
++          return $output;
++        }
++    }
++  }
++
++}
+diff --git a/tests/src/Functional/ViewsBulkEditActionTest.php b/tests/src/Functional/ViewsBulkEditActionTest.php
+index af64d357482e340f0849b4328e394c631eb244b7..336223a368776430748cdcab91ad3631b384cec3 100644
+--- a/tests/src/Functional/ViewsBulkEditActionTest.php
++++ b/tests/src/Functional/ViewsBulkEditActionTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\views_bulk_edit\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Entity\Entity\EntityFormDisplay;
+ use Drupal\Core\Entity\Entity\EntityFormMode;
+ use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
+@@ -13,6 +15,8 @@ use Drupal\field\FieldStorageConfigInterface;
+  *
+  * @group views_bulk_edit
+  */
++#[Group('views_bulk_edit')]
++#[RunTestsInSeparateProcesses]
+ class ViewsBulkEditActionTest extends NodeTestBase {
+ 
+   use EntityReferenceFieldCreationTrait;
+diff --git a/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php b/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php
+index 3beef5866d0f1d7a4defa18fb1f644ace544f7a2..28e5cf928df880509d7d898018b21dac33d4c262 100644
+--- a/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php
++++ b/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\views_bulk_edit\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\node\NodeInterface;
+ 
+@@ -9,6 +11,8 @@ use Drupal\node\NodeInterface;
+  * @coversDefaultClass \Drupal\views_bulk_edit\Plugin\Action\ModifyEntityValues
+  * @group views_bulk_edit
+  */
++#[Group('views_bulk_edit')]
++#[RunTestsInSeparateProcesses]
+ class ViewsBulkEditModifyEntityValuesTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/views_bulk_edit.module b/views_bulk_edit.module
+index 56bca3c4f3a1acc472ab023bcb59781e76f08a24..441cd0c40a4e53bcd5c082a0f6711407fa4156f6 100644
+--- a/views_bulk_edit.module
++++ b/views_bulk_edit.module
+@@ -5,20 +5,14 @@
+  * Allows modification of field values of entities selected in a view.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\views_bulk_edit\Hook\ViewsBulkEditHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function views_bulk_edit_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    case 'help.page.views_bulk_edit':
+-      $filepath = dirname(__FILE__) . '/README.txt';
+-      if (file_exists($filepath)) {
+-        $readme = file_get_contents($filepath);
+-        $output = '<pre>' . $readme . '</pre>';
+-
+-        return $output;
+-      }
+-  }
++  return \Drupal::service(ViewsBulkEditHooks::class)->help($route_name, $route_match);
+ }
+diff --git a/views_bulk_edit.services.yml b/views_bulk_edit.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..93a5d8622713920a129d8445af1306fbccc0bddb
+--- /dev/null
++++ b/views_bulk_edit.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\views_bulk_edit\Hook\ViewsBulkEditHooks:
++    class: Drupal\views_bulk_edit\Hook\ViewsBulkEditHooks
++    autowire: true

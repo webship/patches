@@ -1,0 +1,208 @@
+diff --git a/ai.info.yml b/ai.info.yml
+index 5ad25b9..9f4063b 100644
+--- a/ai.info.yml
++++ b/ai.info.yml
+@@ -2,7 +2,7 @@ name: AI Core
+ description: This module provides an abstraction layer for AI services.
+ package: AI
+ type: module
+-core_version_requirement: ^10.5 || ^11.2
++core_version_requirement: ^10.5 || ^11.2 || ^12
+ configure: ai.settings_form
+ 
+ dependencies:
+diff --git a/docs/examples/dropai_provider/dropai_provider.info.yml b/docs/examples/dropai_provider/dropai_provider.info.yml
+index 9f625b1..646fb77 100644
+--- a/docs/examples/dropai_provider/dropai_provider.info.yml
++++ b/docs/examples/dropai_provider/dropai_provider.info.yml
+@@ -2,7 +2,7 @@ name: 'DropAI Provider'
+ type: module
+ description: 'DropAI provider for AI module.'
+ package: AI Providers
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ hidden: true # This is just for example reasons.
+ dependencies:
+   - ai:ai
+diff --git a/modules/ai_api_explorer/ai_api_explorer.info.yml b/modules/ai_api_explorer/ai_api_explorer.info.yml
+index 2ad7406..80171ae 100644
+--- a/modules/ai_api_explorer/ai_api_explorer.info.yml
++++ b/modules/ai_api_explorer/ai_api_explorer.info.yml
+@@ -2,7 +2,7 @@ name: AI API Explorer
+ type: module
+ description: Adds multiple developers explorers where you can test different settings.
+ package: AI
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ dependencies:
+   - ai:ai
+ 
+diff --git a/modules/ai_assistant_api/ai_assistant_api.info.yml b/modules/ai_assistant_api/ai_assistant_api.info.yml
+index 630cf2a..67de4de 100644
+--- a/modules/ai_assistant_api/ai_assistant_api.info.yml
++++ b/modules/ai_assistant_api/ai_assistant_api.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Assistant API'
+ type: module
+ description: Adds decoupled AI Assistants for any frontend to work with.
+ package: AI Tools
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ configure: entity.ai_assistant.collection
+ 
+ dependencies:
+diff --git a/modules/ai_automators/ai_automators.info.yml b/modules/ai_automators/ai_automators.info.yml
+index b80ddf2..5109d81 100644
+--- a/modules/ai_automators/ai_automators.info.yml
++++ b/modules/ai_automators/ai_automators.info.yml
+@@ -2,7 +2,7 @@ name: AI Automators
+ description: Allows AI and other tools and services to automatically generate field values on content creation.
+ package: AI
+ type: module
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ 
+ dependencies:
+   - ai:ai
+diff --git a/modules/ai_chatbot/ai_chatbot.info.yml b/modules/ai_chatbot/ai_chatbot.info.yml
+index 6f33e9a..1c619b8 100644
+--- a/modules/ai_chatbot/ai_chatbot.info.yml
++++ b/modules/ai_chatbot/ai_chatbot.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Chatbot'
+ type: module
+ description: 'Provides a chatbot frontend for the AI Assistant API.'
+ package: AI Tools
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ dependencies:
+   - ai:ai_assistant_api
+ 
+diff --git a/modules/ai_ckeditor/ai_ckeditor.info.yml b/modules/ai_ckeditor/ai_ckeditor.info.yml
+index a641ece..16850c9 100644
+--- a/modules/ai_ckeditor/ai_ckeditor.info.yml
++++ b/modules/ai_ckeditor/ai_ckeditor.info.yml
+@@ -2,7 +2,7 @@ name: AI CKEditor integration
+ type: module
+ description: Adds a plugin for CKEditor 5 to let editors prompt AI for text generation purposes.
+ package: AI
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ dependencies:
+   - drupal:ckeditor5
+   - ai:ai
+diff --git a/modules/ai_content_suggestions/ai_content_suggestions.info.yml b/modules/ai_content_suggestions/ai_content_suggestions.info.yml
+index c062e88..8d50681 100644
+--- a/modules/ai_content_suggestions/ai_content_suggestions.info.yml
++++ b/modules/ai_content_suggestions/ai_content_suggestions.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Content Suggestions'
+ type: module
+ description: 'Allows a configured AI to be passed content to suggest alterations'
+ package: AI
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ lifecycle: deprecated
+ lifecycle_link: https://www.drupal.org/project/ai/issues/3552885
+ hidden: true
+diff --git a/modules/ai_eca/ai_eca.info.yml b/modules/ai_eca/ai_eca.info.yml
+index 1d5de7a..c16ff9b 100644
+--- a/modules/ai_eca/ai_eca.info.yml
++++ b/modules/ai_eca/ai_eca.info.yml
+@@ -2,7 +2,7 @@ name: AI ECA integration
+ type: module
+ description: 'Deprecated and being removed in AI 2.0.0.'
+ package: AI
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ lifecycle: deprecated
+ lifecycle_link: 'https://www.drupal.org/project/ai/issues/3503947'
+ hidden: true
+diff --git a/modules/ai_external_moderation/ai_external_moderation.info.yml b/modules/ai_external_moderation/ai_external_moderation.info.yml
+index ae0a438..70ed958 100644
+--- a/modules/ai_external_moderation/ai_external_moderation.info.yml
++++ b/modules/ai_external_moderation/ai_external_moderation.info.yml
+@@ -2,7 +2,7 @@ name: AI External Moderation (Deprecated)
+ description: Provides functionality copied to the AI Core module.
+ package: AI
+ type: module
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ lifecycle: deprecated
+ lifecycle_link: https://www.drupal.org/project/ai/issues/3479913
+ hidden: true
+diff --git a/modules/ai_logging/ai_logging.info.yml b/modules/ai_logging/ai_logging.info.yml
+index 3695829..2b7b03e 100644
+--- a/modules/ai_logging/ai_logging.info.yml
++++ b/modules/ai_logging/ai_logging.info.yml
+@@ -2,7 +2,7 @@ name: AI Logging
+ description: This enables you to log any AI request and response as well as additional contextual information.
+ package: AI
+ type: module
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ configure: ai_logging.settings_form
+ tags:
+   - developer
+diff --git a/modules/ai_observability/ai_observability.info.yml b/modules/ai_observability/ai_observability.info.yml
+index 27f58b3..60341da 100644
+--- a/modules/ai_observability/ai_observability.info.yml
++++ b/modules/ai_observability/ai_observability.info.yml
+@@ -2,7 +2,7 @@ name: AI Observability
+ description: Logs AI requests to the Drupal Logger and OpenTelemetry.
+ package: AI
+ type: module
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ configure: ai_observability.settings
+ tags:
+   - developer
+diff --git a/modules/ai_search/ai_search.info.yml b/modules/ai_search/ai_search.info.yml
+index 334d0c1..b795a2f 100644
+--- a/modules/ai_search/ai_search.info.yml
++++ b/modules/ai_search/ai_search.info.yml
+@@ -2,7 +2,7 @@ name: AI Search
+ description: Offers an implementation of the Search API that uses a Vector DB server for indexing content.
+ package: AI (Experimental)
+ type: module
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ lifecycle: deprecated
+ lifecycle_link: https://www.drupal.org/node/3570322
+ 
+diff --git a/modules/ai_translate/ai_translate.info.yml b/modules/ai_translate/ai_translate.info.yml
+index 6d9da05..1e89faf 100644
+--- a/modules/ai_translate/ai_translate.info.yml
++++ b/modules/ai_translate/ai_translate.info.yml
+@@ -2,7 +2,7 @@ name: AI Translate
+ description: This module provides simple -one click- AI powered translations
+ package: AI
+ type: module
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ configure: ai_translate.settings_form
+ dependencies:
+   - ai:ai
+diff --git a/modules/ai_validations/ai_validations.info.yml b/modules/ai_validations/ai_validations.info.yml
+index f34e095..2b97f54 100644
+--- a/modules/ai_validations/ai_validations.info.yml
++++ b/modules/ai_validations/ai_validations.info.yml
+@@ -2,7 +2,7 @@ name: AI Validations
+ description: This provides AI support for the Field Validation module.
+ package: AI
+ type: module
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ lifecycle: deprecated
+ lifecycle_link: https://www.drupal.org/project/ai/issues/3552888
+ hidden: true
+diff --git a/modules/field_widget_actions/field_widget_actions.info.yml b/modules/field_widget_actions/field_widget_actions.info.yml
+index 5ca4c6f..8c8fda5 100644
+--- a/modules/field_widget_actions/field_widget_actions.info.yml
++++ b/modules/field_widget_actions/field_widget_actions.info.yml
+@@ -1,7 +1,7 @@
+ name: Field Widget Actions
+ description: Provides easy way to attach actions to field widgets, for example for content suggestions.
+ type: module
+-core_version_requirement: ^10.3 || ^11.1
++core_version_requirement: ^10.3 || ^11.1 || ^12
+ lifecycle: deprecated
+ lifecycle_link: https://www.drupal.org/node/3568339
+ hidden: true

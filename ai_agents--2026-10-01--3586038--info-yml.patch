@@ -1,0 +1,65 @@
+diff --git a/ai_agents.info.yml b/ai_agents.info.yml
+index ad9d358..bfa9a93 100644
+--- a/ai_agents.info.yml
++++ b/ai_agents.info.yml
+@@ -2,7 +2,7 @@ name: AI Agents
+ type: module
+ description: The Agents module makes Drupal taskable by AI agents.
+ package: AI Tools
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ 
+ dependencies:
+   - ai:ai
+diff --git a/modules/ai_agents_explorer/ai_agents_explorer.info.yml b/modules/ai_agents_explorer/ai_agents_explorer.info.yml
+index 2a77458..b8930be 100644
+--- a/modules/ai_agents_explorer/ai_agents_explorer.info.yml
++++ b/modules/ai_agents_explorer/ai_agents_explorer.info.yml
+@@ -2,7 +2,7 @@ name: AI Agents Explorer
+ type: module
+ description: A helper tool for running and debugging Agents.
+ package: AI Tools
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ 
+ dependencies:
+   - ai_agents:ai_agents
+diff --git a/modules/ai_agents_extra/ai_agents_extra.info.yml b/modules/ai_agents_extra/ai_agents_extra.info.yml
+index b914bba..7947291 100644
+--- a/modules/ai_agents_extra/ai_agents_extra.info.yml
++++ b/modules/ai_agents_extra/ai_agents_extra.info.yml
+@@ -2,7 +2,7 @@ name: AI Agents Extra
+ type: module
+ description: Extra Agents (Views, Webform, Module) that still are experimental.
+ package: AI Tools
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ lifecycle: experimental
+ hidden: true
+ 
+diff --git a/modules/ai_agents_extra_tools/ai_agents_extra_tools.info.yml b/modules/ai_agents_extra_tools/ai_agents_extra_tools.info.yml
+index 71056ff..113af29 100644
+--- a/modules/ai_agents_extra_tools/ai_agents_extra_tools.info.yml
++++ b/modules/ai_agents_extra_tools/ai_agents_extra_tools.info.yml
+@@ -2,7 +2,7 @@ name: AI Agents Extra Tools
+ type: module
+ description: Extra Tools that are still experimental and not ready for production.
+ package: AI Tools
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ lifecycle: experimental
+ deprecated: true
+ deprecated_reasons: The tools are experimental and might have security issues. Will be moved to a different package in the future.
+diff --git a/modules/ai_agents_form_integration/ai_agents_form_integration.info.yml b/modules/ai_agents_form_integration/ai_agents_form_integration.info.yml
+index d14d818..674cfb8 100644
+--- a/modules/ai_agents_form_integration/ai_agents_form_integration.info.yml
++++ b/modules/ai_agents_form_integration/ai_agents_form_integration.info.yml
+@@ -2,7 +2,7 @@ name: AI Agents Form Integration
+ type: module
+ description: The AI Agents For Integration provides assist in different parts of the website to generate configurations and content using forms.
+ package: AI Tools
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ lifecycle: experimental
+ hidden: true
+ 

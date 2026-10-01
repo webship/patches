@@ -1,0 +1,26 @@
+diff --git a/captcha.info.yml b/captcha.info.yml
+index a607139..3b99dee 100644
+--- a/captcha.info.yml
++++ b/captcha.info.yml
+@@ -2,7 +2,7 @@ name: CAPTCHA
+ type: module
+ description: Provides the CAPTCHA API for adding challenges to arbitrary forms.
+ package: Spam control
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: captcha_settings
+ 
+ # Information added by Drupal.org packaging script on 2026-02-09
+diff --git a/modules/image_captcha/image_captcha.info.yml b/modules/image_captcha/image_captcha.info.yml
+index 38217f7..f230a57 100644
+--- a/modules/image_captcha/image_captcha.info.yml
++++ b/modules/image_captcha/image_captcha.info.yml
+@@ -2,7 +2,7 @@ name: Image CAPTCHA
+ type: module
+ description: Provides an image based CAPTCHA.
+ package: Spam control
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ dependencies:
+   - captcha:captcha
+ configure: image_captcha.settings

@@ -1,0 +1,13 @@
+diff --git a/token.info.yml b/token.info.yml
+index c4563c2..e15d987 100644
+--- a/token.info.yml
++++ b/token.info.yml
+@@ -1,7 +1,7 @@
+ name: Token
+ type: module
+ description: Provides a user interface for the Token API and some missing core tokens.
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ 
+ # Information added by Drupal.org packaging script on 2026-01-09
+ version: '8.x-1.17'

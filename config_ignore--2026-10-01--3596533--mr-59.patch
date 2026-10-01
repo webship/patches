@@ -1,0 +1,236 @@
+diff --git a/config_ignore.api.php b/config_ignore.api.php
+index d2aad19c81df33bc34260a2d0e05137c0e96eb6c..5b5b2da4eacb379a1120cbb4b8049820f953acb6 100644
+--- a/config_ignore.api.php
++++ b/config_ignore.api.php
+@@ -1,5 +1,11 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\config_ignore\ConfigIgnoreConfig;
++
+ /**
+  * @file
+  * Hooks specific to the Config Ignore module.
+@@ -21,7 +27,7 @@ function hook_config_ignore_settings_alter(array &$settings) {
+ /**
+  * Alter the list of config entities that should be ignored.
+  */
+-function hook_config_ignore_ignored_alter(\Drupal\config_ignore\ConfigIgnoreConfig $ignored) {
++function hook_config_ignore_ignored_alter(ConfigIgnoreConfig $ignored) {
+   $list = $ignored->getList('import', 'create');
+   $list = array_filter($list, fn($line) => $line !== 'webform.webform.*');
+   $ignored->setList('import', 'create', $list);
+diff --git a/tests/src/Functional/ConfigIgnoreHookTest.php b/tests/src/Functional/ConfigIgnoreHookTest.php
+index 275909841d9006f6e532506242524282ce6eb8e5..f8128dd25b142dc00d608d2c97c4d2b4d62adc10 100644
+--- a/tests/src/Functional/ConfigIgnoreHookTest.php
++++ b/tests/src/Functional/ConfigIgnoreHookTest.php
+@@ -2,11 +2,16 @@
+ 
+ namespace Drupal\Tests\config_ignore\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Test hook implementation of another module.
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class ConfigIgnoreHookTest extends ConfigIgnoreBrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/ConfigIgnoreTest.php b/tests/src/Functional/ConfigIgnoreTest.php
+index 20a900903998a1fe43fd94641cf976f0a089e538..d2d47ec49c5b566f8179e78e16d1588b07d00d57 100644
+--- a/tests/src/Functional/ConfigIgnoreTest.php
++++ b/tests/src/Functional/ConfigIgnoreTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_ignore\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\config_test\ConfigTestInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
+@@ -10,6 +12,8 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class ConfigIgnoreTest extends ConfigIgnoreBrowserTestBase {
+ 
+   use StringTranslationTrait;
+diff --git a/tests/src/Functional/ConfigWithTranslationTest.php b/tests/src/Functional/ConfigWithTranslationTest.php
+index 1de484961aeb4e2674ad2a4b001b80fd47b24329..978946cf2d391fa3698e50c6b25c74ef8304fb41 100644
+--- a/tests/src/Functional/ConfigWithTranslationTest.php
++++ b/tests/src/Functional/ConfigWithTranslationTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_ignore\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Component\FileCache\FileCache;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ use Drupal\Tests\BrowserTestBase;
+@@ -15,6 +17,8 @@ use Drush\TestTraits\DrushTestTrait;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class ConfigWithTranslationTest extends BrowserTestBase {
+ 
+   use DrushTestTrait;
+diff --git a/tests/src/Functional/DevelCommandsTest.php b/tests/src/Functional/DevelCommandsTest.php
+index 7d5e82f60aacab38964f0bb61959d14bbbb646f7..0fe0487f24d6d59eff5595c406cee6b8126656cb 100644
+--- a/tests/src/Functional/DevelCommandsTest.php
++++ b/tests/src/Functional/DevelCommandsTest.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\Tests\config_ignore\Functional;
+ 
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\config_ignore\Drush\Listeners\ConfigIgnoreListener;
+ use Drupal\Tests\BrowserTestBase;
+ use Drush\Commands\config\ConfigExportCommands;
+@@ -19,6 +20,7 @@ use PHPUnit\Framework\Attributes\Group;
+ #[Group('config_ignore')]
+ #[CoversClass(ConfigExportCommands::class)]
+ #[CoversClass(ConfigIgnoreListener::class)]
++#[RunTestsInSeparateProcesses]
+ class DevelCommandsTest extends BrowserTestBase {
+ 
+   use DrushTestTrait;
+diff --git a/tests/src/Kernel/IgnoreConfigSourceTest.php b/tests/src/Kernel/IgnoreConfigSourceTest.php
+index 722ce928c9919df717f4e82ec82edb1d71da7cfc..bbbea9c93978157043ceceaec48633b7434e847a 100644
+--- a/tests/src/Kernel/IgnoreConfigSourceTest.php
++++ b/tests/src/Kernel/IgnoreConfigSourceTest.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\config_ignore\Kernel;
+ 
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Site\Settings;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\Tests\config_filter\Kernel\ConfigStorageTestTrait;
+@@ -14,6 +15,7 @@ use PHPUnit\Framework\Attributes\Group;
+  * Test what config is used for configuring config ignore.
+  */
+ #[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class IgnoreConfigSourceTest extends KernelTestBase {
+ 
+   use ConfigStorageTestTrait;
+diff --git a/tests/src/Kernel/IgnoreKernelTest.php b/tests/src/Kernel/IgnoreKernelTest.php
+index 4b9c1c4e76139fbcc4cad48d570fa9ef3e5962a7..26cd1986d4924328d3899e7a9f4ff13eed86f90b 100644
+--- a/tests/src/Kernel/IgnoreKernelTest.php
++++ b/tests/src/Kernel/IgnoreKernelTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_ignore\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\config_ignore\ConfigIgnoreConfig;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\language\Entity\ConfigurableLanguage;
+@@ -15,6 +17,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class IgnoreKernelTest extends KernelTestBase {
+ 
+   use ConfigStorageTestTrait;
+diff --git a/tests/src/Kernel/IgnoreSchemaTest.php b/tests/src/Kernel/IgnoreSchemaTest.php
+index e46d7704fd3ca252846081f0bee56677cad5c52a..6e4899942d82349a70d3086126f5883da3d00d74 100644
+--- a/tests/src/Kernel/IgnoreSchemaTest.php
++++ b/tests/src/Kernel/IgnoreSchemaTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\config_ignore\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Config\Schema\SchemaCheckTrait;
+ use Drupal\Core\Config\TypedConfigManagerInterface;
+ use Drupal\KernelTests\KernelTestBase;
+@@ -15,6 +17,8 @@ use Symfony\Component\Validator\ConstraintViolation;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class IgnoreSchemaTest extends KernelTestBase {
+ 
+   use SchemaCheckTrait;
+diff --git a/tests/src/Kernel/IsTranslationSaveTest.php b/tests/src/Kernel/IsTranslationSaveTest.php
+index 8f2d40ce4213e92c5f2bb95652abbd7d0a7ec242..f8c56d9788e2ac3cf0db01d3a13d31a94e76660d 100644
+--- a/tests/src/Kernel/IsTranslationSaveTest.php
++++ b/tests/src/Kernel/IsTranslationSaveTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_ignore\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Composer\InstalledVersions;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+@@ -10,6 +12,8 @@ use Drupal\KernelTests\KernelTestBase;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
++#[RunTestsInSeparateProcesses]
+ class IsTranslationSaveTest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Unit/ConfigIgnoreConfigTest.php b/tests/src/Unit/ConfigIgnoreConfigTest.php
+index dd009b05cb2a82b36ca99bcc3ecc3a151ffa0194..2d53826b8f7c8b6ddcde9cb971f51ec34e002afe 100644
+--- a/tests/src/Unit/ConfigIgnoreConfigTest.php
++++ b/tests/src/Unit/ConfigIgnoreConfigTest.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\Tests\config_ignore\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\config_ignore\ConfigIgnoreConfig;
+ use Drupal\Tests\UnitTestCase;
+ use Drupal\TestTools\Random;
+@@ -12,6 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
+ class ConfigIgnoreConfigTest extends UnitTestCase {
+ 
+   /**
+diff --git a/tests/src/Unit/ConfigIgnorePatternResolverTest.php b/tests/src/Unit/ConfigIgnorePatternResolverTest.php
+index 252c51bb5ffae260c11802b7894e569180a8122a..9da2a834778bef9755254d8d157f2a1c6fa86721 100644
+--- a/tests/src/Unit/ConfigIgnorePatternResolverTest.php
++++ b/tests/src/Unit/ConfigIgnorePatternResolverTest.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\Tests\config_ignore\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\config_ignore\ConfigIgnoreConfig;
+ use Drupal\Tests\UnitTestCase;
+ 
+@@ -10,6 +11,7 @@ use Drupal\Tests\UnitTestCase;
+  *
+  * @group config_ignore
+  */
++#[Group('config_ignore')]
+ class ConfigIgnorePatternResolverTest extends UnitTestCase {
+ 
+   /**

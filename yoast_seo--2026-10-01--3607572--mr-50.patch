@@ -1,0 +1,360 @@
+diff --git a/src/Hook/YoastSeoHooks.php b/src/Hook/YoastSeoHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..ebfe83903a592c22eec8efa5a947a2abe66ab6f3
+--- /dev/null
++++ b/src/Hook/YoastSeoHooks.php
+@@ -0,0 +1,138 @@
++<?php
++
++namespace Drupal\yoast_seo\Hook;
++
++use Drupal\Core\Entity\FieldableEntityInterface;
++use Drupal\yoast_seo\Form\AnalysisFormHandler;
++use Drupal\Core\Access\AccessResult;
++use Drupal\Core\Field\FieldItemListInterface;
++use Drupal\Core\Session\AccountInterface;
++use Drupal\Core\Field\FieldDefinitionInterface;
++use Drupal\field\FieldStorageConfigInterface;
++use Drupal\Core\Entity\EntityFormInterface;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for yoast_seo.
++ */
++class YoastSeoHooks {
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   */
++  #[Hook('form_field_storage_config_edit_form_alter')]
++  public function formFieldStorageConfigEditFormAlter(&$form, FormStateInterface $form_state) {
++    $form_object = $form_state->getFormObject();
++    assert($form_object instanceof EntityFormInterface);
++    $field_storage_config = $form_object->getEntity();
++    assert($field_storage_config instanceof FieldStorageConfigInterface);
++    if ($field_storage_config->getType() === 'yoast_seo') {
++      // Hide the cardinality field.
++      $form['cardinality_container']['#access'] = FALSE;
++      $form['cardinality_container']['#disabled'] = TRUE;
++    }
++  }
++
++  /**
++   * Implements hook_field_access().
++   */
++  #[Hook('field_access', module: 'yoast_seo_entity')]
++  public function entityFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
++    if ($field_definition->getType() == 'yoast_seo') {
++      return AccessResult::forbiddenIf(!($account->hasPermission('use yoast seo') || $account->hasPermission('administer yoast seo')))->cachePerPermissions();
++    }
++    // No opinion.
++    return AccessResult::neutral();
++  }
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme() {
++    $theme['yoast_snippet'] = [
++      'variables' => [
++        'wrapper_target_id' => NULL,
++        'snippet_target_id' => NULL,
++        'output_target_id' => NULL,
++      ],
++    ];
++    $theme['overall_score'] = [
++      'variables' => [
++        'overall_score_target_id' => NULL,
++        'overall_score' => NULL,
++      ],
++      'template' => 'overall_score',
++    ];
++    $theme['view_overall_score'] = [
++      'variables' => [
++        'overall_score' => NULL,
++      ],
++      'template' => 'view_overall_score',
++    ];
++    $theme['content_score'] = [
++      'variables' => [],
++      'template' => 'content_score',
++    ];
++    return $theme;
++  }
++
++  /**
++   * Implements hook_entity_type_build().
++   *
++   * Sets the default yoast_seo_form form handler to all entity types.
++   *
++   * @see \Drupal\Core\Entity\Annotation\EntityType
++   */
++  #[Hook('entity_type_build')]
++  public function entityTypeBuild(array &$entity_types) {
++    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
++    foreach ($entity_types as &$entity_type) {
++      if (!$entity_type->hasHandlerClass('yoast_seo_preview_form')) {
++        $entity_type->setHandlerClass('yoast_seo_preview_form', AnalysisFormHandler::class);
++      }
++    }
++  }
++
++  /**
++   * Implements hook_metatags_alter().
++   *
++   * If an entity has values for the custom title or description fields then we
++   * use those values in place of the metatags defaults.
++   */
++  #[Hook('metatags_alter')]
++  public function metatagsAlter(array &$metatags, array $context) {
++    // Without entity there is nothing for us to do.
++    if (empty($context['entity'])) {
++      return;
++    }
++    $entity = $context['entity'];
++    // Make sure we have a fieldable entity or our SeoManager will produce errors.
++    if (!$entity instanceof FieldableEntityInterface) {
++      return;
++    }
++    /** @var \Drupal\yoast_seo\SeoManager $seo_manager */
++    $seo_manager = \Drupal::service('yoast_seo.manager');
++    $seo_field = $seo_manager->getSeoField($entity);
++    // Abort early if we're not enabled for this entity type.
++    if (is_null($seo_field)) {
++      return;
++    }
++    $field_item = $seo_field->first();
++    // If the field has no value then we're done as well.
++    if (empty($field_item)) {
++      return;
++    }
++    $values = $field_item->getValue();
++    // If we have a custom title, use it instead of the default one.
++    if (!empty($values['title'])) {
++      $metatags['title'] = $values['title'];
++    }
++    // If we have a custom description, use it instead of the default one.
++    if (!empty($values['description'])) {
++      $metatags['description'] = $values['description'];
++    }
++  }
++
++}
+diff --git a/tests/src/Kernel/EntityAnalyserTest.php b/tests/src/Kernel/EntityAnalyserTest.php
+index 833049e7d7d1f95f5679ac3f47c576a04c8a66b2..585ed70e608b15211adc07d5e6c8af7f6e1a460e 100644
+--- a/tests/src/Kernel/EntityAnalyserTest.php
++++ b/tests/src/Kernel/EntityAnalyserTest.php
+@@ -2,6 +2,10 @@
+ 
+ namespace Drupal\Tests\yoast_seo\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\filter\FilterFormatRepositoryInterface;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\node\Entity\Node;
+ use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+@@ -13,6 +17,8 @@ use Drupal\Tests\yoast_seo\Traits\YoastSEOTestTrait;
+  *
+  * @group yoast_seo
+  */
++#[Group('yoast_seo')]
++#[RunTestsInSeparateProcesses]
+ class EntityAnalyserTest extends KernelTestBase {
+ 
+   use YoastSEOTestTrait;
+@@ -54,9 +60,6 @@ class EntityAnalyserTest extends KernelTestBase {
+    */
+   public function setUp() : void {
+     parent::setUp();
+-
+-    // Set up everything needed to be able to use nodes.
+-    $this->installSchema('system', 'sequences');
+     $this->installSchema('node', 'node_access');
+     $this->installEntitySchema('user');
+     $this->installEntitySchema('node');
+@@ -93,7 +96,7 @@ class EntityAnalyserTest extends KernelTestBase {
+       'body'      => [
+         [
+           'value' => $this->randomMachineName(32),
+-          'format' => filter_default_format(),
++          'format' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => \Drupal::service(FilterFormatRepositoryInterface::class)->getDefaultFormat()->id(), fn() => filter_default_format()),
+         ],
+       ],
+       'uid' => 0,
+diff --git a/yoast_seo.module b/yoast_seo.module
+index 2520f0505566c7acb2d6fd6b16ab3a20bcccb025..75589a59220b8f2d9b4e5d28655f75137d8364de 100644
+--- a/yoast_seo.module
++++ b/yoast_seo.module
+@@ -5,83 +5,35 @@
+  * Contains yoast_seo.module.
+  */
+ 
+-use Drupal\Core\Access\AccessResult;
+-use Drupal\Core\Entity\EntityFormInterface;
+-use Drupal\Core\Entity\FieldableEntityInterface;
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\yoast_seo\Hook\YoastSeoHooks;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Session\AccountInterface;
+-use Drupal\field\FieldStorageConfigInterface;
+-use Drupal\yoast_seo\Form\AnalysisFormHandler;
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function yoast_seo_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state) {
+-  $form_object = $form_state->getFormObject();
+-  assert($form_object instanceof EntityFormInterface);
+-  $field_storage_config = $form_object->getEntity();
+-  assert($field_storage_config instanceof FieldStorageConfigInterface);
+-  if ($field_storage_config->getType() === 'yoast_seo') {
+-    // Hide the cardinality field.
+-    $form['cardinality_container']['#access'] = FALSE;
+-    $form['cardinality_container']['#disabled'] = TRUE;
+-  }
++  \Drupal::service(YoastSeoHooks::class)->formFieldStorageConfigEditFormAlter($form, $form_state);
+ }
+ 
+ /**
+  * Implements hook_field_access().
+  */
++#[LegacyHook]
+ function yoast_seo_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+-  if ($field_definition->getType() == 'yoast_seo') {
+-    return AccessResult::forbiddenIf(
+-      !($account->hasPermission('use yoast seo') || $account->hasPermission('administer yoast seo'))
+-      // Such edit meta tags permission doesn't exist anymore, and administer
+-      // meta tags is too restrictive.
+-      // Wait or changes.
+-      // || ! ( $account->hasPermission('edit meta tags') ||
+-      // $account->hasPermission('administer meta tags') )
+-    )->cachePerPermissions();
+-  }
+-
+-  // No opinion.
+-  return AccessResult::neutral();
++  return \Drupal::service(YoastSeoHooks::class)->entityFieldAccess($operation, $field_definition, $account, $items);
+ }
+ 
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function yoast_seo_theme() {
+-  $theme['yoast_snippet'] = [
+-    'variables' => [
+-      'wrapper_target_id' => NULL,
+-      'snippet_target_id' => NULL,
+-      'output_target_id' => NULL,
+-    ],
+-  ];
+-
+-  $theme['overall_score'] = [
+-    'variables' => [
+-      'overall_score_target_id' => NULL,
+-      'overall_score' => NULL,
+-    ],
+-    'template' => 'overall_score',
+-  ];
+-
+-  $theme['view_overall_score'] = [
+-    'variables' => [
+-      'overall_score' => NULL,
+-    ],
+-    'template' => 'view_overall_score',
+-  ];
+-
+-  $theme['content_score'] = [
+-    'variables' => [],
+-    'template' => 'content_score',
+-  ];
+-
+-  return $theme;
++  return \Drupal::service(YoastSeoHooks::class)->theme();
+ }
+ 
+ /**
+@@ -91,13 +43,9 @@ function yoast_seo_theme() {
+  *
+  * @see \Drupal\Core\Entity\Annotation\EntityType
+  */
++#[LegacyHook]
+ function yoast_seo_entity_type_build(array &$entity_types) {
+-  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+-  foreach ($entity_types as &$entity_type) {
+-    if (!$entity_type->hasHandlerClass('yoast_seo_preview_form')) {
+-      $entity_type->setHandlerClass('yoast_seo_preview_form', AnalysisFormHandler::class);
+-    }
+-  }
++  \Drupal::service(YoastSeoHooks::class)->entityTypeBuild($entity_types);
+ }
+ 
+ /**
+@@ -106,46 +54,7 @@ function yoast_seo_entity_type_build(array &$entity_types) {
+  * If an entity has values for the custom title or description fields then we
+  * use those values in place of the metatags defaults.
+  */
++#[LegacyHook]
+ function yoast_seo_metatags_alter(array &$metatags, array $context) {
+-  // Without entity there is nothing for us to do.
+-  if (empty($context['entity'])) {
+-    return;
+-  }
+-
+-  $entity = $context['entity'];
+-
+-  // Make sure we have a fieldable entity or our SeoManager will produce errors.
+-  if (!$entity instanceof FieldableEntityInterface) {
+-    return;
+-  }
+-
+-  /** @var \Drupal\yoast_seo\SeoManager $seo_manager */
+-  $seo_manager = \Drupal::service('yoast_seo.manager');
+-
+-  $seo_field = $seo_manager->getSeoField($entity);
+-
+-  // Abort early if we're not enabled for this entity type.
+-  if (is_null($seo_field)) {
+-    return;
+-  }
+-
+-  $field_item = $seo_field->first();
+-
+-  // If the field has no value then we're done as well.
+-  if (empty($field_item)) {
+-    return;
+-  }
+-
+-  $values = $field_item->getValue();
+-
+-  // If we have a custom title, use it instead of the default one.
+-  if (!empty($values['title'])) {
+-    $metatags['title'] = $values['title'];
+-  }
+-
+-  // If we have a custom description, use it instead of the default one.
+-  if (!empty($values['description'])) {
+-    $metatags['description'] = $values['description'];
+-  }
+-
++  \Drupal::service(YoastSeoHooks::class)->metatagsAlter($metatags, $context);
+ }
+diff --git a/yoast_seo.services.yml b/yoast_seo.services.yml
+index 03de6810febf928d8cf082f463268b28267ccf21..bb5e14676d6c78517313859b50a66be4f4e50232 100644
+--- a/yoast_seo.services.yml
++++ b/yoast_seo.services.yml
+@@ -5,3 +5,7 @@ services:
+   yoast_seo.entity_analyser:
+     class: Drupal\yoast_seo\EntityAnalyser
+     arguments: ['@entity_type.manager', '@renderer', '@metatag.manager', '@router.no_access_checks']
++
++  Drupal\yoast_seo\Hook\YoastSeoHooks:
++    class: Drupal\yoast_seo\Hook\YoastSeoHooks
++    autowire: true

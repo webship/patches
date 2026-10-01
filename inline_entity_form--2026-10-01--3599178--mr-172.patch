@@ -1,0 +1,489 @@
+diff --git a/inline_entity_form.api.php b/inline_entity_form.api.php
+index 5c95fab51e99392d994f7567ce379c6370370e4a..d7906472a618772df5c182e202ef0ab699934acc 100644
+--- a/inline_entity_form.api.php
++++ b/inline_entity_form.api.php
+@@ -1,5 +1,11 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\Core\Form\FormStateInterface;
++
+ /**
+  * @file
+  * Hooks provided by the Inline Entity Form module.
+@@ -15,7 +21,7 @@
+  * @param \Drupal\Core\Form\FormStateInterface $form_state
+  *   The form state of the parent form.
+  */
+-function hook_inline_entity_form_entity_form_alter(array &$entity_form, \Drupal\Core\Form\FormStateInterface &$form_state) {
++function hook_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
+   if ($entity_form['#entity_type'] == 'commerce_line_item') {
+     $entity_form['quantity']['#description'] = t('New quantity description.');
+   }
+@@ -34,7 +40,7 @@ function hook_inline_entity_form_entity_form_alter(array &$entity_form, \Drupal\
+  * @param \Drupal\Core\Form\FormStateInterface $form_state
+  *   The form state of the parent form.
+  */
+-function hook_inline_entity_form_reference_form_alter(array &$reference_form, \Drupal\Core\Form\FormStateInterface &$form_state) {
++function hook_inline_entity_form_reference_form_alter(array &$reference_form, FormStateInterface &$form_state) {
+   $reference_form['entity_id']['#description'] = t('New autocomplete description');
+ }
+ 
+diff --git a/inline_entity_form.module b/inline_entity_form.module
+index 7bb004e47aac5c61cb3552587ca174924b101c10..f318bd36d33c439d6449911840c2321cc01c2239 100644
+--- a/inline_entity_form.module
++++ b/inline_entity_form.module
+@@ -10,13 +10,13 @@
+  * managed outside the parent form.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\inline_entity_form\Hook\InlineEntityFormHooks;
+ use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element;
+-use Drupal\inline_entity_form\ElementSubmit;
+ use Drupal\inline_entity_form\Form\EntityInlineForm;
+ use Drupal\inline_entity_form\Plugin\Field\FieldWidget\InlineEntityFormComplex;
+-use Drupal\inline_entity_form\WidgetSubmit;
+ use Drupal\migrate\Plugin\MigrateSourceInterface;
+ use Drupal\migrate\Plugin\MigrationInterface;
+ use Drupal\migrate\Row;
+@@ -24,40 +24,25 @@ use Drupal\migrate\Row;
+ /**
+  * Implements hook_entity_type_build().
+  */
++#[LegacyHook]
+ function inline_entity_form_entity_type_build(array &$entity_types) {
+-  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+-  if (isset($entity_types['node']) && !$entity_types['node']->getHandlerClass('inline_form')) {
+-    $entity_types['node']->setHandlerClass('inline_form', '\Drupal\inline_entity_form\Form\NodeInlineForm');
+-  }
+-
+-  foreach ($entity_types as &$entity_type) {
+-    if (!$entity_type->hasHandlerClass('inline_form')) {
+-      $entity_type->setHandlerClass('inline_form', '\Drupal\inline_entity_form\Form\EntityInlineForm');
+-    }
+-  }
++  \Drupal::service(InlineEntityFormHooks::class)->entityTypeBuild($entity_types);
+ }
+ 
+ /**
+  * Implements hook_form_alter().
+  */
++#[LegacyHook]
+ function inline_entity_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  // Attach the IEF handlers only if the current form has an IEF widget.
+-  $widget_state = $form_state->get('inline_entity_form');
+-  if (!is_null($widget_state)) {
+-    ElementSubmit::attach($form, $form_state);
+-    WidgetSubmit::attach($form, $form_state);
+-  }
++  \Drupal::service(InlineEntityFormHooks::class)->formAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function inline_entity_form_theme() {
+-  return [
+-    'inline_entity_form_entity_table' => [
+-      'render element' => 'form',
+-    ],
+-  ];
++  return \Drupal::service(InlineEntityFormHooks::class)->theme();
+ }
+ 
+ /**
+@@ -475,15 +460,15 @@ function template_preprocess_inline_entity_form_entity_table(array &$variables)
+ /**
+  * Implements hook_migrate_prepare_row().
+  */
++#[LegacyHook]
+ function inline_entity_form_migrate_prepare_row(Row $row, MigrateSourceInterface $source, MigrationInterface $migration) {
+-  \Drupal::service('inline_entity_form.migration_helper')
+-    ->alterRow($row, $source, $migration);
++  \Drupal::service(InlineEntityFormHooks::class)->migratePrepareRow($row, $source, $migration);
+ }
+ 
+ /**
+  * Implements hook_migration_plugins_alter().
+  */
++#[LegacyHook]
+ function inline_entity_form_migration_plugins_alter(array &$migrations) {
+-  \Drupal::service('inline_entity_form.migration_helper')
+-    ->alterPlugins($migrations);
++  \Drupal::service(InlineEntityFormHooks::class)->migrationPluginsAlter($migrations);
+ }
+diff --git a/inline_entity_form.services.yml b/inline_entity_form.services.yml
+index e270e1d6936ec2053b41c9208f2b7ef700a94ea0..abd6c5a222f49abd983633c8476cf326a2dba66d 100644
+--- a/inline_entity_form.services.yml
++++ b/inline_entity_form.services.yml
+@@ -2,3 +2,7 @@ services:
+   inline_entity_form.migration_helper:
+     class: Drupal\inline_entity_form\MigrationHelper
+     arguments: ['@?plugin.manager.migrate.source']
++
++  Drupal\inline_entity_form\Hook\InlineEntityFormHooks:
++    class: Drupal\inline_entity_form\Hook\InlineEntityFormHooks
++    autowire: true
+diff --git a/src/Hook/InlineEntityFormHooks.php b/src/Hook/InlineEntityFormHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..339fa2050439475ccc3f843b3bd81c721191c756
+--- /dev/null
++++ b/src/Hook/InlineEntityFormHooks.php
+@@ -0,0 +1,75 @@
++<?php
++
++namespace Drupal\inline_entity_form\Hook;
++
++use Drupal\migrate\Plugin\MigrationInterface;
++use Drupal\migrate\Plugin\MigrateSourceInterface;
++use Drupal\migrate\Row;
++use Drupal\inline_entity_form\WidgetSubmit;
++use Drupal\inline_entity_form\ElementSubmit;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for inline_entity_form.
++ */
++class InlineEntityFormHooks {
++
++  /**
++   * Implements hook_entity_type_build().
++   */
++  #[Hook('entity_type_build')]
++  public function entityTypeBuild(array &$entity_types) {
++    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
++    if (isset($entity_types['node']) && !$entity_types['node']->getHandlerClass('inline_form')) {
++      $entity_types['node']->setHandlerClass('inline_form', '\Drupal\inline_entity_form\Form\NodeInlineForm');
++    }
++    foreach ($entity_types as &$entity_type) {
++      if (!$entity_type->hasHandlerClass('inline_form')) {
++        $entity_type->setHandlerClass('inline_form', '\Drupal\inline_entity_form\Form\EntityInlineForm');
++      }
++    }
++  }
++
++  /**
++   * Implements hook_form_alter().
++   */
++  #[Hook('form_alter')]
++  public function formAlter(&$form, FormStateInterface $form_state, $form_id) {
++    // Attach the IEF handlers only if the current form has an IEF widget.
++    $widget_state = $form_state->get('inline_entity_form');
++    if (!is_null($widget_state)) {
++      ElementSubmit::attach($form, $form_state);
++      WidgetSubmit::attach($form, $form_state);
++    }
++  }
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme() {
++    return [
++      'inline_entity_form_entity_table' => [
++        'render element' => 'form',
++      ],
++    ];
++  }
++
++  /**
++   * Implements hook_migrate_prepare_row().
++   */
++  #[Hook('migrate_prepare_row')]
++  public function migratePrepareRow(Row $row, MigrateSourceInterface $source, MigrationInterface $migration) {
++    \Drupal::service('inline_entity_form.migration_helper')->alterRow($row, $source, $migration);
++  }
++
++  /**
++   * Implements hook_migration_plugins_alter().
++   */
++  #[Hook('migration_plugins_alter')]
++  public function migrationPluginsAlter(array &$migrations) {
++    \Drupal::service('inline_entity_form.migration_helper')->alterPlugins($migrations);
++  }
++
++}
+diff --git a/src/MigrationHelper.php b/src/MigrationHelper.php
+index 15d95139da68290f3d45d8cfc854b83ad020baf0..2afb54acc762466121eb222c4bb68beb43a89cc0 100644
+--- a/src/MigrationHelper.php
++++ b/src/MigrationHelper.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\inline_entity_form;
+ 
++use Drupal\migrate_plus\Entity\MigrationGroup;
+ use Drupal\Component\Utility\NestedArray;
+ use Drupal\field\Plugin\migrate\source\d7\FieldInstance;
+ use Drupal\field\Plugin\migrate\source\d7\FieldInstancePerFormDisplay;
+@@ -174,7 +175,7 @@ class MigrationHelper {
+     // Integrate shared group configuration into the migration.
+     if (!empty($migration['migration_group']) && class_exists('\Drupal\migrate_plus\Entity\MigrationGroup')) {
+       // phpcs:ignore Drupal.Classes.FullyQualifiedNamespace
+-      $group = \Drupal\migrate_plus\Entity\MigrationGroup::load($migration['migration_group']);
++      $group = MigrationGroup::load($migration['migration_group']);
+       $shared_configuration = !empty($group) ? $group->get('shared_configuration') : [];
+       if (!empty($shared_configuration)) {
+         foreach ($shared_configuration as $key => $group_value) {
+diff --git a/tests/src/FunctionalJavascript/ComplexSimpleWidgetTest.php b/tests/src/FunctionalJavascript/ComplexSimpleWidgetTest.php
+index 62ce09cb4795c7255f7db532b29275f364503c74..5d4b9d96b0dcd3ad9003a08c2649462321d196b1 100644
+--- a/tests/src/FunctionalJavascript/ComplexSimpleWidgetTest.php
++++ b/tests/src/FunctionalJavascript/ComplexSimpleWidgetTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class ComplexSimpleWidgetTest extends InlineEntityFormTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/ComplexWidgetRevisionsTest.php b/tests/src/FunctionalJavascript/ComplexWidgetRevisionsTest.php
+index 6ab3b96bc1934ca1b418785e6d2d7ee438190809..bf9f0eb8a40a11193f79d64da8e1f59c4eed30c1 100644
+--- a/tests/src/FunctionalJavascript/ComplexWidgetRevisionsTest.php
++++ b/tests/src/FunctionalJavascript/ComplexWidgetRevisionsTest.php
+@@ -4,11 +4,17 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
++
+ /**
+  * IEF complex entity reference revisions tests.
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class ComplexWidgetRevisionsTest extends InlineEntityFormTestBase {
+ 
+   /**
+@@ -80,6 +86,7 @@ class ComplexWidgetRevisionsTest extends InlineEntityFormTestBase {
+    *
+    * @dataProvider revisionsAtDepthDataProvider
+    */
++  #[DataProvider('revisionsAtDepthDataProvider')]
+   public function testRevisionsAtDepth(bool $inner_widget_adds_revisions) {
+     $page = $this->getSession()->getPage();
+     $assert_session = $this->assertSession();
+diff --git a/tests/src/FunctionalJavascript/ComplexWidgetTest.php b/tests/src/FunctionalJavascript/ComplexWidgetTest.php
+index b47ac0679c9f23f19c6f8a49c1b8959f5a048df0..362e319cf7bc04da6d38ef6d90c699988e5fbe42 100644
+--- a/tests/src/FunctionalJavascript/ComplexWidgetTest.php
++++ b/tests/src/FunctionalJavascript/ComplexWidgetTest.php
+@@ -4,6 +4,9 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Behat\Mink\Element\NodeElement;
+ use Drupal\node\Entity\Node;
+ use Drupal\node\NodeInterface;
+@@ -11,12 +14,13 @@ use Drupal\Tests\TestFileCreationTrait;
+ use Drupal\user\Entity\Role;
+ 
+ // cspell:ignore Bojan WSOD
+-
+ /**
+  * IEF complex field widget tests.
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class ComplexWidgetTest extends InlineEntityFormTestBase {
+ 
+   use TestFileCreationTrait {
+@@ -1169,6 +1173,7 @@ class ComplexWidgetTest extends InlineEntityFormTestBase {
+    *
+    * @dataProvider simpleFalseTrueDataProvider
+    */
++  #[DataProvider('simpleFalseTrueDataProvider')]
+   public function testNestedCreateAndEditWontClash(bool $required) {
+     // Get the xpath selectors for the input fields in this test.
+     $top_title_field_xpath = $this->getXpathForNthInputByLabelText('Title', 1);
+diff --git a/tests/src/FunctionalJavascript/ElementWebTest.php b/tests/src/FunctionalJavascript/ElementWebTest.php
+index e3fd9576bb0fd52537880feb51bb92288bc705b5..9473e7dc6ba38fc9ef4b98c19810bfde53bc49f1 100644
+--- a/tests/src/FunctionalJavascript/ElementWebTest.php
++++ b/tests/src/FunctionalJavascript/ElementWebTest.php
+@@ -4,11 +4,16 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests the IEF element on a custom form.
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class ElementWebTest extends InlineEntityFormTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/SimpleWidgetTest.php b/tests/src/FunctionalJavascript/SimpleWidgetTest.php
+index 4b6071084a722c4f014d205729fb3e7e7ce169c9..eacd0a0d15e2139c9d03c7059a4349ce510c85ad 100644
+--- a/tests/src/FunctionalJavascript/SimpleWidgetTest.php
++++ b/tests/src/FunctionalJavascript/SimpleWidgetTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ use Drupal\node\Entity\Node;
+ use Drupal\node\NodeInterface;
+@@ -13,6 +15,8 @@ use Drupal\node\NodeInterface;
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class SimpleWidgetTest extends InlineEntityFormTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/TranslationTest.php b/tests/src/FunctionalJavascript/TranslationTest.php
+index 2da8b1b271f4b0e84247918ffaddfa44b4422859..4dab0027ceceb4129b71d9a099737f77929646a1 100644
+--- a/tests/src/FunctionalJavascript/TranslationTest.php
++++ b/tests/src/FunctionalJavascript/TranslationTest.php
+@@ -4,16 +4,19 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\node\Entity\Node;
+ 
+ // cspell:ignore animaux haus haut kangourou kann maison nguru peut sautent
+ // cspell:ignore sauter springen tous
+-
+ /**
+  * Tests translating inline entities.
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class TranslationTest extends InlineEntityFormTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/Migrate/MigrateFieldInstanceTest.php b/tests/src/Kernel/Migrate/MigrateFieldInstanceTest.php
+index 136d620798f8571df0c6c6fb5d86afd5c077423d..d0af3ef4341423f47ade2bcc177a3cab34ee08f7 100644
+--- a/tests/src/Kernel/Migrate/MigrateFieldInstanceTest.php
++++ b/tests/src/Kernel/Migrate/MigrateFieldInstanceTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\Kernel\Migrate;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\FieldConfigInterface;
+ 
+@@ -12,6 +14,8 @@ use Drupal\field\FieldConfigInterface;
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class MigrateFieldInstanceTest extends MigrateTestBase {
+ 
+   // phpcs:disable
+diff --git a/tests/src/Kernel/Migrate/MigrateFieldInstanceWidgetSettingsTest.php b/tests/src/Kernel/Migrate/MigrateFieldInstanceWidgetSettingsTest.php
+index 4d024972d5a24f2cd714b5ce7d7dc9675b0d281b..444bb93563d0075ee201667b1acee602807b6919 100644
+--- a/tests/src/Kernel/Migrate/MigrateFieldInstanceWidgetSettingsTest.php
++++ b/tests/src/Kernel/Migrate/MigrateFieldInstanceWidgetSettingsTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\Kernel\Migrate;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
+ use Drupal\Core\Entity\Entity\EntityFormDisplay;
+ 
+@@ -12,6 +14,8 @@ use Drupal\Core\Entity\Entity\EntityFormDisplay;
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class MigrateFieldInstanceWidgetSettingsTest extends MigrateTestBase {
+ 
+   // phpcs:disable
+diff --git a/tests/src/Kernel/Migrate/MigrateFieldTest.php b/tests/src/Kernel/Migrate/MigrateFieldTest.php
+index 2f54097994639ac4d2ebc877069f56c8cd2c80cf..55fdc17beb3c442302c74ef4a4f8f4ed5cf15f94 100644
+--- a/tests/src/Kernel/Migrate/MigrateFieldTest.php
++++ b/tests/src/Kernel/Migrate/MigrateFieldTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\Kernel\Migrate;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\field\FieldStorageConfigInterface;
+ 
+@@ -12,6 +14,8 @@ use Drupal\field\FieldStorageConfigInterface;
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class MigrateFieldTest extends MigrateTestBase {
+ 
+   // phpcs:disable
+diff --git a/tests/src/Kernel/Plugin/Field/FieldWidget/InlineEntityFormComplexSubmitTest.php b/tests/src/Kernel/Plugin/Field/FieldWidget/InlineEntityFormComplexSubmitTest.php
+index 2895b61f4566e6a4a36d90671c90fddbe23df997..d50913d0db3f87a124ca65c4e65247a0d3eb1a2e 100644
+--- a/tests/src/Kernel/Plugin/Field/FieldWidget/InlineEntityFormComplexSubmitTest.php
++++ b/tests/src/Kernel/Plugin/Field/FieldWidget/InlineEntityFormComplexSubmitTest.php
+@@ -4,6 +4,9 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\inline_entity_form\Kernel\Plugin\Field\FieldWidget;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormState;
+ use Drupal\inline_entity_form\Plugin\Field\FieldWidget\InlineEntityFormComplex;
+@@ -14,6 +17,8 @@ use Drupal\KernelTests\KernelTestBase;
+  *
+  * @group inline_entity_form
+  */
++#[Group('inline_entity_form')]
++#[RunTestsInSeparateProcesses]
+ class InlineEntityFormComplexSubmitTest extends KernelTestBase {
+ 
+   /**
+@@ -30,6 +35,7 @@ class InlineEntityFormComplexSubmitTest extends KernelTestBase {
+    *
+    * @dataProvider providerSubmitConfirmRemoveDeleteDecisions
+    */
++  #[DataProvider('providerSubmitConfirmRemoveDeleteDecisions')]
+   public function testSubmitConfirmRemoveDeleteDecisions(string $removed_reference, array $row_form_values, bool $should_queue_delete): void {
+     $entity = $this->createMock(EntityInterface::class);
+     $entity->expects($this->once())

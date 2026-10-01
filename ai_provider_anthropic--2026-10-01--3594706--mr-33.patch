@@ -1,0 +1,13 @@
+diff --git a/ai_provider_anthropic.info.yml b/ai_provider_anthropic.info.yml
+index b260e168a3669c2ca9ae7aa83b8ce7ce94f8d938..b06507f37a8bd48af321eafd26aebbe17f63d54b 100644
+--- a/ai_provider_anthropic.info.yml
++++ b/ai_provider_anthropic.info.yml
+@@ -2,7 +2,7 @@ name: Anthropic Provider
+ description: This enables the use of Anthropic for the AI module.
+ package: AI Providers
+ type: module
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: ai_provider_anthropic.settings_form
+ 
+ dependencies:

@@ -1,0 +1,142 @@
+diff --git a/restui.info.yml b/restui.info.yml
+index 413a809643fdc14211eadf5b4db2e2ea71b2bc2f..d02f28a32b6a2f16465f4726bd5cbf05e17605fa 100644
+--- a/restui.info.yml
++++ b/restui.info.yml
+@@ -2,7 +2,7 @@ name: REST UI
+ type: module
+ description: "Provides a user interface to manage REST resources."
+ package: Web services
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ configure: restui.list
+ dependencies:
+   - drupal:rest
+diff --git a/restui.module b/restui.module
+index f16b4cfcc7358fcc05704395b0240f7f6ea1f9f7..4f2c7acc287aadbe8ed9cbdb9e79cb09cdf56d3d 100644
+--- a/restui.module
++++ b/restui.module
+@@ -5,33 +5,22 @@
+  * Hook implementations for REST UI module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\restui\Hook\RestuiHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function restui_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    case 'restui.edit':
+-      return '<p>' . t('Here you can restrict which HTTP methods should this resource support. And within each method, the available serialization formats and authentication providers.') . '</p>';
+-
+-    case 'restui.list':
+-      return '<p>' . t('Here you can enable and disable available resources. Once a resource has been enabled, you can restrict its formats and authentication by clicking on its "Edit" link.') . '</p>';
+-  }
++  return \Drupal::service(RestuiHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function restui_theme() {
+-  return [
+-    // List resources.
+-    'restui_resource_info' => [
+-      'variables' => [
+-        'granularity' => [],
+-        'configuration' => [],
+-      ],
+-      'template' => 'restui-resource-info',
+-    ],
+-  ];
++  return \Drupal::service(RestuiHooks::class)->theme();
+ }
+diff --git a/restui.services.yml b/restui.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bff4b60b279fcef093c42e8930363919fe9e6c5
+--- /dev/null
++++ b/restui.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\restui\Hook\RestuiHooks:
++    class: Drupal\restui\Hook\RestuiHooks
++    autowire: true
+diff --git a/src/Hook/RestuiHooks.php b/src/Hook/RestuiHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..39f65ff5d68367fedf6ffcff9e5afc2956a4778e
+--- /dev/null
++++ b/src/Hook/RestuiHooks.php
+@@ -0,0 +1,46 @@
++<?php
++
++namespace Drupal\restui\Hook;
++
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for restui.
++ */
++class RestuiHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      case 'restui.edit':
++        return '<p>' . $this->t('Here you can restrict which HTTP methods should this resource support. And within each method, the available serialization formats and authentication providers.') . '</p>';
++
++      case 'restui.list':
++        return '<p>' . $this->t('Here you can enable and disable available resources. Once a resource has been enabled, you can restrict its formats and authentication by clicking on its "Edit" link.') . '</p>';
++    }
++  }
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme() {
++    return [
++          // List resources.
++      'restui_resource_info' => [
++        'variables' => [
++          'granularity' => [],
++          'configuration' => [],
++        ],
++        'template' => 'restui-resource-info',
++      ],
++    ];
++  }
++
++}
+diff --git a/tests/src/FunctionalJavascript/RestUITest.php b/tests/src/FunctionalJavascript/RestUITest.php
+index 53336060579a6ee8649e28aef821f8b5c8e15ccd..179d3718e02734c274dad9f9cac89cf9f9f5e6af 100644
+--- a/tests/src/FunctionalJavascript/RestUITest.php
++++ b/tests/src/FunctionalJavascript/RestUITest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\restui\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ use Drupal\rest\RestResourceConfigInterface;
+ 
+@@ -10,6 +12,8 @@ use Drupal\rest\RestResourceConfigInterface;
+  *
+  * @group restui
+  */
++#[Group('restui')]
++#[RunTestsInSeparateProcesses]
+ class RestUITest extends WebDriverTestBase {
+ 
+   /**

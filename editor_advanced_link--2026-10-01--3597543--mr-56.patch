@@ -1,0 +1,428 @@
+diff --git a/editor_advanced_link.info.yml b/editor_advanced_link.info.yml
+index bc97b1469d48a4ca7acfd25c6179140932895b99..9df0dea6070e51f02d505e4489a11455906ac74f 100644
+--- a/editor_advanced_link.info.yml
++++ b/editor_advanced_link.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Editor Advanced Link'
+ description: 'Add title, target etc. attributes to Text Editor''s link dialog if the text format allows them.'
+ type: module
+-core_version_requirement: ^10.5 || ^11.2
++core_version_requirement: ^10.5 || ^11.2 || ^12
+ dependencies:
+   - drupal:editor
+ test_dependencies:
+diff --git a/editor_advanced_link.module b/editor_advanced_link.module
+index 0404245ec9a9c950d44d580fd428b1d53ed6aed8..687d32a4f11e06838ce576b4c32b1fa28a56e0da 100644
+--- a/editor_advanced_link.module
++++ b/editor_advanced_link.module
+@@ -5,8 +5,9 @@
+  * Advanced Link module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\editor_advanced_link\Hook\EditorAdvancedLinkHooks;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\editor\Entity\Editor;
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+@@ -16,133 +17,9 @@ use Drupal\editor\Entity\Editor;
+  *   'editor_link_dialog' as base_form_id. In this case, the function above is
+  *   going to be called as an implementation of hook_form_BASE_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  $argument = $form_state->getBuildInfo()['args'][0];
+-  // In case the only argument we get is the Editor instead of the FilterFormat.
+-  if ($argument instanceof Editor) {
+-    $argument = $argument->getFilterFormat();
+-  }
+-  $restrictions = $argument->getHtmlRestrictions();
+-
+-  if (isset($form_state->getUserInput()['editor_object'])) {
+-    $input = $form_state->getUserInput()['editor_object'];
+-    $form_state->set('link_element', $input);
+-    $form_state->setCached(TRUE);
+-  }
+-  else {
+-    // Retrieve the link element's attributes from form state.
+-    $input = $form_state->get('link_element') ?: [];
+-  }
+-
+-  /*
+-   * Helper to retrieve form fields' default values.
+-   *
+-   * @param string $attribute_name
+-   * @param string $fallback
+-   *
+-   * @return mixed
+-   *   The existing value or the fallback.
+-   */
+-  $get_default_value = function ($attribute_name, $fallback = '') use ($input) {
+-    return !empty($input[$attribute_name]) ? $input[$attribute_name] : $fallback;
+-  };
+-
+-  /*
+-   * Helper to set the status of a form field according to the status of the
+-   * filter about the attribute it is defining.
+-   *
+-   * @param string $attribute_name
+-   *
+-   * @return bool
+-   *   TRUE if the filter is disabled or if the entire "a" tag is allowed or if
+-   *   the given attribute is allowed for the "a" tag.
+-   */
+-  $is_accessible = function ($attribute_name) use ($restrictions) {
+-    return $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || !empty($restrictions['allowed']['a'][$attribute_name]);
+-  };
+-
+-  // Load the library.
+-  $form['#attached']['library'][] = 'editor_advanced_link/editor_advanced_link';
+-
+-  $form['attributes']['href']['#weight'] = 0;
+-
+-  $form['attributes']['title'] = [
+-    '#type' => 'textfield',
+-    '#title' => t('Title'),
+-    '#description' => t('Populates the title attribute of the link, usually shown as a small tooltip on hover.'),
+-    '#default_value' => $get_default_value('title'),
+-    '#maxlength' => 512,
+-    '#weight' => 1,
+-    '#access' => $is_accessible('title'),
+-  ];
+-
+-  $form['advanced'] = [
+-    '#type' => 'details',
+-    '#title' => t('Advanced'),
+-    '#access' => FALSE,
+-    '#weight' => 2,
+-  ];
+-
+-  $form['attributes']['aria-label'] = [
+-    '#type' => 'textfield',
+-    '#title' => t('ARIA label'),
+-    '#description' => t('Provide an alternative text value/label for assistive technologies.'),
+-    '#default_value' => $get_default_value('aria-label'),
+-    '#maxlength' => 512,
+-    '#access' => $is_accessible('aria-label'),
+-    '#group' => 'advanced',
+-  ];
+-
+-  $form['attributes']['class'] = [
+-    '#type' => 'textfield',
+-    '#title' => t('CSS classes'),
+-    '#description' => t('List of CSS classes to add to the link, separated by spaces.'),
+-    '#default_value' => $get_default_value('class'),
+-    '#maxlength' => 512,
+-    '#access' => $is_accessible('class'),
+-    '#group' => 'advanced',
+-  ];
+-
+-  $form['attributes']['id'] = [
+-    '#type' => 'textfield',
+-    '#title' => t('ID'),
+-    '#description' => t('Allows linking to this content using a <a href="https://en.wikipedia.org/wiki/Fragment_identifier" target="_blank">URL fragment</a>. Must be unique.'),
+-    '#default_value' => $get_default_value('id'),
+-    '#maxlength' => 512,
+-    '#access' => $is_accessible('id'),
+-    '#group' => 'advanced',
+-  ];
+-
+-  $form['attributes']['target'] = [
+-    '#title' => t('Open in new window/tab'),
+-    '#type' => 'checkbox',
+-    '#description' => t('See WCAG guidance on <a href="https://www.w3.org/WAI/WCAG21/Techniques/general/G200" target="_blank">opening links in new windows/tabs</a>.'),
+-    '#default_value' => $get_default_value('target', FALSE),
+-    '#return_value' => '_blank',
+-    '#access' => $is_accessible('target'),
+-    '#group' => 'advanced',
+-  ];
+-
+-  $form['attributes']['rel'] = [
+-    '#type' => 'textfield',
+-    '#title' => t('Relation (rel)'),
+-    '#description' => t('Often used by JS galleries. When opening links in new windows/tabs, it is advised to add the noopener attribute due to security concerns.'),
+-    '#default_value' => $get_default_value('rel'),
+-    '#maxlength' => 512,
+-    '#access' => $is_accessible('rel'),
+-    '#group' => 'advanced',
+-  ];
+-
+-  // Show the advanced group if at least one of its fields is accessible.
+-  foreach ($form['attributes'] as $element) {
+-    if (!empty($element['#group']) && $element['#group'] === 'advanced' && (!isset($element['#access']) || $element['#access'] === TRUE)) {
+-      $form['advanced']['#access'] = TRUE;
+-      break;
+-    }
+-  }
+-
+-  // Add #validate callback that handles empty attributes.
+-  array_unshift($form['#validate'], '_editor_advanced_link_attributes_validate');
++  return \Drupal::service(EditorAdvancedLinkHooks::class)->formEditorLinkDialogAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+@@ -150,8 +27,9 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
+  *
+  * LinkIt 5.x module compatibility.
+  */
++#[LegacyHook]
+ function editor_advanced_link_form_linkit_editor_dialog_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  editor_advanced_link_form_editor_link_dialog_alter($form, $form_state, $form_id);
++  \Drupal::service(EditorAdvancedLinkHooks::class)->formLinkitEditorDialogFormAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+diff --git a/editor_advanced_link.services.yml b/editor_advanced_link.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..f54a3fac77f2c3067fc75a779f5321734d6e0976
+--- /dev/null
++++ b/editor_advanced_link.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\editor_advanced_link\Hook\EditorAdvancedLinkHooks:
++    class: Drupal\editor_advanced_link\Hook\EditorAdvancedLinkHooks
++    autowire: true
+diff --git a/src/Hook/EditorAdvancedLinkHooks.php b/src/Hook/EditorAdvancedLinkHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..d49c2af0523ad2a81e681db6d0de79125e218a78
+--- /dev/null
++++ b/src/Hook/EditorAdvancedLinkHooks.php
+@@ -0,0 +1,150 @@
++<?php
++
++namespace Drupal\editor_advanced_link\Hook;
++
++use Drupal\editor\Entity\Editor;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for editor_advanced_link.
++ */
++class EditorAdvancedLinkHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   *
++   * Add a title and a target fields on EditorLinkDialog if the filter allows it.
++   * Note: the editor_file module declares that its EditorFileDialog form uses
++   *   'editor_link_dialog' as base_form_id. In this case, the function above is
++   *   going to be called as an implementation of hook_form_BASE_FORM_ID_alter().
++   */
++  #[Hook('form_editor_link_dialog_alter')]
++  public function formEditorLinkDialogAlter(&$form, FormStateInterface $form_state, $form_id) {
++    $argument = $form_state->getBuildInfo()['args'][0];
++    // In case the only argument we get is the Editor instead of the FilterFormat.
++    if ($argument instanceof Editor) {
++      $argument = $argument->getFilterFormat();
++    }
++    $restrictions = $argument->getHtmlRestrictions();
++    if (isset($form_state->getUserInput()['editor_object'])) {
++      $input = $form_state->getUserInput()['editor_object'];
++      $form_state->set('link_element', $input);
++      $form_state->setCached(TRUE);
++    }
++    else {
++      // Retrieve the link element's attributes from form state.
++      $input = $form_state->get('link_element') ?: [];
++    }
++    /*
++     * Helper to retrieve form fields' default values.
++     *
++     * @param string $attribute_name
++     * @param string $fallback
++     *
++     * @return mixed
++     *   The existing value or the fallback.
++     */
++    $get_default_value = function ($attribute_name, $fallback = '') use ($input) {
++      return !empty($input[$attribute_name]) ? $input[$attribute_name] : $fallback;
++    };
++    /*
++     * Helper to set the status of a form field according to the status of the
++     * filter about the attribute it is defining.
++     *
++     * @param string $attribute_name
++     *
++     * @return bool
++     *   TRUE if the filter is disabled or if the entire "a" tag is allowed or if
++     *   the given attribute is allowed for the "a" tag.
++     */
++    $is_accessible = function ($attribute_name) use ($restrictions) {
++      return $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || !empty($restrictions['allowed']['a'][$attribute_name]);
++    };
++    // Load the library.
++    $form['#attached']['library'][] = 'editor_advanced_link/editor_advanced_link';
++    $form['attributes']['href']['#weight'] = 0;
++    $form['attributes']['title'] = [
++      '#type' => 'textfield',
++      '#title' => $this->t('Title'),
++      '#description' => $this->t('Populates the title attribute of the link, usually shown as a small tooltip on hover.'),
++      '#default_value' => $get_default_value('title'),
++      '#maxlength' => 512,
++      '#weight' => 1,
++      '#access' => $is_accessible('title'),
++    ];
++    $form['advanced'] = [
++      '#type' => 'details',
++      '#title' => $this->t('Advanced'),
++      '#access' => FALSE,
++      '#weight' => 2,
++    ];
++    $form['attributes']['aria-label'] = [
++      '#type' => 'textfield',
++      '#title' => $this->t('ARIA label'),
++      '#description' => $this->t('Provide an alternative text value/label for assistive technologies.'),
++      '#default_value' => $get_default_value('aria-label'),
++      '#maxlength' => 512,
++      '#access' => $is_accessible('aria-label'),
++      '#group' => 'advanced',
++    ];
++    $form['attributes']['class'] = [
++      '#type' => 'textfield',
++      '#title' => $this->t('CSS classes'),
++      '#description' => $this->t('List of CSS classes to add to the link, separated by spaces.'),
++      '#default_value' => $get_default_value('class'),
++      '#maxlength' => 512,
++      '#access' => $is_accessible('class'),
++      '#group' => 'advanced',
++    ];
++    $form['attributes']['id'] = [
++      '#type' => 'textfield',
++      '#title' => $this->t('ID'),
++      '#description' => $this->t('Allows linking to this content using a <a href="https://en.wikipedia.org/wiki/Fragment_identifier" target="_blank">URL fragment</a>. Must be unique.'),
++      '#default_value' => $get_default_value('id'),
++      '#maxlength' => 512,
++      '#access' => $is_accessible('id'),
++      '#group' => 'advanced',
++    ];
++    $form['attributes']['target'] = [
++      '#title' => $this->t('Open in new window/tab'),
++      '#type' => 'checkbox',
++      '#description' => $this->t('See WCAG guidance on <a href="https://www.w3.org/WAI/WCAG21/Techniques/general/G200" target="_blank">opening links in new windows/tabs</a>.'),
++      '#default_value' => $get_default_value('target', FALSE),
++      '#return_value' => '_blank',
++      '#access' => $is_accessible('target'),
++      '#group' => 'advanced',
++    ];
++    $form['attributes']['rel'] = [
++      '#type' => 'textfield',
++      '#title' => $this->t('Relation (rel)'),
++      '#description' => $this->t('Often used by JS galleries. When opening links in new windows/tabs, it is advised to add the noopener attribute due to security concerns.'),
++      '#default_value' => $get_default_value('rel'),
++      '#maxlength' => 512,
++      '#access' => $is_accessible('rel'),
++      '#group' => 'advanced',
++    ];
++    // Show the advanced group if at least one of its fields is accessible.
++    foreach ($form['attributes'] as $element) {
++      if (!empty($element['#group']) && $element['#group'] === 'advanced' && (!isset($element['#access']) || $element['#access'] === TRUE)) {
++        $form['advanced']['#access'] = TRUE;
++        break;
++      }
++    }
++    // Add #validate callback that handles empty attributes.
++    array_unshift($form['#validate'], '_editor_advanced_link_attributes_validate');
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   *
++   * LinkIt 5.x module compatibility.
++   */
++  #[Hook('form_linkit_editor_dialog_form_alter')]
++  public function formLinkitEditorDialogFormAlter(&$form, FormStateInterface $form_state, $form_id) {
++    editor_advanced_link_form_editor_link_dialog_alter($form, $form_state, $form_id);
++  }
++
++}
+diff --git a/tests/src/Functional/AdvancedLinkDialogTest.php b/tests/src/Functional/AdvancedLinkDialogTest.php
+index f8c425e6e494a96eae867283516050e4642a6dfe..a67dc8d49d4d7bb871b1116c3566c1ca98c8aee8 100644
+--- a/tests/src/Functional/AdvancedLinkDialogTest.php
++++ b/tests/src/Functional/AdvancedLinkDialogTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\editor_advanced_link\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\editor\Entity\Editor;
+ use Drupal\filter\Entity\FilterFormat;
+ use Drupal\Tests\BrowserTestBase;
+@@ -12,6 +15,8 @@ use Drupal\Tests\BrowserTestBase;
+  * @group editor_advanced_link
+  * @requires module ckeditor
+  */
++#[Group('editor_advanced_link')]
++#[RunTestsInSeparateProcesses]
+ class AdvancedLinkDialogTest extends BrowserTestBase {
+ 
+   /**
+@@ -75,6 +80,7 @@ class AdvancedLinkDialogTest extends BrowserTestBase {
+    *
+    * @dataProvider providerLinkDialogFieldsForm
+    */
++  #[DataProvider('providerLinkDialogFieldsForm')]
+   public function testLinkDialogFieldsForm(array $filters, array $expected, bool $has_advanced) {
+     // Reset filter format then add filters from the provider.
+     foreach ($this->format->filters() as $filter_id => $filter_settings) {
+diff --git a/tests/src/FunctionalJavascript/AdvancedLinkTest.php b/tests/src/FunctionalJavascript/AdvancedLinkTest.php
+index 5d096cebf4ce960449afd4447a735f6231705484..2dcdceaa58c9996de06f8bd0da96b4f9804ed381 100644
+--- a/tests/src/FunctionalJavascript/AdvancedLinkTest.php
++++ b/tests/src/FunctionalJavascript/AdvancedLinkTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\editor_advanced_link\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\ckeditor5\HTMLRestrictions;
+ use Drupal\editor\Entity\Editor;
+ use Drupal\editor_advanced_link\Plugin\CKEditor5Plugin\AdvancedLink;
+@@ -17,6 +20,9 @@ use Symfony\Component\Validator\ConstraintViolation;
+  * @group ckeditor5
+  * @internal
+  */
++#[Group('editor_advanced_link')]
++#[Group('ckeditor5')]
++#[RunTestsInSeparateProcesses]
+ class AdvancedLinkTest extends WebDriverTestBase {
+ 
+   use CKEditor5TestTrait;
+@@ -138,6 +144,7 @@ class AdvancedLinkTest extends WebDriverTestBase {
+    *
+    * @dataProvider providerTest
+    */
++  #[DataProvider('providerTest')]
+   public function test(string $attribute_name, string $expected_input_label, bool $is_grouped = FALSE, bool $is_button = FALSE) {
+     $this->configureExtraAttribute($attribute_name);
+ 
+diff --git a/tests/src/Kernel/CKEditor4To5Upgrade/UpgradePathTest.php b/tests/src/Kernel/CKEditor4To5Upgrade/UpgradePathTest.php
+index 5248f3a96244b6ac8254452166b4f3c983e62881..eab57241b15edeb5516e59854dfe3da75ba4db47 100644
+--- a/tests/src/Kernel/CKEditor4To5Upgrade/UpgradePathTest.php
++++ b/tests/src/Kernel/CKEditor4To5Upgrade/UpgradePathTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\editor_advanced_link\Kernel\CKEditor4To5Upgrade;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\ckeditor5\Plugin\CKEditor4To5UpgradePluginInterface;
+ use Drupal\editor\Entity\Editor;
+ use Drupal\editor_advanced_link\Plugin\CKEditor5Plugin\AdvancedLink;
+@@ -17,6 +19,9 @@ use Drupal\Tests\ckeditor5\Kernel\SmartDefaultSettingsTest;
+  * @requires module ckeditor5
+  * @internal
+  */
++#[Group('editor_advanced_link')]
++#[Group('ckeditor5')]
++#[RunTestsInSeparateProcesses]
+ class UpgradePathTest extends SmartDefaultSettingsTest {
+ 
+   /**

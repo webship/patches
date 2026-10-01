@@ -1,0 +1,155 @@
+diff --git a/seckit.info.yml b/seckit.info.yml
+index b2f4e3c4224a16f473c98b3181d0cbdf7ac6a59d..be7a8139bd1d93d1e0586b13895af9c2ed0ce0ae 100644
+--- a/seckit.info.yml
++++ b/seckit.info.yml
+@@ -1,6 +1,6 @@
+ name: Security Kit
+ description: "Enhance security of your Drupal website."
+ package: Security
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ configure: seckit.settings
+ type: module
+diff --git a/seckit.install b/seckit.install
+index abb655c231b45cd7f222f9aec7c712acd043fbd2..a4c7efb54fd859a69eeeeca8cad6eb9d7ad5999b 100644
+--- a/seckit.install
++++ b/seckit.install
+@@ -20,7 +20,6 @@ function seckit_update_8101() {
+ function seckit_update_8102() {
+   $config = \Drupal::configFactory()->getEditable('seckit.settings');
+   if ($config->get('seckit_various.referrer_policy_policy') == 'empty') {
+-    $config->set('seckit_various.referrer_policy_policy', '""')
+-      ->save(TRUE);
++    $config->set('seckit_various.referrer_policy_policy', '""')->save();
+   }
+ }
+diff --git a/seckit.module b/seckit.module
+index 594d41ff297e8795b0be3918cff6148ad9e9ecd6..a03e00ed69af2992eb4e25321691b93f6a9de853 100644
+--- a/seckit.module
++++ b/seckit.module
+@@ -5,20 +5,24 @@
+  * Allows administrators to improve security of the website.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\seckit\Hook\SeckitHooks;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function seckit_form_user_login_form_alter(&$form, FormStateInterface &$form_state) {
+-  _seckit_form_alter_login_form($form, $form_state);
++  \Drupal::service(SeckitHooks::class)->formUserLoginFormAlter($form, $form_state);
+ }
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function seckit_form_user_register_form_alter(&$form, FormStateInterface &$form_state) {
+-  _seckit_form_alter_login_form($form, $form_state);
++  \Drupal::service(SeckitHooks::class)->formUserRegisterFormAlter($form, $form_state);
+ }
+ 
+ /**
+diff --git a/seckit.services.yml b/seckit.services.yml
+index 0668ced224b39ee633b6ba51260438e503f88716..339be20cda3b84a1a2f7e97f6c75e7cf711e5793 100644
+--- a/seckit.services.yml
++++ b/seckit.services.yml
+@@ -7,3 +7,7 @@ services:
+   logger.channel.seckit:
+     parent: logger.channel_base
+     arguments: ['seckit']
++
++  Drupal\seckit\Hook\SeckitHooks:
++    class: Drupal\seckit\Hook\SeckitHooks
++    autowire: true
+diff --git a/src/Hook/SeckitHooks.php b/src/Hook/SeckitHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..be6f85112e95db829efcbc172967eb5e01fec9c8
+--- /dev/null
++++ b/src/Hook/SeckitHooks.php
+@@ -0,0 +1,29 @@
++<?php
++
++namespace Drupal\seckit\Hook;
++
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for seckit.
++ */
++class SeckitHooks {
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   */
++  #[Hook('form_user_login_form_alter')]
++  public function formUserLoginFormAlter(&$form, FormStateInterface &$form_state) {
++    _seckit_form_alter_login_form($form, $form_state);
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   */
++  #[Hook('form_user_register_form_alter')]
++  public function formUserRegisterFormAlter(&$form, FormStateInterface &$form_state) {
++    _seckit_form_alter_login_form($form, $form_state);
++  }
++
++}
+diff --git a/tests/src/Functional/SecKitReportCspViolationTest.php b/tests/src/Functional/SecKitReportCspViolationTest.php
+index 7f013c938418cff61fe6fe11aa8ed0b864a58fbf..206ede0afac0b6f1939f363ec66ef049e285e51c 100644
+--- a/tests/src/Functional/SecKitReportCspViolationTest.php
++++ b/tests/src/Functional/SecKitReportCspViolationTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\seckit\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Url;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -10,6 +12,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group seckit
+  */
++#[Group('seckit')]
++#[RunTestsInSeparateProcesses]
+ class SecKitReportCspViolationTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/SecKitTestCaseTest.php b/tests/src/Functional/SecKitTestCaseTest.php
+index cb6f17184f4f595aa318c5adf1d574a8179d1878..3c038d732ea7bce912c68f8b7434b60981f18bc1 100644
+--- a/tests/src/Functional/SecKitTestCaseTest.php
++++ b/tests/src/Functional/SecKitTestCaseTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\seckit\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\seckit\SeckitInterface;
+ use Drupal\Tests\BrowserTestBase;
+ use GuzzleHttp\Client;
+@@ -12,6 +14,8 @@ use Psr\Http\Message\RequestInterface;
+  *
+  * @group seckit
+  */
++#[Group('seckit')]
++#[RunTestsInSeparateProcesses]
+ class SecKitTestCaseTest extends BrowserTestBase {
+ 
+   /**
+@@ -69,7 +73,6 @@ class SecKitTestCaseTest extends BrowserTestBase {
+     // removed in guzzlehttp/guzzle:8.0 and as of today there's no alternative.
+     // Hence, used Reflection class to get handler and added our handler.
+     $reflection = new \ReflectionProperty(Client::class, 'config');
+-    $reflection->setAccessible(TRUE);
+     $handler_stack = $reflection->getValue($client)['handler'];
+     $handler_stack->push($this->secKitRequestHeader());
+   }

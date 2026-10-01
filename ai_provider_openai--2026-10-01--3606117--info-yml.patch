@@ -1,0 +1,13 @@
+diff --git a/ai_provider_openai.info.yml b/ai_provider_openai.info.yml
+index 736cc23..19544da 100644
+--- a/ai_provider_openai.info.yml
++++ b/ai_provider_openai.info.yml
+@@ -2,7 +2,7 @@ name: OpenAI Provider
+ description: This enables the use of OpenAI for the AI module.
+ package: AI Providers
+ type: module
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: ai_provider_openai.settings_form
+ 
+ dependencies:

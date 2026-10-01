@@ -1,0 +1,13 @@
+diff --git a/openapi_jsonapi.info.yml b/openapi_jsonapi.info.yml
+index 3affd6136613f761f59dc79e12583a486cb3ecd3..505beff42368512f7a43e5082ebd9d8a4406287a 100644
+--- a/openapi_jsonapi.info.yml
++++ b/openapi_jsonapi.info.yml
+@@ -2,7 +2,7 @@ name: OpenAPI JSON:API
+ description: OpenAPI support for the JSON:API module.
+ type: module
+ package: Web Services
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ dependencies:
+   - drupal:jsonapi
+   - openapi:openapi

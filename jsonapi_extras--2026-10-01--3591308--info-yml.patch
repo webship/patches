@@ -1,0 +1,26 @@
+diff --git a/jsonapi_extras.info.yml b/jsonapi_extras.info.yml
+index c8000bc..d9ffb05 100644
+--- a/jsonapi_extras.info.yml
++++ b/jsonapi_extras.info.yml
+@@ -1,7 +1,7 @@
+ name: JSON:API Extras
+ type: module
+ description: Builds on top of JSON:API to deliver extra functionality.
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^9.5 || ^10 || ^11 || ^12
+ package: Web services
+ configure: jsonapi_extras.settings
+ dependencies:
+diff --git a/modules/jsonapi_defaults/jsonapi_defaults.info.yml b/modules/jsonapi_defaults/jsonapi_defaults.info.yml
+index 22d6480..1cb7c62 100644
+--- a/modules/jsonapi_defaults/jsonapi_defaults.info.yml
++++ b/modules/jsonapi_defaults/jsonapi_defaults.info.yml
+@@ -1,7 +1,7 @@
+ name: JSON:API Defaults
+ type: module
+ description: Builds on top of JSON API to deliver extra functionality.
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^9.5 || ^10 || ^11 || ^12
+ package: Web services
+ dependencies:
+   - jsonapi_extras:jsonapi_extras

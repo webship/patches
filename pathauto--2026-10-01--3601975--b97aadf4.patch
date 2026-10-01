@@ -1,0 +1,340 @@
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index c4ecf77..acba46a 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -49,25 +49,38 @@ include:
+ # variables:
+ #   SKIP_ESLINT: '1'
+ variables:
+-  OPT_IN_TEST_PREVIOUS_MINOR: '1'
+-  OPT_IN_TEST_PREVIOUS_MAJOR: '1'
+-  _PHPUNIT_CONCURRENT: 1
++  _PHPUNIT_CONCURRENT: '1'
++  OPT_IN_TEST_PREVIOUS_MAJOR: 1
++  OPT_IN_TEST_PREVIOUS_MINOR: 1
++  OPT_IN_TEST_NEXT_MINOR: 1
++  OPT_IN_TEST_NEXT_MAJOR: 1
++  _LENIENT_ALLOW_LIST: "ctools,history"
++
++# If next major or minor are run, then they should fail.
++phpunit (next major):
++  allow_failure: false
++phpunit (next minor):
++  allow_failure: false
+ 
+ # history is not compatible with D10 and D11.2, add it to lenient and then
+ # remove from the code base, so that the core version of the history module
+ # is used.
+-# @todo revisit this when adding D12 compatibility, will need to be conditional
+-#   then. Alternatively, resolving https://www.drupal.org/project/drupal/issues/3579778
+-#   would allow this to be removed too.
+ .composer-base:
+-  variables:
+-    _LENIENT_ALLOW_LIST: "ctools,history"
+   after_script:
+-    - rm -r web/modules/contrib/history
++    - |
++      if [ -d "web/core/modules/history" ]; then
++        rm -r web/modules/contrib/history
++      fi
+ 
++# We are only interested in PHPStan on the current version.
+ phpstan (previous major):
+   rules:
+-    # We are only interested in PHPStan on the current version.
++    - when: never
++phpstan (next minor):
++  rules:
++    - when: never
++phpstan (next major):
++  rules:
+     - when: never
+ 
+ ###################################################################################
+diff --git a/pathauto.info.yml b/pathauto.info.yml
+index ec64cb7..bd954a5 100644
+--- a/pathauto.info.yml
++++ b/pathauto.info.yml
+@@ -1,6 +1,6 @@
+ name : 'Pathauto'
+ description : 'Provides a mechanism for modules to automatically generate aliases for the content they manage.'
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ type: module
+ 
+ dependencies:
+diff --git a/src/PathautoPatternListBuilder.php b/src/PathautoPatternListBuilder.php
+index eb35e07..4292939 100644
+--- a/src/PathautoPatternListBuilder.php
++++ b/src/PathautoPatternListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\pathauto;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\DraggableListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+ 
+@@ -51,9 +52,9 @@ class PathautoPatternListBuilder extends DraggableListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity) {
++  public function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+     /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $entity */
+-    $operations = parent::getDefaultOperations($entity);
++    $operations = parent::getDefaultOperations($entity, $cacheability);
+ 
+     if (!$entity->hasLinkTemplate('duplicate-form')) {
+       return $operations;
+diff --git a/tests/src/Functional/PathautoBulkUpdateTest.php b/tests/src/Functional/PathautoBulkUpdateTest.php
+index b4823e5..45955b2 100644
+--- a/tests/src/Functional/PathautoBulkUpdateTest.php
++++ b/tests/src/Functional/PathautoBulkUpdateTest.php
+@@ -5,12 +5,16 @@ namespace Drupal\Tests\pathauto\Functional;
+ use Drupal\pathauto\PathautoGeneratorInterface;
+ use Drupal\pathauto\PathautoState;
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Bulk update functionality tests.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoBulkUpdateTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoCacheInvalidationTest.php b/tests/src/Functional/PathautoCacheInvalidationTest.php
+index d438133..b6dff03 100644
+--- a/tests/src/Functional/PathautoCacheInvalidationTest.php
++++ b/tests/src/Functional/PathautoCacheInvalidationTest.php
+@@ -4,13 +4,16 @@ namespace Drupal\Tests\pathauto\Functional;
+ 
+ use Drupal\pathauto\PathautoGeneratorInterface;
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Tests cache invalidation after bulk alias operations.
+  *
+  * @group pathauto
+  */
+-#[\PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses]
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoCacheInvalidationTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoEnablingEntityTypesTest.php b/tests/src/Functional/PathautoEnablingEntityTypesTest.php
+index bf03c8e..94dcebb 100644
+--- a/tests/src/Functional/PathautoEnablingEntityTypesTest.php
++++ b/tests/src/Functional/PathautoEnablingEntityTypesTest.php
+@@ -4,12 +4,16 @@ namespace Drupal\Tests\pathauto\Functional;
+ 
+ use Drupal\comment\Tests\CommentTestTrait;
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Tests pathauto settings form.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoEnablingEntityTypesTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoMassDeleteTest.php b/tests/src/Functional/PathautoMassDeleteTest.php
+index 0b033e3..d581f0f 100644
+--- a/tests/src/Functional/PathautoMassDeleteTest.php
++++ b/tests/src/Functional/PathautoMassDeleteTest.php
+@@ -5,12 +5,16 @@ namespace Drupal\Tests\pathauto\Functional;
+ use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\pathauto\PathautoState;
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Mass delete functionality tests.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoMassDeleteTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoNodeWebTest.php b/tests/src/Functional/PathautoNodeWebTest.php
+index d675564..8b57cc2 100644
+--- a/tests/src/Functional/PathautoNodeWebTest.php
++++ b/tests/src/Functional/PathautoNodeWebTest.php
+@@ -7,12 +7,16 @@ use Drupal\node\Entity\Node;
+ use Drupal\pathauto\Entity\PathautoPattern;
+ use Drupal\pathauto\PathautoState;
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Tests pathauto node UI integration.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoNodeWebTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoSettingsFormWebTest.php b/tests/src/Functional/PathautoSettingsFormWebTest.php
+index 37610f8..f8e9bf0 100644
+--- a/tests/src/Functional/PathautoSettingsFormWebTest.php
++++ b/tests/src/Functional/PathautoSettingsFormWebTest.php
+@@ -4,12 +4,16 @@ namespace Drupal\Tests\pathauto\Functional;
+ 
+ use Drupal\pathauto\PathautoGeneratorInterface;
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Tests pathauto settings form.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoSettingsFormWebTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoTaxonomyWebTest.php b/tests/src/Functional/PathautoTaxonomyWebTest.php
+index 60bb423..66fee28 100644
+--- a/tests/src/Functional/PathautoTaxonomyWebTest.php
++++ b/tests/src/Functional/PathautoTaxonomyWebTest.php
+@@ -3,12 +3,16 @@
+ namespace Drupal\Tests\pathauto\Functional;
+ 
+ use Drupal\Tests\BrowserTestBase;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Tests pathauto taxonomy UI integration.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoTaxonomyWebTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Functional/PathautoUserWebTest.php b/tests/src/Functional/PathautoUserWebTest.php
+index 7c19ab6..7c5a235 100644
+--- a/tests/src/Functional/PathautoUserWebTest.php
++++ b/tests/src/Functional/PathautoUserWebTest.php
+@@ -4,12 +4,16 @@ namespace Drupal\Tests\pathauto\Functional;
+ 
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\views\Views;
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+ /**
+  * Tests pathauto user UI integration.
+  *
+  * @group pathauto
+  */
++#[Group('pathauto')]
++#[RunTestsInSeparateProcesses]
+ class PathautoUserWebTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+diff --git a/tests/src/Kernel/PathautoEntityWithStringIdTest.php b/tests/src/Kernel/PathautoEntityWithStringIdTest.php
+index 98b1a12..211af72 100644
+--- a/tests/src/Kernel/PathautoEntityWithStringIdTest.php
++++ b/tests/src/Kernel/PathautoEntityWithStringIdTest.php
+@@ -7,6 +7,7 @@ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\pathauto\PathautoState;
+ use Drupal\pathauto_string_id_test\Entity\PathautoStringId;
+ use Drupal\Tests\pathauto\Functional\PathautoTestHelperTrait;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use PHPUnit\Framework\Attributes\Group;
+ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ 
+@@ -70,6 +71,7 @@ class PathautoEntityWithStringIdTest extends KernelTestBase {
+    *
+    * @dataProvider entityWithStringIdProvider
+    */
++  #[DataProvider('entityWithStringIdProvider')]
+   public function testEntityWithStringId($id, $expected_key) {
+     $entity = PathautoStringId::create([
+       'id' => $id,
+diff --git a/tests/src/Kernel/PathautoRemoveUuidUpdateTest.php b/tests/src/Kernel/PathautoRemoveUuidUpdateTest.php
+index 04d237e..39a3c34 100644
+--- a/tests/src/Kernel/PathautoRemoveUuidUpdateTest.php
++++ b/tests/src/Kernel/PathautoRemoveUuidUpdateTest.php
+@@ -22,17 +22,6 @@ class PathautoRemoveUuidUpdateTest extends KernelTestBase {
+ 
+   use PathautoTestHelperTrait;
+ 
+-  /**
+-   * Disable schema validation because we intentionally write invalid config.
+-   *
+-   * The test injects uuid keys into condition plugin config to simulate
+-   * legacy data. In Drupal 11.4+, this key is no longer in the schema,
+-   * so strict validation would reject it before the post update runs.
+-   *
+-   * @var bool
+-   */
+-  protected $strictConfigSchema = FALSE;
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -53,6 +42,12 @@ class PathautoRemoveUuidUpdateTest extends KernelTestBase {
+    * {@inheritdoc}
+    */
+   protected function setUp(): void {
++
++    // The test injects uuid keys into condition plugin config to simulate
++    // legacy data. In Drupal 11.4+, this key is no longer in the schema, so
++    // strict validation would reject it before the post update runs.
++    $this->strictConfigSchema = FALSE;
++
+     parent::setUp();
+ 
+     $this->installEntitySchema('user');
+diff --git a/tests/src/Unit/VerboseMessengerTest.php b/tests/src/Unit/VerboseMessengerTest.php
+index 113fff0..2606819 100644
+--- a/tests/src/Unit/VerboseMessengerTest.php
++++ b/tests/src/Unit/VerboseMessengerTest.php
+@@ -6,11 +6,13 @@ use Drupal\Core\Messenger\MessengerInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\pathauto\VerboseMessenger;
+ use Drupal\Tests\UnitTestCase;
++use PHPUnit\Framework\Attributes\Group;
+ 
+ /**
+  * @coversDefaultClass \Drupal\pathauto\VerboseMessenger
+  * @group pathauto
+  */
++#[Group('pathauto')]
+ class VerboseMessengerTest extends UnitTestCase {
+ 
+   /**
+@@ -31,7 +33,7 @@ class VerboseMessengerTest extends UnitTestCase {
+       ->method('hasPermission')
+       ->withAnyParameters()
+       ->willReturn(TRUE);
+-    $messenger = $this->createMock(MessengerInterface::class);
++    $messenger = $this->createStub(MessengerInterface::class);
+ 
+     $this->messenger = new VerboseMessenger($config_factory, $account, $messenger);
+   }

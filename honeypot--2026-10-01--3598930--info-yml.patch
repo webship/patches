@@ -1,0 +1,13 @@
+diff --git a/honeypot.info.yml b/honeypot.info.yml
+index daeee7b..6297ecc 100644
+--- a/honeypot.info.yml
++++ b/honeypot.info.yml
+@@ -2,7 +2,7 @@ name: Honeypot
+ type: module
+ description: 'Mitigates spam form submissions using the honeypot method.'
+ package: 'Spam control'
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ test_dependencies:
+   - rules:rules
+ 

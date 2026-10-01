@@ -1,0 +1,773 @@
+diff --git a/schema_article/tests/src/Functional/SchemaArticleTest.php b/schema_article/tests/src/Functional/SchemaArticleTest.php
+index 545a7dc489c80e59126f47c821a562b766720a1c..0ccf63e433f8d9964fc8a66d1c8a15e45628840a 100644
+--- a/schema_article/tests/src/Functional/SchemaArticleTest.php
++++ b/schema_article/tests/src/Functional/SchemaArticleTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_article\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_article
+  */
++#[Group('schema_metatag')]
++#[Group('schema_article')]
++#[RunTestsInSeparateProcesses]
+ class SchemaArticleTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_book/tests/src/Functional/SchemaBookTest.php b/schema_book/tests/src/Functional/SchemaBookTest.php
+index 432e109ac7eed34e2a144cee7d9ef3429fb70b54..bbeef026117027e8b12cedb6a5df9560b7d7c672 100644
+--- a/schema_book/tests/src/Functional/SchemaBookTest.php
++++ b/schema_book/tests/src/Functional/SchemaBookTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_book\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_book
+  */
++#[Group('schema_metatag')]
++#[Group('schema_book')]
++#[RunTestsInSeparateProcesses]
+ class SchemaBookTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_course/tests/src/Functional/SchemaCourseTest.php b/schema_course/tests/src/Functional/SchemaCourseTest.php
+index d5274e91ecfae6378b955c9fda81273be2409d83..8cfbd08d988e34fac743dd6cba94c566bb1a60c6 100644
+--- a/schema_course/tests/src/Functional/SchemaCourseTest.php
++++ b/schema_course/tests/src/Functional/SchemaCourseTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_course\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_course
+  */
++#[Group('schema_metatag')]
++#[Group('schema_course')]
++#[RunTestsInSeparateProcesses]
+ class SchemaCourseTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_event/tests/src/Functional/SchemaEventTest.php b/schema_event/tests/src/Functional/SchemaEventTest.php
+index afbcd807761d4c3fdd380cf4b73302840c739737..f7aec69962ad7ad6a48c58e65ca8c3a059a3ee8c 100644
+--- a/schema_event/tests/src/Functional/SchemaEventTest.php
++++ b/schema_event/tests/src/Functional/SchemaEventTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_event\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_event
+  */
++#[Group('schema_metatag')]
++#[Group('schema_event')]
++#[RunTestsInSeparateProcesses]
+ class SchemaEventTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_how_to/tests/src/Functional/SchemaHowToTest.php b/schema_how_to/tests/src/Functional/SchemaHowToTest.php
+index a35844aa786372c93ca582f511a91a9eff7e563c..a4a961332bdef22cf37ac5ea9174bd77d4b0ba97 100644
+--- a/schema_how_to/tests/src/Functional/SchemaHowToTest.php
++++ b/schema_how_to/tests/src/Functional/SchemaHowToTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_how_to\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_how_to
+  */
++#[Group('schema_metatag')]
++#[Group('schema_how_to')]
++#[RunTestsInSeparateProcesses]
+ class SchemaHowToTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_image_object/tests/src/Functional/SchemaImageObjectTest.php b/schema_image_object/tests/src/Functional/SchemaImageObjectTest.php
+index d86a5ef929e24b8b80fdd660680bd19893ebb7a7..52badcdbb0cdadae492eae7535c9a0d4d237818b 100644
+--- a/schema_image_object/tests/src/Functional/SchemaImageObjectTest.php
++++ b/schema_image_object/tests/src/Functional/SchemaImageObjectTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_image_object\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_image_object
+  */
++#[Group('schema_metatag')]
++#[Group('schema_image_object')]
++#[RunTestsInSeparateProcesses]
+ class SchemaImageObjectTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_item_list/tests/src/Functional/SchemaItemListTest.php b/schema_item_list/tests/src/Functional/SchemaItemListTest.php
+index abd0480197e51e2b99822fd4c2df0e29fb0f558e..6e8f87491f59c0b524206155392256f110aa252b 100644
+--- a/schema_item_list/tests/src/Functional/SchemaItemListTest.php
++++ b/schema_item_list/tests/src/Functional/SchemaItemListTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_item_list\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_item_list
+  */
++#[Group('schema_metatag')]
++#[Group('schema_item_list')]
++#[RunTestsInSeparateProcesses]
+ class SchemaItemListTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_job_posting/tests/src/Functional/SchemaJobPostingTest.php b/schema_job_posting/tests/src/Functional/SchemaJobPostingTest.php
+index a464bb596583e78d9c148da886c4a8a2c47bbfa9..413934fcce0716f80ecb5de1d5837461360b7305 100644
+--- a/schema_job_posting/tests/src/Functional/SchemaJobPostingTest.php
++++ b/schema_job_posting/tests/src/Functional/SchemaJobPostingTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_job_posting\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_job_posting
+  */
++#[Group('schema_metatag')]
++#[Group('schema_job_posting')]
++#[RunTestsInSeparateProcesses]
+ class SchemaJobPostingTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_metatag.module b/schema_metatag.module
+index 460446e0ffb2d6371aabce04e652df7d405d8dd2..12ef5fe01555c0cfea152371d652dcac7e6113dd 100644
+--- a/schema_metatag.module
++++ b/schema_metatag.module
+@@ -5,21 +5,16 @@
+  * Contains schema_metatag.module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\schema_metatag\Hook\SchemaMetatagHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function schema_metatag_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    case 'help.page.schema_metatag':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('This module adds Schema.org structured data to web pages as JSON-LD. Configure structured data elements using the metatags module.') . '</p>';
+-      return $output;
+-
+-    default:
+-  }
++  return \Drupal::service(SchemaMetatagHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+@@ -27,28 +22,7 @@ function schema_metatag_help($route_name, RouteMatchInterface $route_match) {
+  *
+  * Load all meta tags for this page, then separate out the structured data.
+  */
++#[LegacyHook]
+ function schema_metatag_page_attachments_alter(array &$attachments) {
+-  if (empty($attachments['#attached']['html_head'])) {
+-    return;
+-  }
+-
+-  // Collect tags added by Schema Metatag into structured data array.
+-  $schema_metatag_manager = \Drupal::service('schema_metatag.schema_metatag_manager');
+-  $items = $schema_metatag_manager->parseJsonld($attachments['#attached']['html_head']);
+-
+-  // Turn the structured data array into JSON LD and add it to page head.
+-  if (count($items) > 0) {
+-    $jsonld = $schema_metatag_manager->encodeJsonld($items);
+-    if (!empty($jsonld)) {
+-      $attachments['#attached']['html_head'][] = [
+-        [
+-          '#type' => 'html_tag',
+-          '#tag' => 'script',
+-          '#value' => $jsonld,
+-          '#attributes' => ['type' => 'application/ld+json'],
+-        ],
+-        'schema_metatag',
+-      ];
+-    }
+-  }
++  \Drupal::service(SchemaMetatagHooks::class)->pageAttachmentsAlter($attachments);
+ }
+diff --git a/schema_metatag.services.yml b/schema_metatag.services.yml
+index ed1ba7e3dd4eddc2633eb760248feed664580867..84e9e41dd2fbf2bb3826978ae6ad50e4e4e53914 100644
+--- a/schema_metatag.services.yml
++++ b/schema_metatag.services.yml
+@@ -17,3 +17,7 @@ services:
+   logger.channel.schema_metatag:
+     parent: logger.channel_base
+     arguments: ['schema_metatag']
++
++  Drupal\schema_metatag\Hook\SchemaMetatagHooks:
++    class: Drupal\schema_metatag\Hook\SchemaMetatagHooks
++    autowire: true
+diff --git a/schema_movie/tests/src/Functional/SchemaMovieTest.php b/schema_movie/tests/src/Functional/SchemaMovieTest.php
+index 724fc79e62688abb6a2ec6946ebcb591f4eb57bf..f489fa625ad76118f2cb9ca228875ecccd204371 100644
+--- a/schema_movie/tests/src/Functional/SchemaMovieTest.php
++++ b/schema_movie/tests/src/Functional/SchemaMovieTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_movie\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_movie
+  */
++#[Group('schema_metatag')]
++#[Group('schema_movie')]
++#[RunTestsInSeparateProcesses]
+ class SchemaMovieTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_organization/tests/src/Functional/SchemaOrganizationTest.php b/schema_organization/tests/src/Functional/SchemaOrganizationTest.php
+index 312d2e934f9040f00af68f99da30575ee96043fa..6f84e08134fd798404ee265ed2510e4ac64282f8 100644
+--- a/schema_organization/tests/src/Functional/SchemaOrganizationTest.php
++++ b/schema_organization/tests/src/Functional/SchemaOrganizationTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_organization\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_organization
+  */
++#[Group('schema_metatag')]
++#[Group('schema_organization')]
++#[RunTestsInSeparateProcesses]
+ class SchemaOrganizationTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_person/tests/src/Functional/SchemaPersonTest.php b/schema_person/tests/src/Functional/SchemaPersonTest.php
+index 80383d25b3bbcbe17f358f9b763a535ce3903ff8..47e2f30bab5f57b7d58f1e254f5266fa0a946002 100644
+--- a/schema_person/tests/src/Functional/SchemaPersonTest.php
++++ b/schema_person/tests/src/Functional/SchemaPersonTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_person\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_person
+  */
++#[Group('schema_metatag')]
++#[Group('schema_person')]
++#[RunTestsInSeparateProcesses]
+ class SchemaPersonTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_place/tests/src/Functional/SchemaPlaceTest.php b/schema_place/tests/src/Functional/SchemaPlaceTest.php
+index 787d69be7d447c7f9d09f3ffdf246671b50a5888..dac1837226409a49b6212e72fcb4279a6b9d7226 100644
+--- a/schema_place/tests/src/Functional/SchemaPlaceTest.php
++++ b/schema_place/tests/src/Functional/SchemaPlaceTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_place\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_place
+  */
++#[Group('schema_metatag')]
++#[Group('schema_place')]
++#[RunTestsInSeparateProcesses]
+ class SchemaPlaceTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_product/tests/src/Functional/SchemaProductTest.php b/schema_product/tests/src/Functional/SchemaProductTest.php
+index 0c30a996909ba157e8f9f6e77068fb062e3f2530..e4f85207906a4d1859e1f2be9c185a67cbf74670 100644
+--- a/schema_product/tests/src/Functional/SchemaProductTest.php
++++ b/schema_product/tests/src/Functional/SchemaProductTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_product\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_product
+  */
++#[Group('schema_metatag')]
++#[Group('schema_product')]
++#[RunTestsInSeparateProcesses]
+ class SchemaProductTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_qa_page/tests/src/Functional/SchemaQAPageTest.php b/schema_qa_page/tests/src/Functional/SchemaQAPageTest.php
+index 8a42e808d95241f5fee188b297017094b25c9618..6db1015923ce98b2959cda8e16dbd2a1df772044 100644
+--- a/schema_qa_page/tests/src/Functional/SchemaQAPageTest.php
++++ b/schema_qa_page/tests/src/Functional/SchemaQAPageTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_qa_page\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_qa_page
+  */
++#[Group('schema_metatag')]
++#[Group('schema_qa_page')]
++#[RunTestsInSeparateProcesses]
+ class SchemaQAPageTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_recipe/tests/src/Functional/SchemaRecipeTest.php b/schema_recipe/tests/src/Functional/SchemaRecipeTest.php
+index a3b62d6288dbbba09bc102a09d1b970470b9925b..7c90e46077aa0573b732871b98ff0deb0b3dac59 100644
+--- a/schema_recipe/tests/src/Functional/SchemaRecipeTest.php
++++ b/schema_recipe/tests/src/Functional/SchemaRecipeTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_recipe\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_recipe
+  */
++#[Group('schema_metatag')]
++#[Group('schema_recipe')]
++#[RunTestsInSeparateProcesses]
+ class SchemaRecipeTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_review/tests/src/Functional/SchemaReviewTest.php b/schema_review/tests/src/Functional/SchemaReviewTest.php
+index 34a2abf164a49a971796507f18f46db07eeea202..b228ad647d890c38bf9aa008cb733bacf0cc95a5 100644
+--- a/schema_review/tests/src/Functional/SchemaReviewTest.php
++++ b/schema_review/tests/src/Functional/SchemaReviewTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_review\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_review
+  */
++#[Group('schema_metatag')]
++#[Group('schema_review')]
++#[RunTestsInSeparateProcesses]
+ class SchemaReviewTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_service/tests/src/Functional/SchemaServiceTest.php b/schema_service/tests/src/Functional/SchemaServiceTest.php
+index 71d9ceb4a6149e37aa3625d541fd8ef5f448fb9c..2c575aa221c054e21b9fa96e2c14a23a3e879ae9 100644
+--- a/schema_service/tests/src/Functional/SchemaServiceTest.php
++++ b/schema_service/tests/src/Functional/SchemaServiceTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_service\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_service
+  */
++#[Group('schema_metatag')]
++#[Group('schema_service')]
++#[RunTestsInSeparateProcesses]
+ class SchemaServiceTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_special_announcement/tests/src/Functional/SchemaSpecialAnnouncementTest.php b/schema_special_announcement/tests/src/Functional/SchemaSpecialAnnouncementTest.php
+index 6af5af859a3ce29cc4ffb21323e095e883201ac7..77fc6bab2f0fe78978d9e8919fdf85e68ae0913e 100644
+--- a/schema_special_announcement/tests/src/Functional/SchemaSpecialAnnouncementTest.php
++++ b/schema_special_announcement/tests/src/Functional/SchemaSpecialAnnouncementTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_special_announcement\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_special_announcement
+  */
++#[Group('schema_metatag')]
++#[Group('schema_special_announcement')]
++#[RunTestsInSeparateProcesses]
+ class SchemaSpecialAnnouncementTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_video_object/tests/src/Functional/SchemaVideoObjectTest.php b/schema_video_object/tests/src/Functional/SchemaVideoObjectTest.php
+index 215b4f63052510b6539ed61edf8eb910781260fa..3cfbe502d6df7d5227f5882e6f89dc9251b03aba 100644
+--- a/schema_video_object/tests/src/Functional/SchemaVideoObjectTest.php
++++ b/schema_video_object/tests/src/Functional/SchemaVideoObjectTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_video_object\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_video_object
+  */
++#[Group('schema_metatag')]
++#[Group('schema_video_object')]
++#[RunTestsInSeparateProcesses]
+ class SchemaVideoObjectTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_web_page/tests/src/Functional/SchemaWebPageTest.php b/schema_web_page/tests/src/Functional/SchemaWebPageTest.php
+index 9d2009239967c94cf5aba77a0cfa3e407595da1a..4d6ab00ebac8d43d724716b5a38abc2d069afad1 100644
+--- a/schema_web_page/tests/src/Functional/SchemaWebPageTest.php
++++ b/schema_web_page/tests/src/Functional/SchemaWebPageTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_web_page\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_web_page
+  */
++#[Group('schema_metatag')]
++#[Group('schema_web_page')]
++#[RunTestsInSeparateProcesses]
+ class SchemaWebPageTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/schema_web_site/tests/src/Functional/SchemaWebSiteTest.php b/schema_web_site/tests/src/Functional/SchemaWebSiteTest.php
+index f4f60ec338ca8f5370d5391f04b0670fa989d56c..c5b491a636c37be5e01d432e8d56316cb053b34b 100644
+--- a/schema_web_site/tests/src/Functional/SchemaWebSiteTest.php
++++ b/schema_web_site/tests/src/Functional/SchemaWebSiteTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_web_site\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\schema_metatag\Functional\SchemaMetatagTagsTestBase;
+ 
+ /**
+@@ -10,6 +12,9 @@
+  * @group schema_metatag
+  * @group schema_web_site
+  */
++#[Group('schema_metatag')]
++#[Group('schema_web_site')]
++#[RunTestsInSeparateProcesses]
+ class SchemaWebSiteTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/src/Hook/SchemaMetatagHooks.php b/src/Hook/SchemaMetatagHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..362bde4bf4223ba8daf1f1865c2561264709b6cc
+--- /dev/null
++++ b/src/Hook/SchemaMetatagHooks.php
+@@ -0,0 +1,61 @@
++<?php
++
++namespace Drupal\schema_metatag\Hook;
++
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++/**
++ * Hook implementations for schema_metatag.
++ */
++class SchemaMetatagHooks
++{
++    use StringTranslationTrait;
++    /**
++     * Implements hook_help().
++     */
++    #[Hook('help')]
++    public function help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match)
++    {
++        switch ($route_name) {
++            case 'help.page.schema_metatag':
++                $output = '';
++                $output .= '<h3>' . $this->t('About') . '</h3>';
++                $output .= '<p>' . $this->t('This module adds Schema.org structured data to web pages as JSON-LD. Configure structured data elements using the metatags module.') . '</p>';
++                return $output;
++            default:
++        }
++    }
++    /**
++     * Implements hook_page_attachments_alter().
++     *
++     * Load all meta tags for this page, then separate out the structured data.
++     */
++    #[Hook('page_attachments_alter')]
++    public function pageAttachmentsAlter(array &$attachments)
++    {
++        if (empty($attachments['#attached']['html_head'])) {
++            return;
++        }
++        // Collect tags added by Schema Metatag into structured data array.
++        $schema_metatag_manager = \Drupal::service('schema_metatag.schema_metatag_manager');
++        $items = $schema_metatag_manager->parseJsonld($attachments['#attached']['html_head']);
++        // Turn the structured data array into JSON LD and add it to page head.
++        if (count($items) > 0) {
++            $jsonld = $schema_metatag_manager->encodeJsonld($items);
++            if (!empty($jsonld)) {
++                $attachments['#attached']['html_head'][] = [
++                    [
++                        '#type' => 'html_tag',
++                        '#tag' => 'script',
++                        '#value' => $jsonld,
++                        '#attributes' => [
++                            'type' => 'application/ld+json',
++                        ],
++                    ],
++                    'schema_metatag',
++                ];
++            }
++        }
++    }
++}
+diff --git a/src/Plugin/schema_metatag/PropertyType/BreadcrumbList.php b/src/Plugin/schema_metatag/PropertyType/BreadcrumbList.php
+index 870dcdd61cdd70c03c2e7abaabb964eed0f7f4c2..dccd25138e0acf33d6037480702209f95791f1cf 100644
+--- a/src/Plugin/schema_metatag/PropertyType/BreadcrumbList.php
++++ b/src/Plugin/schema_metatag/PropertyType/BreadcrumbList.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\schema_metatag\Plugin\schema_metatag\PropertyType;
+ 
++use Drupal\Component\Utility\DeprecationHelper;
+ use Drupal\Core\Render\RendererInterface;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+@@ -125,7 +126,7 @@ public function getItems($input_value) {
+           // Handling backward compatibility.
+           if (method_exists(RendererInterface::class, 'renderPlain')) {
+             // @phpstan-ignore-next-line as it is deprecated in D10.3 and removed from D12.
+-            $text = $this->renderer->renderPlain($text);
++            $text = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.3.0', fn() => $this->renderer->renderInIsolation($text), fn() => $this->renderer->renderPlain($text));
+           }
+           else {
+             $text = $this->renderer->renderInIsolation($text);
+diff --git a/src/SchemaMetatagClient.php b/src/SchemaMetatagClient.php
+index e17719e6780b15a502f4fe61ea85c05a640d4124..6e1617d134c890f453f9ce85a1f612991ec885c3 100644
+--- a/src/SchemaMetatagClient.php
++++ b/src/SchemaMetatagClient.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\schema_metatag;
+ 
++use Drupal\Component\Utility\DeprecationHelper;
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use GuzzleHttp\Exception\RequestException;
+@@ -392,7 +393,7 @@ public function getOptionList($parent_name = NULL, $depth = -1) {
+    * {@inheritdoc}
+    */
+   public function clearData() {
+-    $this->cacheBackend->invalidateAll();
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => $this->cacheBackend->deleteAll(), fn() => $this->cacheBackend->invalidateAll());
+   }
+ 
+   /**
+diff --git a/tests/src/Functional/SchemaMetatagTagsTest.php b/tests/src/Functional/SchemaMetatagTagsTest.php
+index edac621967f9c28ca1981da4db108afe0b876015..35b20e7dbab85c614c01fa0e6a7d07633d049e9c 100644
+--- a/tests/src/Functional/SchemaMetatagTagsTest.php
++++ b/tests/src/Functional/SchemaMetatagTagsTest.php
+@@ -2,12 +2,18 @@
+ 
+ namespace Drupal\Tests\schema_metatag\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests that each of the SchemaMetatagTest Metatag base tags work correctly.
+  *
+  * @group schema_metatag
+  * @group schema_metatag_base
+  */
++#[Group('schema_metatag')]
++#[Group('schema_metatag_base')]
++#[RunTestsInSeparateProcesses]
+ class SchemaMetatagTagsTest extends SchemaMetatagTagsTestBase {
+ 
+   /**
+diff --git a/tests/src/Unit/SchemaMetatagManagerTest.php b/tests/src/Unit/SchemaMetatagManagerTest.php
+index 511d904fa7fff412633bde1695c580ecc49654b9..1daedba6e6f24299111e3bbfdf45550e606bcc6a 100644
+--- a/tests/src/Unit/SchemaMetatagManagerTest.php
++++ b/tests/src/Unit/SchemaMetatagManagerTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\schema_metatag\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\schema_metatag\SchemaMetatagManager;
+ use Drupal\Tests\UnitTestCase;
+ 
+@@ -11,12 +13,15 @@
+  * @group schema_metatag
+  * @group schema_metatag_base
+  */
++#[Group('schema_metatag')]
++#[Group('schema_metatag_base')]
+ class SchemaMetatagManagerTest extends UnitTestCase {
+ 
+   /**
+    * @covers ::pivot
+    * @dataProvider pivotData
+    */
++  #[DataProvider('pivotData')]
+   public function testPivot($original, $desired) {
+     $processed = SchemaMetatagManager::pivot($original);
+     $this->assertEquals($desired, $processed);
+@@ -26,6 +31,7 @@ public function testPivot($original, $desired) {
+    * @covers ::explode
+    * @dataProvider stringData
+    */
++  #[DataProvider('stringData')]
+   public function testExplode($original, $desired) {
+     $processed = SchemaMetatagManager::explode($original);
+     $this->assertEquals($desired, $processed);
+@@ -35,6 +41,7 @@ public function testExplode($original, $desired) {
+    * @covers ::explode
+    * @dataProvider stringDataCustomSeparator
+    */
++  #[DataProvider('stringDataCustomSeparator')]
+   public function testExplodeWithCustomSeparator($separator, $original, $desired) {
+     $processed = SchemaMetatagManager::explode($original, $separator);
+     $this->assertEquals($desired, $processed);
+@@ -44,6 +51,7 @@ public function testExplodeWithCustomSeparator($separator, $original, $desired)
+    * @covers ::arrayTrim
+    * @dataProvider arrayData
+    */
++  #[DataProvider('arrayData')]
+   public function testArrayTrim($tests, $original, $original_serialized, $desired, $desired_serialized) {
+     if (!in_array('arraytrim', $tests)) {
+       $this->assertTrue(TRUE);
+@@ -57,6 +65,7 @@ public function testArrayTrim($tests, $original, $original_serialized, $desired,
+    * @covers ::unserialize
+    * @dataProvider arrayData
+    */
++  #[DataProvider('arrayData')]
+   public function testUnserialize($tests, $original, $original_serialized, $desired, $desired_serialized) {
+     if (!in_array('unserialize', $tests)) {
+       $this->assertTrue(TRUE);
+@@ -70,6 +79,7 @@ public function testUnserialize($tests, $original, $original_serialized, $desire
+    * @covers ::serialize
+    * @dataProvider arrayData
+    */
++  #[DataProvider('arrayData')]
+   public function testSerialize($tests, $original, $original_serialized, $desired, $desired_serialized) {
+     if (!in_array('serialize', $tests)) {
+       $this->assertTrue(TRUE);
+@@ -84,6 +94,7 @@ public function testSerialize($tests, $original, $original_serialized, $desired,
+    *
+    * @dataProvider arrayData
+    */
++  #[DataProvider('arrayData')]
+   public function testRecomputeSerializedLength($tests, $original, $original_serialized, $desired, $desired_serialized) {
+     if (!in_array('recompute', $tests)) {
+       $this->assertTrue(TRUE);
+@@ -101,6 +112,7 @@ public function testRecomputeSerializedLength($tests, $original, $original_seria
+    *
+    * @dataProvider jsonData
+    */
++  #[DataProvider('jsonData')]
+   public function testEncodeJsonld($original, $desired) {
+     $processed = SchemaMetatagManager::encodeJsonld($original);
+     // Eliminate spacing and line breaks that don't matter.
