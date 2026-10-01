@@ -7,6 +7,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the `ReflectionProperty::setAccessible()` calls, deprecated in PHP 8.5 and a no-op since PHP 8.1
 - Remove the patches for the Display Builder module (`drupal/display_builder`)
 
 ## [11.0.1] - 2026-09-15
