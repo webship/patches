@@ -7,7 +7,24 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.5] - 2026-10-01
+
+- Add the Drupal 12 requirements, signature and Webform patches ([#27](https://github.com/webship/patches/pull/27), patch files in [#26](https://github.com/webship/patches/pull/26))
+  - `RequirementSeverity` parts of the Project Update Bot MRs (Drupal 12 removes the `REQUIREMENT_*` constants): ai, ai_translate, captcha, field_group, google_tag, metatag; re-rolled for friendlycaptcha 1.1.4 and token 1.17
+  - `drupal/ai`: [#3586667](https://git.drupalcode.org/project/ai/-/work_items/3586667) Add the `$object` parameter to `ExecutableInterface::execute()` implementations
+  - `drupal/captcha`: [#3576948](https://www.drupal.org/i/3576948) Replace the deprecated `FormElement` base class
+  - `drupal/consumers`: [#3592591](https://git.drupalcode.org/project/consumers/-/work_items/3592591) `ConsumerListBuilder::getOperations()` forward-compatible signature
+  - `drupal/field_group`: [#3489669](https://www.drupal.org/i/3489669) Replace annotations with PHP attributes (re-rolled for 4.0.0)
+  - `drupal/google_tag`: [#3617953](https://www.drupal.org/i/3617953) Add the array return type to `getSubscribedEvents()`
+  - `drupal/key`: [#3484086](https://www.drupal.org/i/3484086) Add attributes to plugins in addition to annotations
+  - `drupal/views_bulk_operations`: [#3617756](https://www.drupal.org/i/3617756) Add the missing return type to `getSubscribedEvents()`
+  - `drupal/webform`: [#3537358](https://www.drupal.org/i/3537358), [#3585813](https://www.drupal.org/i/3585813), [#3590360](https://www.drupal.org/i/3590360), [#3614713](https://www.drupal.org/i/3614713), [#3617732](https://www.drupal.org/i/3617732), [#3618362](https://www.drupal.org/i/3618362), [#3618665](https://www.drupal.org/i/3618665), [#3618674](https://www.drupal.org/i/3618674), [#3618889](https://www.drupal.org/i/3618889)
+
+## [12.0.4] - 2026-10-01
+
 - Change the AI Image Alt Text `core_version_requirement` patch for [#3594672](https://git.drupalcode.org/project/ai_image_alt_text/-/work_items/3594672) to the file re-rolled for ai_image_alt_text 1.0.3: the 1.0.2 file no longer applies, which broke fresh builds
+
+## [12.0.3] - 2026-10-01
 
 - Remove the Redirect patch for [#3602388](https://www.drupal.org/i/3602388) (MR !196): Composer Patches can apply it before the [#2879648](https://www.drupal.org/i/2879648) patch it was re-rolled on, and both append to `redirect.services.yml`, so the install fails where only `git apply` is available. The `core_version_requirement` patch for Redirect stays.
 
@@ -25,5 +42,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.5]: https://github.com/webship/patches/compare/12.0.4...12.0.5
+[12.0.4]: https://github.com/webship/patches/compare/12.0.3...12.0.4
+[12.0.3]: https://github.com/webship/patches/compare/12.0.2...12.0.3
 [11.0.1]: https://github.com/webship/patches/compare/11.0.0...11.0.1
 [12.0.2]: https://github.com/webship/patches/compare/12.0.1...12.0.2
