@@ -1,0 +1,26 @@
+diff --git a/modules/actions_permissions/src/EventSubscriber/ActionsPermissionsEventSubscriber.php b/modules/actions_permissions/src/EventSubscriber/ActionsPermissionsEventSubscriber.php
+index 0bb236c9171ff270dfa7fbfed14efc8bf495b46b..6767b3b747a519e0edc02d2f3688908048efc599 100644
+--- a/modules/actions_permissions/src/EventSubscriber/ActionsPermissionsEventSubscriber.php
++++ b/modules/actions_permissions/src/EventSubscriber/ActionsPermissionsEventSubscriber.php
+@@ -30,7 +30,7 @@ final class ActionsPermissionsEventSubscriber implements EventSubscriberInterfac
+   /**
+    * {@inheritdoc}
+    */
+-  public static function getSubscribedEvents() {
++  public static function getSubscribedEvents(): array {
+     return [
+       ViewsBulkOperationsActionManager::ALTER_ACTIONS_EVENT => [
+         ['alterActions', self::PRIORITY],
+diff --git a/src/EventSubscriber/ViewsBulkOperationsEventSubscriber.php b/src/EventSubscriber/ViewsBulkOperationsEventSubscriber.php
+index fefcf5dea03af7f31943233ddb5a64cd1310b4f8..01374c20121beaf997f3cae08b26adf57e226a82 100644
+--- a/src/EventSubscriber/ViewsBulkOperationsEventSubscriber.php
++++ b/src/EventSubscriber/ViewsBulkOperationsEventSubscriber.php
+@@ -32,7 +32,7 @@ class ViewsBulkOperationsEventSubscriber implements EventSubscriberInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function getSubscribedEvents() {
++  public static function getSubscribedEvents(): array {
+     return [
+       ViewsBulkOperationsEvent::NAME => [
+         ['provideViewData', self::PRIORITY],

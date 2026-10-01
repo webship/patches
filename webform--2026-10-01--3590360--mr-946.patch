@@ -1,0 +1,39 @@
+diff --git a/src/Access/WebformSourceEntityAccess.php b/src/Access/WebformSourceEntityAccess.php
+index ffd5d461195067844c60569e784f1328d1b7ed4e..d90fa2852930acf876ebe65c7ce20939e274458a 100644
+--- a/src/Access/WebformSourceEntityAccess.php
++++ b/src/Access/WebformSourceEntityAccess.php
+@@ -28,8 +28,7 @@ class WebformSourceEntityAccess {
+     $entity_reference_manager = \Drupal::service('webform.entity_reference_manager');
+ 
+     $access = $entity->access('update', $account, TRUE);
+-    $access->andIf(AccessResult::allowedIf($entity_reference_manager->getWebform($entity) instanceof WebformInterface));
+-    return $access;
++    return $access->andIf(AccessResult::allowedIf($entity_reference_manager->getWebform($entity) instanceof WebformInterface));
+   }
+ 
+ }
+diff --git a/src/Element/WebformHtmlEditor.php b/src/Element/WebformHtmlEditor.php
+index cd26dff556916b0411869c3206653048bb682cb8..47b78031f3a27888ee30b14afe0df8897f555692 100644
+--- a/src/Element/WebformHtmlEditor.php
++++ b/src/Element/WebformHtmlEditor.php
+@@ -301,6 +301,7 @@ class WebformHtmlEditor extends FormElementBase implements TrustedCallbackInterf
+       // Hide the format select widget if there is now only one available format
+       // and it is the default value.
+       if (count($element['format']['format']['#options']) <= 1
++        && isset($element['format']['format']['#default_value'])
+         && isset($element['format']['format']['#options'][$element['format']['format']['#default_value']])) {
+         $element['format']['format']['#access'] = FALSE;
+       }
+diff --git a/src/Plugin/WebformElement/OptionsBase.php b/src/Plugin/WebformElement/OptionsBase.php
+index ea5167b1c22782494aab77a01b5d6ea69fc0c301..83d289b4874640ce2865e1079069154662a3ae0e 100644
+--- a/src/Plugin/WebformElement/OptionsBase.php
++++ b/src/Plugin/WebformElement/OptionsBase.php
+@@ -845,7 +845,7 @@ abstract class OptionsBase extends WebformElementBase {
+         }
+         else {
+           // Return valid #option.
+-          return (isset($options[$value])) ? $value : NULL;
++          return (isset($options[$value ?? ''])) ? $value : NULL;
+         }
+       }
+     }

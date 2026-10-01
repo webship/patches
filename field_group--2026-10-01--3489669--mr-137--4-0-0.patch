@@ -1,0 +1,422 @@
+diff --git a/src/Attribute/FieldGroupFormatter.php b/src/Attribute/FieldGroupFormatter.php
+new file mode 100644
+index 0000000..b8ce243
+--- /dev/null
++++ b/src/Attribute/FieldGroupFormatter.php
+@@ -0,0 +1,52 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\field_group\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++
++/**
++ * Defines a FieldGroupFormatter attribute object.
++ *
++ * Formatters handle the display of fieldgroups.
++ *
++ * Additional attribute keys for formatters can be defined in
++ * hook_field_group_formatter_info_alter().
++ *
++ * @see \Drupal\field_group\FieldGroupFormatterPluginManager
++ * @see \Drupal\field_group\FieldGroupFormatterInterface
++ *
++ * @ingroup field_formatter
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class FieldGroupFormatter extends Plugin {
++
++  /**
++   * Constructs a FieldGroupFormatter attribute.
++   *
++   * @param string $id
++   *   The plugin ID.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $label
++   *   The human-readable name of the formatter type.
++   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
++   *   A short description of the formatter type.
++   * @param array $supported_contexts
++   *   An array of contexts the formatter supports (form / view).
++   * @param array $format_types
++   *   The different format types available for this formatter.
++   * @param int|null $weight
++   *   An integer to determine the weight of this formatter relative to other
++   *   formatters in the Field UI when selecting a formatter for a given group.
++   */
++  public function __construct(
++    public readonly string $id,
++    public readonly ?TranslatableMarkup $label = NULL,
++    public readonly ?TranslatableMarkup $description = NULL,
++    public readonly array $supported_contexts = [],
++    public readonly array $format_types = [],
++    public readonly ?int $weight = NULL,
++  ) {}
++
++}
+diff --git a/src/Element/HorizontalTabs.php b/src/Element/HorizontalTabs.php
+index 00a9df2..5252515 100644
+--- a/src/Element/HorizontalTabs.php
++++ b/src/Element/HorizontalTabs.php
+@@ -3,6 +3,7 @@
+ namespace Drupal\field_group\Element;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Render\Attribute\FormElement;
+ use Drupal\Core\Render\Element;
+ use Drupal\Core\Render\Element\RenderElementBase;
+ 
+@@ -11,9 +12,8 @@ use Drupal\Core\Render\Element\RenderElementBase;
+  *
+  * Formats all child details and all non-child details whose #group is
+  * assigned this element's name as horizontal tabs.
+- *
+- * @FormElement("horizontal_tabs")
+  */
++#[FormElement('horizontal_tabs')]
+ class HorizontalTabs extends RenderElementBase {
+ 
+   /**
+diff --git a/src/Element/HtmlElement.php b/src/Element/HtmlElement.php
+index 751527f..b0600d3 100644
+--- a/src/Element/HtmlElement.php
++++ b/src/Element/HtmlElement.php
+@@ -3,14 +3,14 @@
+ namespace Drupal\field_group\Element;
+ 
+ use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Render\Attribute\FormElement;
+ use Drupal\Core\Render\Element\RenderElementBase;
+ use Drupal\Core\Template\Attribute;
+ 
+ /**
+  * Provides a render element for a html element.
+- *
+- * @FormElement("field_group_html_element")
+  */
++#[FormElement('field_group_html_element')]
+ class HtmlElement extends RenderElementBase {
+ 
+   /**
+diff --git a/src/FieldGroupFormatterPluginManager.php b/src/FieldGroupFormatterPluginManager.php
+index 782a3b9..c336474 100644
+--- a/src/FieldGroupFormatterPluginManager.php
++++ b/src/FieldGroupFormatterPluginManager.php
+@@ -7,6 +7,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+@@ -45,6 +46,7 @@ class FieldGroupFormatterPluginManager extends DefaultPluginManager {
+       $namespaces,
+       $module_handler,
+       FieldGroupFormatterInterface::class,
++      FieldGroupFormatter::class,
+       'Drupal\field_group\Annotation\FieldGroupFormatter'
+     );
+ 
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/Details.php b/src/Plugin/field_group/FieldGroupFormatter/Details.php
+index a25ae47..9901e40 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/Details.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/Details.php
+@@ -5,21 +5,19 @@ namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
+ use Drupal\Component\Utility\Html;
+ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Render\Markup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
+ use Drupal\field_group\FieldGroupFormatterBase;
+ 
+ /**
+  * Plugin implementation of the 'details' formatter.
+- *
+- * @FieldGroupFormatter(
+- *   id = "details",
+- *   label = @Translation("Details"),
+- *   description = @Translation("Add a details element"),
+- *   supported_contexts = {
+- *     "form",
+- *     "view"
+- *   }
+- * )
+  */
++#[FieldGroupFormatter(
++  id: 'details',
++  label: new TranslatableMarkup('Details'),
++  description: new TranslatableMarkup('Add a details element'),
++  supported_contexts: ['form', 'view'],
++)]
+ class Details extends FieldGroupFormatterBase {
+ 
+   /**
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/DetailsSidebar.php b/src/Plugin/field_group/FieldGroupFormatter/DetailsSidebar.php
+index aa1563b..4e1c7a3 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/DetailsSidebar.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/DetailsSidebar.php
+@@ -2,19 +2,18 @@
+ 
+ namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
+ 
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
++
+ /**
+  * Details Sidebar element.
+- *
+- * @FieldGroupFormatter(
+- *   id = "details_sidebar",
+- *   label = @Translation("Details Sidebar"),
+- *   description = @Translation("Add a details sidebar element"),
+- *   supported_contexts = {
+- *     "form",
+- *     "view"
+- *   }
+- * )
+  */
++#[FieldGroupFormatter(
++  id: 'details_sidebar',
++  label: new TranslatableMarkup('Details Sidebar'),
++  description: new TranslatableMarkup('Add a details sidebar element'),
++  supported_contexts: ['form', 'view'],
++)]
+ class DetailsSidebar extends Details {
+ 
+   /**
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/Fieldset.php b/src/Plugin/field_group/FieldGroupFormatter/Fieldset.php
+index 09ad1cf..df80dea 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/Fieldset.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/Fieldset.php
+@@ -5,21 +5,19 @@ namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
+ use Drupal\Component\Utility\Html;
+ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Render\Markup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
+ use Drupal\field_group\FieldGroupFormatterBase;
+ 
+ /**
+  * Plugin implementation of the 'fieldset' formatter.
+- *
+- * @FieldGroupFormatter(
+- *   id = "fieldset",
+- *   label = @Translation("Fieldset"),
+- *   description = @Translation("This fieldgroup renders the inner content in a fieldset with the title as legend."),
+- *   supported_contexts = {
+- *     "form",
+- *     "view",
+- *   }
+- * )
+  */
++#[FieldGroupFormatter(
++  id: 'fieldset',
++  label: new TranslatableMarkup('Fieldset'),
++  description: new TranslatableMarkup('This fieldgroup renders the inner content in a fieldset with the title as legend.'),
++  supported_contexts: ['form', 'view'],
++)]
+ class Fieldset extends FieldGroupFormatterBase {
+ 
+   /**
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/HtmlElement.php b/src/Plugin/field_group/FieldGroupFormatter/HtmlElement.php
+index 66a1104..aba1297 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/HtmlElement.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/HtmlElement.php
+@@ -6,23 +6,21 @@ use Drupal\Component\Utility\Html;
+ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Form\FormState;
+ use Drupal\Core\Render\Markup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Template\Attribute;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
+ use Drupal\field_group\Element\HtmlElement as HtmlElementRenderElement;
+ use Drupal\field_group\FieldGroupFormatterBase;
+ 
+ /**
+  * Plugin implementation of the 'html_element' formatter.
+- *
+- * @FieldGroupFormatter(
+- *   id = "html_element",
+- *   label = @Translation("HTML element"),
+- *   description = @Translation("This fieldgroup renders the inner content in a HTML element with classes and attributes."),
+- *   supported_contexts = {
+- *     "form",
+- *     "view",
+- *   }
+- * )
+  */
++#[FieldGroupFormatter(
++  id: 'html_element',
++  label: new TranslatableMarkup('HTML element'),
++  description: new TranslatableMarkup('This fieldgroup renders the inner content in a HTML element with classes and attributes.'),
++  supported_contexts: ['form', 'view'],
++)]
+ class HtmlElement extends FieldGroupFormatterBase {
+ 
+   /**
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/Tab.php b/src/Plugin/field_group/FieldGroupFormatter/Tab.php
+index f4e98b3..e56c6fc 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/Tab.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/Tab.php
+@@ -5,25 +5,20 @@ namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
+ use Drupal\Component\Utility\Html;
+ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Render\Markup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
+ use Drupal\field_group\FieldGroupFormatterBase;
+ 
+ /**
+  * Plugin implementation of the 'tab' formatter.
+- *
+- * @FieldGroupFormatter(
+- *   id = "tab",
+- *   label = @Translation("Tab"),
+- *   description = @Translation("This fieldgroup renders the content as a tab."),
+- *   format_types = {
+- *     "open",
+- *     "closed",
+- *   },
+- *   supported_contexts = {
+- *     "form",
+- *     "view",
+- *   }
+- * )
+  */
++#[FieldGroupFormatter(
++  id: 'tab',
++  label: new TranslatableMarkup('Tab'),
++  description: new TranslatableMarkup('This fieldgroup renders the content as a tab.'),
++  format_types: ['open', 'closed'],
++  supported_contexts: ['form', 'view'],
++)]
+ class Tab extends FieldGroupFormatterBase {
+ 
+   /**
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/Tabs.php b/src/Plugin/field_group/FieldGroupFormatter/Tabs.php
+index 5a664e1..bf0df46 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/Tabs.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/Tabs.php
+@@ -7,22 +7,20 @@ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Form\FormState;
+ use Drupal\Core\Render\Element\VerticalTabs;
+ use Drupal\Core\Render\Markup;
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\field_group\Attribute\FieldGroupFormatter;
+ use Drupal\field_group\Element\HorizontalTabs;
+ use Drupal\field_group\FieldGroupFormatterBase;
+ 
+ /**
+  * Plugin implementation of the 'horizontal_tabs' formatter.
+- *
+- * @FieldGroupFormatter(
+- *   id = "tabs",
+- *   label = @Translation("Tabs"),
+- *   description = @Translation("This fieldgroup renders child groups in its own tabs wrapper."),
+- *   supported_contexts = {
+- *     "form",
+- *     "view",
+- *   }
+- * )
+  */
++#[FieldGroupFormatter(
++  id: 'tabs',
++  label: new TranslatableMarkup('Tabs'),
++  description: new TranslatableMarkup('This fieldgroup renders child groups in its own tabs wrapper.'),
++  supported_contexts: ['form', 'view'],
++)]
+ class Tabs extends FieldGroupFormatterBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/FieldGroupFormatterPluginManagerTest.php b/tests/src/Kernel/FieldGroupFormatterPluginManagerTest.php
+new file mode 100644
+index 0000000..fdd9b68
+--- /dev/null
++++ b/tests/src/Kernel/FieldGroupFormatterPluginManagerTest.php
+@@ -0,0 +1,83 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\field_group\Kernel;
++
++use Drupal\KernelTests\KernelTestBase;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
++/**
++ * Tests discovery of the attribute-based field group formatter plugins.
++ *
++ * @group field_group
++ */
++#[RunTestsInSeparateProcesses]
++class FieldGroupFormatterPluginManagerTest extends KernelTestBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  protected static $modules = ['field', 'field_group'];
++
++  /**
++   * The field group formatter plugin manager.
++   *
++   * @var \Drupal\field_group\FieldGroupFormatterPluginManager
++   */
++  protected $formatterManager;
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp(): void {
++    parent::setUp();
++    $this->formatterManager = $this->container->get('plugin.manager.field_group.formatters');
++  }
++
++  /**
++   * Tests that all core formatters are discovered via PHP attributes.
++   */
++  public function testFormatterDiscovery(): void {
++    $definitions = $this->formatterManager->getDefinitions();
++    $expected = ['details', 'details_sidebar', 'fieldset', 'html_element', 'tab', 'tabs'];
++    foreach ($expected as $id) {
++      $this->assertArrayHasKey($id, $definitions, "Formatter '$id' is discovered.");
++    }
++  }
++
++  /**
++   * Tests that attribute arguments are parsed into the plugin definition.
++   */
++  public function testFormatterDefinitionMetadata(): void {
++    $definition = $this->formatterManager->getDefinition('tab');
++
++    $this->assertEquals('Tab', (string) $definition['label']);
++    $this->assertEquals(['open', 'closed'], $definition['format_types']);
++    $this->assertEquals(['form', 'view'], $definition['supported_contexts']);
++    $this->assertEquals('Drupal\field_group\Plugin\field_group\FieldGroupFormatter\Tab', $definition['class']);
++  }
++
++  /**
++   * Tests that a discovered formatter plugin can be instantiated.
++   */
++  public function testFormatterInstantiation(): void {
++    $group = (object) ['label' => 'Tabs', 'group_name' => 'group_test', 'context' => 'form'];
++    $plugin = $this->formatterManager->getInstance([
++      'format_type' => 'tabs',
++      'configuration' => ['label' => 'Tabs', 'settings' => []],
++      'group' => $group,
++    ]);
++    $this->assertInstanceOf('Drupal\field_group\Plugin\field_group\FieldGroupFormatter\Tabs', $plugin);
++  }
++
++  /**
++   * Tests that the attribute-based render elements are discovered.
++   */
++  public function testRenderElementDiscovery(): void {
++    $element_info = $this->container->get('plugin.manager.element_info');
++    $this->assertTrue($element_info->hasDefinition('field_group_html_element'));
++    $this->assertTrue($element_info->hasDefinition('horizontal_tabs'));
++  }
++
++}

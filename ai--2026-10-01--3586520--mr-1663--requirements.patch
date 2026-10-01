@@ -1,0 +1,121 @@
+diff --git a/ai.install b/ai.install
+index 0ff2e9a92948826c4015b5b85e1b5da71f76c751..f71e2d0dced66062565a19716db04c3388ec969c 100644
+--- a/ai.install
++++ b/ai.install
+@@ -1,5 +1,13 @@
+ <?php
+ 
++/**
++ * @file
++ * Install, update and uninstall functions for the ai module.
++ */
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * @file
+  * Install, update and uninstall functions for the ai module.
+@@ -25,14 +33,14 @@ function ai_requirements($phase) {
+       $requirements['ai_module'] = [
+         'title' => t('AI'),
+         'value' => t('You need to install and setup one AI Provider before you can use the AI module.'),
+-        'severity' => REQUIREMENT_WARNING,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+       ];
+     }
+     else {
+       $requirements['ai_module'] = [
+         'title' => t('AI'),
+         'value' => t('Providers installed'),
+-        'severity' => REQUIREMENT_OK,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::OK, fn() => REQUIREMENT_OK),
+       ];
+     }
+ 
+@@ -72,7 +80,7 @@ function _ai_built_assets_requirements(): array {
+       'ai_built_assets' => [
+         'title' => t('AI built assets'),
+         'value' => t('Built JavaScript assets for the AI module are present.'),
+-        'severity' => REQUIREMENT_OK,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::OK, fn() => REQUIREMENT_OK),
+       ],
+     ];
+   }
+@@ -84,7 +92,7 @@ function _ai_built_assets_requirements(): array {
+       'description' => t('The following built assets are missing: <code>@assets</code>. Run <code>npm ci</code> and <code>npm run build</code> in the <code>ai</code> module folder to generate them.', [
+         '@assets' => implode(', ', $missing),
+       ]),
+-      'severity' => REQUIREMENT_WARNING,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+     ],
+   ];
+ }
+diff --git a/modules/ai_assistant_api/ai_assistant_api.install b/modules/ai_assistant_api/ai_assistant_api.install
+index bcb95011b7aaec9cd9047889edd5ba30f2f4ff7d..d799bb413c02447d5a8fcd67fde8321a95f253fc 100644
+--- a/modules/ai_assistant_api/ai_assistant_api.install
++++ b/modules/ai_assistant_api/ai_assistant_api.install
+@@ -5,6 +5,8 @@
+  * Install, update and uninstall function for AI assistant.
+  */
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+ 
+ /**
+@@ -27,7 +29,7 @@ function ai_assistant_api_requirements(string $phase): array {
+             new TranslatableMarkup('Enabling the custom prompts by changing the <code>ai_assistant_custom_prompts</code> setting to <code>TRUE</code>'),
+           ],
+         ],
+-        'severity' => REQUIREMENT_WARNING,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+       ];
+     }
+   }
+diff --git a/modules/ai_ckeditor/ai_ckeditor.install b/modules/ai_ckeditor/ai_ckeditor.install
+index 583387d7a108b82802b8ec5ee7977f66c5e879eb..920faa8f3530e9172288038e2536db921ee596b5 100644
+--- a/modules/ai_ckeditor/ai_ckeditor.install
++++ b/modules/ai_ckeditor/ai_ckeditor.install
+@@ -1,5 +1,13 @@
+ <?php
+ 
++/**
++ * @file
++ * Install, update and uninstall functions for the AI CKEditor module.
++ */
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * @file
+  * Install, update and uninstall functions for the AI CKEditor module.
+@@ -31,7 +39,7 @@ function ai_ckeditor_requirements($phase): array {
+       'ai_ckeditor_assets' => [
+         'title' => t('AI CKEditor assets'),
+         'value' => t('Built assets are present.'),
+-        'severity' => REQUIREMENT_OK,
++        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::OK, fn() => REQUIREMENT_OK),
+       ],
+     ];
+   }
+@@ -43,7 +51,7 @@ function ai_ckeditor_requirements($phase): array {
+       'description' => t('The AI CKEditor plugin assets are not built, so the editor toolbar buttons will not load. Run <code>npm ci</code> and <code>npm run build</code> in <code>modules/ai_ckeditor</code> inside the AI module to generate them. See <code>docs/modules/ai_ckeditor/index.md</code> for details. Missing files: @files', [
+         '@files' => implode(', ', $missing),
+       ]),
+-      'severity' => REQUIREMENT_WARNING,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+     ],
+   ];
+ }
+@@ -55,7 +63,7 @@ function ai_ckeditor_update_10001() {
+   // Add the modify prompt configuration.
+   $config = \Drupal::configFactory()->getEditable('ai_ckeditor.settings');
+   if (!$config->get('prompts.modify_prompt')) {
+-    $config->set('prompts.modify_prompt', "Use the following instructions to process this text. Return only the processed text without explanations.\nInstructions: {{ modify_prompt }}\n\nText to process:")
+-      ->save(TRUE);
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $config->set('prompts.modify_prompt', "Use the following instructions to process this text. Return only the processed text without explanations.\nInstructions: {{ modify_prompt }}\n\nText to process:")->save(), fn() => $config->set('prompts.modify_prompt', "Use the following instructions to process this text. Return only the processed text without explanations.\nInstructions: {{ modify_prompt }}\n\nText to process:")
++      ->save(TRUE));
+   }
+ }

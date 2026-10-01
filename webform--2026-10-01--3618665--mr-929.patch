@@ -1,0 +1,88 @@
+diff --git a/modules/webform_devel/src/Form/WebformDevelEntityFormApiBaseForm.php b/modules/webform_devel/src/Form/WebformDevelEntityFormApiBaseForm.php
+index e8e83caabbf022174390da30bde929d0f1d42974..1696290b0832a3c2d5aab0ffd11d12dfe047a7a4 100644
+--- a/modules/webform_devel/src/Form/WebformDevelEntityFormApiBaseForm.php
++++ b/modules/webform_devel/src/Form/WebformDevelEntityFormApiBaseForm.php
+@@ -11,13 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  */
+ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
+ 
+-  /**
+-   * The archiver manager.
+-   *
+-   * @var \Drupal\Core\Archiver\ArchiverManager
+-   */
+-  protected $archiverManager;
+-
+   /**
+    * The renderer.
+    *
+@@ -58,7 +51,6 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
+    */
+   public static function create(ContainerInterface $container) {
+     $instance = new static();
+-    $instance->archiverManager = $container->get('plugin.manager.archiver');
+     $instance->renderer = $container->get('renderer');
+     $instance->generate = $container->get('webform_submission.generate');
+     $instance->tokenManager = $container->get('webform.token_manager');
+diff --git a/src/WebformSubmissionExporter.php b/src/WebformSubmissionExporter.php
+index e2e6a6ab8376d715d141f2feb62cd2b53f0426dc..c0d51d1933e2f39ec28e8bd39980fca5bde3e41c 100644
+--- a/src/WebformSubmissionExporter.php
++++ b/src/WebformSubmissionExporter.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\webform;
+ 
+-use Drupal\Core\Archiver\ArchiverManager;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+@@ -58,13 +57,6 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
+    */
+   protected $streamWrapperManager;
+ 
+-  /**
+-   * The archiver manager.
+-   *
+-   * @var \Drupal\Core\Archiver\ArchiverManager
+-   */
+-  protected $archiverManager;
+-
+   /**
+    * The webform element manager.
+    *
+@@ -132,8 +124,6 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
+    *   The entity type manager.
+    * @param \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager
+    *   The stream wrapper manager.
+-   * @param \Drupal\Core\Archiver\ArchiverManager $archiver_manager
+-   *   The archiver manager.
+    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+    *   The webform element manager.
+    * @param \Drupal\webform\Plugin\WebformExporterManagerInterface $exporter_manager
+@@ -141,12 +131,11 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
+    * @param \Drupal\Core\Language\LanguageManagerInterface|null $language_manager
+    *   The language manager.
+    */
+-  public function __construct(ConfigFactoryInterface $config_factory, FileSystemInterface $file_system, EntityTypeManagerInterface $entity_type_manager, StreamWrapperManagerInterface $stream_wrapper_manager, ArchiverManager $archiver_manager, WebformElementManagerInterface $element_manager, WebformExporterManagerInterface $exporter_manager, ?LanguageManagerInterface $language_manager = NULL) {
++  public function __construct(ConfigFactoryInterface $config_factory, FileSystemInterface $file_system, EntityTypeManagerInterface $entity_type_manager, StreamWrapperManagerInterface $stream_wrapper_manager, WebformElementManagerInterface $element_manager, WebformExporterManagerInterface $exporter_manager, ?LanguageManagerInterface $language_manager = NULL) {
+     $this->configFactory = $config_factory;
+     $this->fileSystem = $file_system;
+     $this->entityTypeManager = $entity_type_manager;
+     $this->streamWrapperManager = $stream_wrapper_manager;
+-    $this->archiverManager = $archiver_manager;
+     $this->elementManager = $element_manager;
+     $this->exporterManager = $exporter_manager;
+     // @todo [Webform 7.x] Require the language manager as an injected dependency.
+diff --git a/webform.services.yml b/webform.services.yml
+index ea248e5664802724e143878ad05046a370199d97..ba83adff6336a305044c73b971859c1adb07b0fa 100644
+--- a/webform.services.yml
++++ b/webform.services.yml
+@@ -86,7 +86,7 @@ services:
+ 
+   webform_submission.exporter:
+     class: Drupal\webform\WebformSubmissionExporter
+-    arguments: ['@config.factory', '@file_system', '@entity_type.manager', '@stream_wrapper_manager', '@plugin.manager.archiver', '@plugin.manager.webform.element', '@plugin.manager.webform.exporter', '@language_manager']
++    arguments: ['@config.factory', '@file_system', '@entity_type.manager', '@stream_wrapper_manager', '@plugin.manager.webform.element', '@plugin.manager.webform.exporter', '@language_manager']
+ 
+   webform.third_party_settings_manager:
+     class: Drupal\webform\WebformThirdPartySettingsManager

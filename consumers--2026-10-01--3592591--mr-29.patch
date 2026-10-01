@@ -1,0 +1,23 @@
+diff --git a/src/ConsumerListBuilder.php b/src/ConsumerListBuilder.php
+index 0e390c851e05fae2bf2e63a3839780c3ba3efa6a..38fe3885b3adc452c6cf6efab2e22199b6a64832 100644
+--- a/src/ConsumerListBuilder.php
++++ b/src/ConsumerListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\consumers;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityListBuilder;
+ 
+@@ -58,8 +59,8 @@ class ConsumerListBuilder extends EntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getOperations(EntityInterface $entity) {
+-    $operations = parent::getOperations($entity);
++  public function getOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
++    $operations = parent::getOperations($entity, $cacheability);
+     if (
+       $entity->access('update') &&
+       $entity->hasLinkTemplate('make-default-form') &&

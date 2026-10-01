@@ -1,0 +1,468 @@
+diff --git a/includes/webform.theme.template.inc b/includes/webform.theme.template.inc
+index 8066377cafc08151c771da30ab93b42140942076..58a8f17fea70fc1f9e3119d8abc6dec90acbf2db 100644
+--- a/includes/webform.theme.template.inc
++++ b/includes/webform.theme.template.inc
+@@ -72,7 +72,17 @@ function template_preprocess_webform_help(array &$variables) {
+  *     Properties used: #action, #method, #attributes, #webform_children.
+  */
+ function template_preprocess_webform(array &$variables) {
+-  template_preprocess_form($variables);
++  // Drupal 12 removes the procedural template_preprocess_form() and moves its
++  // body to Drupal\Core\Form\FormPreprocess::preprocessForm(), registered as a
++  // service under its own class name. Without this, none of the variables the
++  // template needs are set and a webform renders as an empty form element.
++  if (function_exists('template_preprocess_form')) {
++    template_preprocess_form($variables);
++  }
++  else {
++    \Drupal::service('Drupal\Core\Form\FormPreprocess')
++      ->preprocessForm($variables);
++  }
+ }
+ 
+ /**
+diff --git a/modules/webform_share/webform_share.module b/modules/webform_share/webform_share.module
+index 3818fc93799bac1da55629d32c874712a1b7e6c4..4af74baeb123236e799cb3e69dc2a7b485f41c6b 100644
+--- a/modules/webform_share/webform_share.module
++++ b/modules/webform_share/webform_share.module
+@@ -104,7 +104,15 @@ function template_preprocess_html__webform_share(&$variables) {
+   // Make sure the variables are preprocessed.
+   // @see template_preprocess_page()
+   if (!isset($variables['page'])) {
+-    template_preprocess_html($variables);
++    // Drupal 12 removes the procedural template_preprocess_html(); its body
++    // moved to Drupal\Core\Theme\ThemePreprocess::preprocessHtml().
++    if (function_exists('template_preprocess_html')) {
++      template_preprocess_html($variables);
++    }
++    else {
++      \Drupal::service('Drupal\Core\Theme\ThemePreprocess')
++        ->preprocessHtml($variables);
++    }
+   }
+ 
+   /** @var \Drupal\webform\WebformInterface $webform */
+@@ -150,7 +158,15 @@ function template_preprocess_page__webform_share(&$variables) {
+   // Make sure the variables are preprocessed.
+   // @see template_preprocess_page()
+   if (!isset($variables['base_path'])) {
+-    template_preprocess_page($variables);
++    // Drupal 12 removes the procedural template_preprocess_page(); its body
++    // moved to Drupal\Core\Theme\ThemePreprocess::preprocessPage().
++    if (function_exists('template_preprocess_page')) {
++      template_preprocess_page($variables);
++    }
++    else {
++      \Drupal::service('Drupal\Core\Theme\ThemePreprocess')
++        ->preprocessPage($variables);
++    }
+   }
+ }
+ 
+diff --git a/src/Hook/WebformThemeHooks.php b/src/Hook/WebformThemeHooks.php
+index fedab487564568044cb36cb56cbb9d5ead26a559..08dac059c878631f52da3ebf11bbdbd5070490c1 100644
+--- a/src/Hook/WebformThemeHooks.php
++++ b/src/Hook/WebformThemeHooks.php
+@@ -3,6 +3,7 @@
+ namespace Drupal\webform\Hook;
+ 
+ use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\webform\Theme\WebformPreprocess;
+ use Drupal\webform\Utility\WebformElementHelper;
+ 
+ /**
+@@ -304,9 +305,17 @@ class WebformThemeHooks {
+       ],
+     ];
+     // Since any rendering of a webform is going to require 'webform.theme.inc'
+-    // we are going to just add it to every template.
+-    foreach ($info as &$template) {
++    // we are going to just add it to every template. Drupal 12 removes that
++    // 'file' mechanism, so also declare an 'initial preprocess' callback
++    // wherever WebformPreprocess carries one: on Drupal 12 that is what loads
++    // the file and runs the preprocess, and on 10.3 the unknown key is
++    // ignored.
++    foreach ($info as $hook => &$template) {
+       $template['file'] = 'includes/webform.theme.template.inc';
++      $method = 'preprocess' . str_replace(' ', '', ucwords(str_replace('_', ' ', $hook)));
++      if (method_exists(WebformPreprocess::class, $method)) {
++        $template['initial preprocess'] = WebformPreprocess::class . ':' . $method;
++      }
+     }
+     return $info;
+   }
+diff --git a/src/Theme/WebformPreprocess.php b/src/Theme/WebformPreprocess.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..37b8cfec71c5a51f378263bf9b4ae54d34cb6daa
+--- /dev/null
++++ b/src/Theme/WebformPreprocess.php
+@@ -0,0 +1,369 @@
++<?php
++
++namespace Drupal\webform\Theme;
++
++/**
++ * Initial preprocess callbacks for webform's theme hooks.
++ *
++ * Drupal 12 removes the theme hook 'includes' mechanism, so the file that
++ * holds webform's template_preprocess_*() functions is no longer loaded and
++ * those functions are never discovered. Declaring a method here as a theme
++ * hook's 'initial preprocess' loads that file and calls the function, which
++ * keeps one implementation of each preprocess rather than two.
++ *
++ * @see \Drupal\webform\Hook\WebformThemeHooks::theme()
++ * @see https://www.drupal.org/node/3549500
++ */
++class WebformPreprocess {
++
++  /**
++   * Prepares variables for webform help templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformHelp(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_help($variables);
++  }
++
++  /**
++   * Prepares variables for webform templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebform(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform($variables);
++  }
++
++  /**
++   * Prepares variables for webform actions templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformActions(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_actions($variables);
++  }
++
++  /**
++   * Prepares variables for webform confirmation templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformConfirmation(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_confirmation($variables);
++  }
++
++  /**
++   * Prepares variables for webform submission navigation templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformSubmissionNavigation(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_submission_navigation($variables);
++  }
++
++  /**
++   * Prepares variables for webform submission templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformSubmission(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_submission($variables);
++  }
++
++  /**
++   * Prepares variables for webform submission data templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformSubmissionData(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_submission_data($variables);
++  }
++
++  /**
++   * Prepares variables for webform submission information templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformSubmissionInformation(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_submission_information($variables);
++  }
++
++  /**
++   * Prepares variables for webform codemirror templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCodemirror(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_codemirror($variables);
++  }
++
++  /**
++   * Prepares variables for webform element base html templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementBaseHtml(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_base_html($variables);
++  }
++
++  /**
++   * Prepares variables for webform element base text templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementBaseText(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_base_text($variables);
++  }
++
++  /**
++   * Prepares variables for webform progress templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformProgress(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_progress($variables);
++  }
++
++  /**
++   * Prepares variables for webform progress bar templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformProgressBar(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_progress_bar($variables);
++  }
++
++  /**
++   * Prepares variables for webform progress tracker templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformProgressTracker(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_progress_tracker($variables);
++  }
++
++  /**
++   * Prepares variables for webform message templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformMessage(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_message($variables);
++  }
++
++  /**
++   * Prepares variables for webform html editor markup templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformHtmlEditorMarkup(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_html_editor_markup($variables);
++  }
++
++  /**
++   * Prepares variables for webform horizontal rule templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformHorizontalRule(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_horizontal_rule($variables);
++  }
++
++  /**
++   * Prepares variables for webform section templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformSection(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_section($variables);
++  }
++
++  /**
++   * Prepares variables for webform composite address templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCompositeAddress(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_composite_address($variables);
++  }
++
++  /**
++   * Prepares variables for webform composite contact templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCompositeContact(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_composite_contact($variables);
++  }
++
++  /**
++   * Prepares variables for webform composite link templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCompositeLink(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_composite_link($variables);
++  }
++
++  /**
++   * Prepares variables for webform composite location templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCompositeLocation(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_composite_location($variables);
++  }
++
++  /**
++   * Prepares variables for webform composite name templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCompositeName(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_composite_name($variables);
++  }
++
++  /**
++   * Prepares variables for webform composite telephone templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformCompositeTelephone(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_composite_telephone($variables);
++  }
++
++  /**
++   * Prepares variables for webform element help templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementHelp(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_help($variables);
++  }
++
++  /**
++   * Prepares variables for webform element more templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementMore(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_more($variables);
++  }
++
++  /**
++   * Prepares variables for webform element managed file templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementManagedFile(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_managed_file($variables);
++  }
++
++  /**
++   * Prepares variables for webform element audio file templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementAudioFile(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_audio_file($variables);
++  }
++
++  /**
++   * Prepares variables for webform element document file templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementDocumentFile(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_document_file($variables);
++  }
++
++  /**
++   * Prepares variables for webform element image file templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementImageFile(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_image_file($variables);
++  }
++
++  /**
++   * Prepares variables for webform element video file templates.
++   *
++   * @param array $variables
++   *   An associative array containing the properties of the element.
++   */
++  public function preprocessWebformElementVideoFile(array &$variables): void {
++    $this->loadPreprocessFunctions();
++    template_preprocess_webform_element_video_file($variables);
++  }
++
++  /**
++   * Loads the file that defines the template_preprocess_*() functions.
++   */
++  protected function loadPreprocessFunctions(): void {
++    if (!function_exists('template_preprocess_webform')) {
++      include_once __DIR__ . '/../../includes/webform.theme.template.inc';
++    }
++  }
++
++}
