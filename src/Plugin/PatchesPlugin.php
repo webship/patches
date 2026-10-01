@@ -130,13 +130,11 @@ class PatchesPlugin implements PluginInterface, EventSubscriberInterface, Capabl
 
         $r = new \ReflectionClass($cweagans);
         $lockerProp = $r->getProperty('locker');
-        $lockerProp->setAccessible(true);
         $locker = $lockerProp->getValue($cweagans);
         $locker->setLockData($newCollection, true);
 
         if ($r->hasProperty('patchCollection')) {
             $pcProp = $r->getProperty('patchCollection');
-            $pcProp->setAccessible(true);
             $pcProp->setValue($cweagans, $newCollection);
         }
     }
