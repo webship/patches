@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Change the AI Image Alt Text `core_version_requirement` patch for [#3594672](https://git.drupalcode.org/project/ai_image_alt_text/-/work_items/3594672) to the file re-rolled for ai_image_alt_text 1.0.3: the 1.0.2 file no longer applies, which broke fresh builds
+
 - Remove the Redirect patch for [#3602388](https://www.drupal.org/i/3602388) (MR !196): Composer Patches can apply it before the [#2879648](https://www.drupal.org/i/2879648) patch it was re-rolled on, and both append to `redirect.services.yml`, so the install fails where only `git apply` is available. The `core_version_requirement` patch for Redirect stays.
 
 ## [12.0.2] - 2026-10-01
