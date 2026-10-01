@@ -54,7 +54,7 @@ Result: only patches declared by `webship/patches` (and your project's own `extr
 
 | Branch       | Drupal core | Use with                     |
 |--------------|-------------|------------------------------|
-| `12.0.x`     | `~11.4.0`   | Webship `12.0.x` and the website project |
+| `12.0.x`     | `^11.4 \|\| ^12` | Webship `12.0.x` and the website project |
 | `11.0.x`     | `~11.4.0`   | Webship `~11.0.0`, Drupal 11 |
 | `10.1.x`     | `~11.3.0`   | Webship `~10.1.0`            |
 | `10.0.x`     | `~10.6.0`   | Webship `~10.0.0`            |

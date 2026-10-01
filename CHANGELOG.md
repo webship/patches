@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Add the Drupal 12 compatibility patches for 64 contrib modules: the Project Update Bot (or issue) MR where it applies to the installed release, and a `core_version_requirement` patch where it does not
+- Remove the Shield patch for [#3562392](https://www.drupal.org/i/3562392): the Drupal 12 MR for [#3602958](https://www.drupal.org/i/3602958) carries the same change
 - Remove the `ReflectionProperty::setAccessible()` calls, deprecated in PHP 8.5 and a no-op since PHP 8.1
 - Remove the patches for the Display Builder module (`drupal/display_builder`)
 
