@@ -1,0 +1,13 @@
+diff --git a/easy_breadcrumb.info.yml b/easy_breadcrumb.info.yml
+index e2387ee..da96630 100644
+--- a/easy_breadcrumb.info.yml
++++ b/easy_breadcrumb.info.yml
+@@ -2,7 +2,7 @@ name: 'Easy Breadcrumb'
+ type: module
+ description: 'Provides configurable path based breadcrumbs.'
+ package: 'Navigation'
+-core_version_requirement: ^9.2 || ^10 || ^11
++core_version_requirement: ^9.2 || ^10 || ^11 || ^12
+ configure: easy_breadcrumb.general_settings_form
+ 
+ # Information added by Drupal.org packaging script on 2026-08-28

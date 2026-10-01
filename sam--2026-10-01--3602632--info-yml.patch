@@ -1,0 +1,13 @@
+diff --git a/sam.info.yml b/sam.info.yml
+index 82d1d57..92bf907 100644
+--- a/sam.info.yml
++++ b/sam.info.yml
+@@ -1,7 +1,7 @@
+ name: Simple Add More
+ type: module
+ description: Improves limited-cardinality widgets by displaying only one empty element at a time.
+-core_version_requirement: ^9.2 || ^10 || ^11
++core_version_requirement: ^9.2 || ^10 || ^11 || ^12
+ package: Fields
+ 
+ test_dependencies:

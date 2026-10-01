@@ -1,0 +1,504 @@
+diff --git a/dashboards.module b/dashboards.module
+index 02bf2a1d7012bcf46ca3d6bd90b29d2a3769f489..2a8d3a0b8615b780759dbea709b30547216b64e4 100644
+--- a/dashboards.module
++++ b/dashboards.module
+@@ -5,45 +5,26 @@
+  * Contains dashboards.module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\dashboards\Hook\DashboardsHooks;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Template\Attribute;
+-use Drupal\dashboards\Form\FormAlter;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function dashboards_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-
+-    case 'help.page.dashboards':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('Place dashboards with layout builder functionality.') . '</p>';
+-      $output .= '<p>';
+-      $output .= t('Visit the <a href=":project_link">Dashboards project page</a> on Drupal.org for more information.', [
+-        ':project_link' => 'https://www.drupal.org/project/dashboards',
+-      ]);
+-      $output .= '</p>';
+-
+-      return $output;
+-
+-    default:
+-  }
++  return \Drupal::service(DashboardsHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function dashboards_theme() {
+-  return [
+-    'dashboards_admin_list' => [
+-      'variables' => [
+-        'attributes' => new Attribute(),
+-        'list' => [],
+-      ],
+-    ],
+-  ];
++  return \Drupal::service(DashboardsHooks::class)->theme();
+ }
+ 
+ /**
+@@ -62,132 +43,39 @@ function dashboards_preprocess_dashboards_admin_list(&$variables) {
+ /**
+  * Implements hook_theme_registry_alter().
+  */
++#[LegacyHook]
+ function dashboards_theme_registry_alter(&$info) {
+-  if (
+-    \Drupal::theme()->getActiveTheme()->getName() == 'gin'
+-    || in_array('gin', array_keys(\Drupal::theme()->getActiveTheme()->getBaseThemeExtensions()))
+-  ) {
+-    $info['dashboards_admin_list']['theme path'] = \Drupal::moduleHandler()->getModule("dashboards")->getPath();
+-    $info['dashboards_admin_list']['path'] = \Drupal::moduleHandler()->getModule("dashboards")->getPath() . '/templates/gin';
+-  }
++  \Drupal::service(DashboardsHooks::class)->themeRegistryAlter($info);
+ }
+ 
+ /**
+  * Implements hook_toolbar().
+  */
++#[LegacyHook]
+ function dashboards_toolbar() {
+-  $items['dashboards'] = [
+-    '#cache' => [
+-      'tags' => [
+-        'config:dashboard_list',
+-      ],
+-      'contexts' => [
+-        'user.permissions',
+-      ],
+-    ],
+-  ];
+-
+-  $entityTypeManager = \Drupal::entityTypeManager();
+-
+-  /**
+-   * @var \Drupal\dashboards\Entity\DashboardStorage
+-   */
+-  $storage = $entityTypeManager->getStorage('dashboard');
+-  $boards = $storage->loadMultipleOrderedByWeight();
+-  foreach ($boards as $key => $board) {
+-    if (!$board->access('view', \Drupal::currentUser())) {
+-      unset($boards[$key]);
+-    }
+-  }
+-  if (count($boards) == 0) {
+-    return $items;
+-  }
+-  $boards = array_values($boards);
+-  $links = [];
+-  foreach ($boards as $board) {
+-    $links[] = [
+-      'title' => $board->label(),
+-      'url' => $board->toUrl('canonical'),
+-    ];
+-  }
+-
+-  $first_board = reset($boards);
+-  $items['dashboards'] += [
+-    '#type' => 'toolbar_item',
+-    'tab' => [
+-      '#type' => 'link',
+-      '#title' => t('Dashboards'),
+-      '#url' => $first_board->toUrl(),
+-      '#attributes' => [
+-        'class' => ['toolbar-icon', 'toolbar-menu-administration-dashboard'],
+-      ],
+-    ],
+-    'tray' => [
+-      '#heading' => t('Dashboards'),
+-      'dashboards' => [
+-        '#theme' => 'links__toolbar_dashboards',
+-        '#links' => $links,
+-        '#attributes' => [
+-          'class' => ['toolbar-menu'],
+-        ],
+-      ],
+-    ],
+-    '#weight' => 150,
+-    '#attached' => [
+-      'library' => ['dashboards/core'],
+-    ],
+-  ];
+-
+-  return $items;
++  return \Drupal::service(DashboardsHooks::class)->toolbar();
+ }
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter() for the entity view display edit form.
+  */
++#[LegacyHook]
+ function dashboards_form_dashboard_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  if (!\Drupal::service('module_handler')->moduleExists('layout_builder_restrictions')) {
+-    return;
+-  }
+-  \Drupal::classResolver(FormAlter::class)->alterEntityViewDisplayFormAllowedBlockCategories($form, $form_state, $form_id);
+-  \Drupal::classResolver(FormAlter::class)->alterEntityViewDisplayForm($form, $form_state, $form_id);
++  \Drupal::service(DashboardsHooks::class)->formDashboardFormAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+  * Implements hook_preprocess_block().
+  */
++#[LegacyHook]
+ function dashboards_preprocess_block(&$variables) {
+-  if (
+-    isset($variables['attributes']) &&
+-    isset($variables['attributes']['class']) &&
+-    in_array('dashboard-gin-panel', $variables['attributes']['class'])
+-  ) {
+-    $variables['title_attributes'] = ['class' => ['panel__title']];
+-    $variables['content'] = [
+-      '#type' => 'container',
+-      '#attributes' => ['class' => ['panel__content']],
+-      'content' => $variables['content'],
+-    ];
+-
+-    $active_theme = \Drupal::theme()->getActiveTheme();
+-    $base_themes = (array) $active_theme->getBaseThemeExtensions();
+-
+-    if ($active_theme->getName() === 'gin'|| array_key_exists('gin', $base_themes)) {
+-      $variables['attributes']['class'][] = 'gin-layer-wrapper';
+-    }
+-    elseif ($active_theme->getName() === 'claro' || array_key_exists('claro', $base_themes)) {
+-      $variables['attributes']['class'][] = 'card';
+-    }
+-  }
++  \Drupal::service(DashboardsHooks::class)->preprocessBlock($variables);
+ }
+ 
+ /**
+  * Implements hook_preprocess_html().
+  */
++#[LegacyHook]
+ function dashboards_preprocess_html(&$variables) {
+-  $route = \Drupal::routeMatch()->getRouteName();
+-  if (!is_null($route)) {
+-    if (strpos($route, "entity.dashboard") === 0) {
+-      $variables['html_attributes']['class'] = 'dashboard';
+-    }
+-  }
++  \Drupal::service(DashboardsHooks::class)->preprocessHtml($variables);
+ }
+diff --git a/dashboards.services.yml b/dashboards.services.yml
+index 7ed951924855cd4814fc4911b0535e9f0694786e..736c4ae75ff1bf221ff4de7d9d7abd89b7ebdf4c 100644
+--- a/dashboards.services.yml
++++ b/dashboards.services.yml
+@@ -21,3 +21,7 @@ services:
+     class: '\Drupal\dashboards\EventSubscriber\Decorator'
+     tags:
+       - { name: "event_subscriber" }
++
++  Drupal\dashboards\Hook\DashboardsHooks:
++    class: Drupal\dashboards\Hook\DashboardsHooks
++    autowire: true
+diff --git a/src/Form/DashboardLayoutBuilderForm.php b/src/Form/DashboardLayoutBuilderForm.php
+index 455194175233f5303710b618df1b76113fc81892..51510dab2daf9bbcd25ecc139d5da3a43b80325b 100644
+--- a/src/Form/DashboardLayoutBuilderForm.php
++++ b/src/Form/DashboardLayoutBuilderForm.php
+@@ -90,7 +90,7 @@ class DashboardLayoutBuilderForm extends EntityForm {
+   /**
+    * {@inheritdoc}
+    */
+-  public function buildForm(array $form, FormStateInterface $form_state, SectionStorageInterface $section_storage = NULL) {
++  public function buildForm(array $form, FormStateInterface $form_state, ?SectionStorageInterface $section_storage = NULL) {
+     $form['layout_builder'] = [
+       '#type' => 'layout_builder',
+       '#section_storage' => $section_storage,
+diff --git a/src/Hook/DashboardsHooks.php b/src/Hook/DashboardsHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..abb820d354c293852245b37c39fcbc9fca39308f
+--- /dev/null
++++ b/src/Hook/DashboardsHooks.php
+@@ -0,0 +1,194 @@
++<?php
++
++namespace Drupal\dashboards\Hook;
++
++use Drupal\dashboards\Form\FormAlter;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Template\Attribute;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for dashboards.
++ */
++class DashboardsHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      case 'help.page.dashboards':
++        $output = '';
++        $output .= '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t('Place dashboards with layout builder functionality.') . '</p>';
++        $output .= '<p>';
++        $output .= $this->t('Visit the <a href=":project_link">Dashboards project page</a> on Drupal.org for more information.', [
++          ':project_link' => 'https://www.drupal.org/project/dashboards',
++        ]);
++        $output .= '</p>';
++        return $output;
++
++      default:
++    }
++  }
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme() {
++    return [
++      'dashboards_admin_list' => [
++        'variables' => [
++          'attributes' => new Attribute(),
++          'list' => [],
++        ],
++      ],
++    ];
++  }
++
++  /**
++   * Implements hook_theme_registry_alter().
++   */
++  #[Hook('theme_registry_alter')]
++  public function themeRegistryAlter(&$info) {
++    if (\Drupal::theme()->getActiveTheme()->getName() == 'gin' || in_array('gin', array_keys(\Drupal::theme()->getActiveTheme()->getBaseThemeExtensions()))) {
++      $info['dashboards_admin_list']['theme path'] = \Drupal::moduleHandler()->getModule("dashboards")->getPath();
++      $info['dashboards_admin_list']['path'] = \Drupal::moduleHandler()->getModule("dashboards")->getPath() . '/templates/gin';
++    }
++  }
++
++  /**
++   * Implements hook_toolbar().
++   */
++  #[Hook('toolbar')]
++  public function toolbar() {
++    $items['dashboards'] = [
++      '#cache' => [
++        'tags' => [
++          'config:dashboard_list',
++        ],
++        'contexts' => [
++          'user.permissions',
++        ],
++      ],
++    ];
++    $entityTypeManager = \Drupal::entityTypeManager();
++    /**
++     * @var \Drupal\dashboards\Entity\DashboardStorage
++     */
++    $storage = $entityTypeManager->getStorage('dashboard');
++    $boards = $storage->loadMultipleOrderedByWeight();
++    foreach ($boards as $key => $board) {
++      if (!$board->access('view', \Drupal::currentUser())) {
++        unset($boards[$key]);
++      }
++    }
++    if (count($boards) == 0) {
++      return $items;
++    }
++    $boards = array_values($boards);
++    $links = [];
++    foreach ($boards as $board) {
++      $links[] = [
++        'title' => $board->label(),
++        'url' => $board->toUrl('canonical'),
++      ];
++    }
++    $first_board = reset($boards);
++    $items['dashboards'] += [
++      '#type' => 'toolbar_item',
++      'tab' => [
++        '#type' => 'link',
++        '#title' => $this->t('Dashboards'),
++        '#url' => $first_board->toUrl(),
++        '#attributes' => [
++          'class' => [
++            'toolbar-icon',
++            'toolbar-menu-administration-dashboard',
++          ],
++        ],
++      ],
++      'tray' => [
++        '#heading' => $this->t('Dashboards'),
++        'dashboards' => [
++          '#theme' => 'links__toolbar_dashboards',
++          '#links' => $links,
++          '#attributes' => [
++            'class' => [
++              'toolbar-menu',
++            ],
++          ],
++        ],
++      ],
++      '#weight' => 150,
++      '#attached' => [
++        'library' => [
++          'dashboards/core',
++        ],
++      ],
++    ];
++    return $items;
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter() for the entity view display edit form.
++   */
++  #[Hook('form_dashboard_form_alter')]
++  public function formDashboardFormAlter(&$form, FormStateInterface $form_state, $form_id) {
++    if (!\Drupal::service('module_handler')->moduleExists('layout_builder_restrictions')) {
++      return;
++    }
++    \Drupal::classResolver(FormAlter::class)->alterEntityViewDisplayFormAllowedBlockCategories($form, $form_state, $form_id);
++    \Drupal::classResolver(FormAlter::class)->alterEntityViewDisplayForm($form, $form_state, $form_id);
++  }
++
++  /**
++   * Implements hook_preprocess_block().
++   */
++  #[Hook('preprocess_block')]
++  public function preprocessBlock(&$variables) {
++    if (isset($variables['attributes']) && isset($variables['attributes']['class']) && in_array('dashboard-gin-panel', $variables['attributes']['class'])) {
++      $variables['title_attributes'] = [
++        'class' => [
++          'panel__title',
++        ],
++      ];
++      $variables['content'] = [
++        '#type' => 'container',
++        '#attributes' => [
++          'class' => [
++            'panel__content',
++          ],
++        ],
++        'content' => $variables['content'],
++      ];
++      $active_theme = \Drupal::theme()->getActiveTheme();
++      $base_themes = (array) $active_theme->getBaseThemeExtensions();
++      if ($active_theme->getName() === 'gin' || array_key_exists('gin', $base_themes)) {
++        $variables['attributes']['class'][] = 'gin-layer-wrapper';
++      }
++      elseif ($active_theme->getName() === 'claro' || array_key_exists('claro', $base_themes)) {
++        $variables['attributes']['class'][] = 'card';
++      }
++    }
++  }
++
++  /**
++   * Implements hook_preprocess_html().
++   */
++  #[Hook('preprocess_html')]
++  public function preprocessHtml(&$variables) {
++    $route = \Drupal::routeMatch()->getRouteName();
++    if (!is_null($route)) {
++      if (strpos($route, "entity.dashboard") === 0) {
++        $variables['html_attributes']['class'] = 'dashboard';
++      }
++    }
++  }
++
++}
+diff --git a/src/Plugin/Dashboard/SystemInfo.php b/src/Plugin/Dashboard/SystemInfo.php
+index 3d45136028343c2bcec9a3eec0222d23d6340b25..e19d290205a4d414cacbe8e7213d47a6964acfb7 100644
+--- a/src/Plugin/Dashboard/SystemInfo.php
++++ b/src/Plugin/Dashboard/SystemInfo.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\dashboards\Plugin\Dashboard;
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Render\Element\StatusReport;
+ use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
+@@ -78,12 +80,12 @@ class SystemInfo extends DashboardBase {
+ 
+     $severities = StatusReport::getSeverities();
+     foreach ($requirements as $key => &$requirement) {
+-      $severity = $severities[REQUIREMENT_INFO];
++      $severity = $severities[DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Info, fn() => REQUIREMENT_INFO)];
+       if (isset($requirement['severity'])) {
+         $severity = $severities[(int) $requirement['severity']];
+       }
+       elseif (defined('MAINTENANCE_MODE') && MAINTENANCE_MODE == 'install') {
+-        $severity = $severities[REQUIREMENT_OK];
++        $severity = $severities[DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::OK, fn() => REQUIREMENT_OK)];
+       }
+ 
+       if (isset($counters[$severity['status']])) {
+diff --git a/tests/src/Functional/UiPageTest.php b/tests/src/Functional/UiPageTest.php
+index 192cc255b942f7becd2f075fd85ebdfa67723dfb..fde3f6a15ba7d02d7f27bb4c71cf6e0e641f73a1 100644
+--- a/tests/src/Functional/UiPageTest.php
++++ b/tests/src/Functional/UiPageTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\dashboards\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ use Symfony\Component\HttpFoundation\Response;
+ 
+@@ -10,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
+  *
+  * @group dashboards
+  */
++#[Group('dashboards')]
++#[RunTestsInSeparateProcesses]
+ class UiPageTest extends BrowserTestBase {
+   /**
+    * Modules to enable.
+diff --git a/tests/src/FunctionalJavascript/PersonalizeTest.php b/tests/src/FunctionalJavascript/PersonalizeTest.php
+index 5574dfea3df80cd9e38c05684187e0143e673d9f..1ffbbc1812709a68b1eaa39fb5e4990a22120a71 100644
+--- a/tests/src/FunctionalJavascript/PersonalizeTest.php
++++ b/tests/src/FunctionalJavascript/PersonalizeTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\dashboards\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\block_content\Entity\BlockContentType;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ use Drupal\Tests\contextual\FunctionalJavascript\ContextualLinkClickTrait;
+@@ -12,6 +14,8 @@ use Drupal\Tests\system\Traits\OffCanvasTestTrait;
+  *
+  * @group dashboards
+  */
++#[Group('dashboards')]
++#[RunTestsInSeparateProcesses]
+ class PersonalizeTest extends WebDriverTestBase {
+ 
+   use OffCanvasTestTrait;
+@@ -99,7 +103,6 @@ class PersonalizeTest extends WebDriverTestBase {
+       'revision' => 1,
+     ]);
+     $bundle->save();
+-    block_content_add_body_field($bundle->id());
+   }
+ 
+   /**

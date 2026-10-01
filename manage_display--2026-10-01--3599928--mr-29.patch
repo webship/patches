@@ -1,0 +1,610 @@
+diff --git a/manage_display.info.yml b/manage_display.info.yml
+index 823160a3efc7525657aae4d34a9d3f714f25fb3e..9fac17e997c4c3d6c2befebb6166bcfe2f5d8179 100644
+--- a/manage_display.info.yml
++++ b/manage_display.info.yml
+@@ -1,5 +1,5 @@
+ name: Manage Display
+ type: module
+ description: Make base fields such as 'title' available in "Manage Display"
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ package: Fields
+diff --git a/manage_display.module b/manage_display.module
+index a3c64a6bcfb0cfc27ebcac4a82bb68fd3ee43726..c9451739010bdefabcf162d55066ace45bdecfeb 100644
+--- a/manage_display.module
++++ b/manage_display.module
+@@ -5,113 +5,46 @@
+  * Make base fields such as 'title' available in "Manage Display".
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\manage_display\Hook\ManageDisplayHooks;
+ use Drupal\comment\CommentInterface;
+ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Template\Attribute;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function manage_display_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    case 'help.page.manage_display':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t("This project makes base fields such as 'title' available in 'Manage Display'. This very simple module uses the framework that is already in Core rather than inventing anything new. The goal is that most or all of this module will be absorbed into core.") . '</p>';
+-      $output .= '<h3>' . t('Formatters:') . '</h3>';
+-      $output .= '<ul><li>' . t("Title - The Title formatter is designed for any label or title field. It is based on the Core 'Plain text' formatter with an additional setting to select the Tag to wrap around the title.") . '</li>';
+-      $output .= '<li>' . t("Submitted - The Submitted formatter matches the sentence shown by Drupal Core for nodes and comments: 'Submitted by AAA on DDD' (AAA is the author and DDD is the date).") . '</li>';
+-      $output .= '<li>' . t("In reply to - The 'In reply to' formatter is intended specifically for the comment 'Parent ID' field, to be used in combination with the Submitted formatter.") . '</li></ul>';
+-      return $output;
+-  }
++  return \Drupal::service(ManageDisplayHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+  * Implements hook_entity_type_build().
+  */
++#[LegacyHook]
+ function manage_display_entity_type_build(array &$entity_types) {
+-  $attributes = [
+-    'enable_base_field_custom_preprocess_skipping' => [
+-      'node',
+-      'taxonomy_term',
+-      'aggregator_feed',
+-      'aggregator_item',
+-      'comment',
+-    ],
+-    'enable_page_title_template' => [
+-      'node',
+-      'taxonomy_term',
+-      'aggregator_feed',
+-      'media',
+-    ],
+-  ];
+-
+-  foreach ($attributes as $property => $types) {
+-    foreach ($types as $type) {
+-      if (isset($entity_types[$type])) {
+-        $entity_types[$type]->set($property, TRUE);
+-      }
+-    }
+-  }
+-
+-  if (isset($entity_types['user'])) {
+-    // Set user name as a label else it gets printed twice on the user page.
+-    $keys = $entity_types['user']->get('entity_keys');
+-    $keys['label'] = 'name';
+-    $entity_types['user']->set('entity_keys', $keys);
+-  }
++  \Drupal::service(ManageDisplayHooks::class)->entityTypeBuild($entity_types);
+ }
+ 
+ /**
+  * Implements hook_entity_base_field_info_alter().
+  */
++#[LegacyHook]
+ function manage_display_entity_base_field_info_alter(&$base_field_definitions, EntityTypeInterface $entity_type) {
+-  $info = manage_display_base_field_info($entity_type->id());
+-  foreach ($info as $field => $options) {
+-    $base_field_definitions[$field]
+-      ->setDisplayConfigurable('view', TRUE)
+-      ->setDisplayOptions('view', $options);
+-  }
++  \Drupal::service(ManageDisplayHooks::class)->entityBaseFieldInfoAlter($base_field_definitions, $entity_type);
+ }
+ 
+ /**
+  * Implements hook_entity_view_alter().
+  */
++#[LegacyHook]
+ function manage_display_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+-  $owner_key = $entity->getEntityType()->getKey('owner');
+-  $owner_formatter = $build[$owner_key]['#formatter'] ?? '';
+-
+-  if ($owner_formatter == 'submitted') {
+-    // Build the submitted render element.
+-    $build['submitted'] = [
+-      '#theme' => 'submitted',
+-      '#entity' => $entity,
+-      '#weight' => $build[$owner_key]['#weight'],
+-      '#author_name' => $build[$owner_key] + ['#is_inline' => TRUE],
+-    ];
+-
+-    if ($user_picture = $build[$owner_key]['user_picture'] ?? NULL) {
+-      $build['submitted']['#user_picture'] = $user_picture;
+-    }
+-    unset($build[$owner_key]);
+-
+-    $created_type = $build['created']['#field_type'] ?? '';
+-    if ($created_type == 'created') {
+-      $build['submitted']['#date'] = $build['created'] + ['#is_inline' => TRUE];
+-      unset($build['created']);
+-    }
+-
+-    if (isset($build['pid'][0]) && ($entity->getEntityTypeId() == 'comment')) {
+-      $build['submitted']['#parent'] = $build['pid'] + ['#is_inline' => TRUE];
+-      unset($build['pid']);
+-    }
+-  }
++  \Drupal::service(ManageDisplayHooks::class)->entityViewAlter($build, $entity, $display);
+ }
+ 
+ /**
+@@ -185,49 +118,17 @@ function manage_display_base_field_info($entity_type_id) {
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function manage_display_theme() {
+-  $node_path = \Drupal::service('extension.path.resolver')->getPath('module', 'node');
+-  return [
+-    'submitted' => [
+-      'variables' => [
+-        'author_name' => NULL,
+-        'date' => NULL,
+-        'user_picture' => NULL,
+-        'entity' => NULL,
+-        // For comments.
+-        'parent' => NULL,
+-      ],
+-    ],
+-    'submitted__comment' => [
+-      'base hook' => 'submitted',
+-    ],
+-    'in_reply_to' => [
+-      'render element' => 'elements',
+-    ],
+-    // Reuse the special 'inline' node templates for other entity types.
+-    'field__uid' => [
+-      'base hook' => 'field',
+-      'path' => $node_path . '/templates',
+-      'template' => 'field--node--uid',
+-    ],
+-    'field__created' => [
+-      'base hook' => 'field',
+-      'path' => $node_path . '/templates',
+-      'template' => 'field--node--created',
+-    ],
+-    'field__comment__pid' => [
+-      'base hook' => 'field',
+-      'path' => $node_path . '/templates',
+-      'template' => 'field--node--title',
+-    ],
+-  ];
++  return \Drupal::service(ManageDisplayHooks::class)->theme();
+ }
+ 
+ /**
+  * Implements hook_theme_suggestions_HOOK() for 'submitted'.
+  */
++#[LegacyHook]
+ function manage_display_theme_suggestions_submitted(array $variables) {
+-  return ['submitted__' . $variables['entity']->getEntityTypeId()];
++  return \Drupal::service(ManageDisplayHooks::class)->themeSuggestionsSubmitted($variables);
+ }
+ 
+ /**
+@@ -272,22 +173,9 @@ function template_preprocess_in_reply_to(&$variables) {
+  * @see olivero_preprocess_field__comment()
+  * @see https://www.drupal.org/project/drupal/issues/1367354
+  */
++#[LegacyHook]
+ function manage_display_preprocess_field(&$variables) {
+-  _manage_display_preprocess_inline_field($variables);
+-  $element = $variables['element'];
+-
+-  if ($element['#entity_type'] == 'comment' && !$element['#object']->isNew()) {
+-    $formatters = [
+-      'subject' => ['title' => TRUE, 'string' => TRUE],
+-      'uid' => ['submitted' => TRUE, 'author' => TRUE],
+-    ];
+-
+-    if (!empty($formatters[$element['#field_name']][$element['#formatter']])) {
+-      foreach ($variables['items'] as &$item) {
+-        _manage_display_fix_comment_item($item['content'], $element['#field_name'], $element['#object']);
+-      }
+-    }
+-  }
++  \Drupal::service(ManageDisplayHooks::class)->preprocessField($variables);
+ }
+ 
+ /**
+@@ -296,8 +184,9 @@ function manage_display_preprocess_field(&$variables) {
+  * We have to implement this more specific hook to run after
+  * node_preprocess_field__node().
+  */
++#[LegacyHook]
+ function manage_display_preprocess_field__node__created(&$variables) {
+-  _manage_display_preprocess_inline_field($variables);
++  \Drupal::service(ManageDisplayHooks::class)->preprocessFieldNodeCreated($variables);
+ }
+ 
+ /**
+@@ -306,8 +195,9 @@ function manage_display_preprocess_field__node__created(&$variables) {
+  * We have to implement this more specific hook to run after
+  * node_preprocess_field__node().
+  */
++#[LegacyHook]
+ function manage_display_preprocess_field__node__uid(&$variables) {
+-  _manage_display_preprocess_inline_field($variables);
++  \Drupal::service(ManageDisplayHooks::class)->preprocessFieldNodeUid($variables);
+ }
+ 
+ /**
+@@ -322,29 +212,25 @@ function _manage_display_preprocess_inline_field(&$variables) {
+ /**
+  * Implements hook_preprocess_HOOK() for 'submitted__comment'.
+  */
++#[LegacyHook]
+ function manage_display_preprocess_submitted__comment(&$variables) {
+-  // Set extra variables.
+-  $comment = $variables['entity'];
+-  $variables['permalink_url'] = $comment->isNew() ? Url::fromRoute('<front>') : $comment->permalink();
+-  $variables['permalink'] = Link::fromTextAndUrl(t('Permalink'), $variables['permalink_url'])->toString();
++  \Drupal::service(ManageDisplayHooks::class)->preprocessSubmittedComment($variables);
+ }
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function manage_display_form_node_type_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  // Hide display_submitted in GUI.
+-  $form['display']['#access'] = FALSE;
++  \Drupal::service(ManageDisplayHooks::class)->formNodeTypeFormAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
++#[LegacyHook]
+ function manage_display_form_system_theme_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  // Hide the theme settings for user_pictures because the submitted formatter
+-  // has its own setting.
+-  $form['theme_settings']['toggle_node_user_picture']['#access'] = FALSE;
+-  $form['theme_settings']['toggle_comment_user_picture']['#access'] = FALSE;
++  \Drupal::service(ManageDisplayHooks::class)->formSystemThemeSettingsAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+diff --git a/manage_display.services.yml b/manage_display.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..25e7d18df6221725bb61d5258637ce252e426ccc
+--- /dev/null
++++ b/manage_display.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\manage_display\Hook\ManageDisplayHooks:
++    class: Drupal\manage_display\Hook\ManageDisplayHooks
++    autowire: true
+diff --git a/src/Hook/ManageDisplayHooks.php b/src/Hook/ManageDisplayHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..9d95d62abe8fc925d1be038885327d869643da23
+--- /dev/null
++++ b/src/Hook/ManageDisplayHooks.php
+@@ -0,0 +1,262 @@
++<?php
++
++namespace Drupal\manage_display\Hook;
++
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Link;
++use Drupal\Core\Url;
++use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
++use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Entity\EntityTypeInterface;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for manage_display.
++ */
++class ManageDisplayHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      case 'help.page.manage_display':
++        $output = '';
++        $output .= '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t("This project makes base fields such as 'title' available in 'Manage Display'. This very simple module uses the framework that is already in Core rather than inventing anything new. The goal is that most or all of this module will be absorbed into core.") . '</p>';
++        $output .= '<h3>' . $this->t('Formatters:') . '</h3>';
++        $output .= '<ul><li>' . $this->t("Title - The Title formatter is designed for any label or title field. It is based on the Core 'Plain text' formatter with an additional setting to select the Tag to wrap around the title.") . '</li>';
++        $output .= '<li>' . $this->t("Submitted - The Submitted formatter matches the sentence shown by Drupal Core for nodes and comments: 'Submitted by AAA on DDD' (AAA is the author and DDD is the date).") . '</li>';
++        $output .= '<li>' . $this->t("In reply to - The 'In reply to' formatter is intended specifically for the comment 'Parent ID' field, to be used in combination with the Submitted formatter.") . '</li></ul>';
++        return $output;
++    }
++  }
++
++  /**
++   * Implements hook_entity_type_build().
++   */
++  #[Hook('entity_type_build')]
++  public function entityTypeBuild(array &$entity_types) {
++    $attributes = [
++      'enable_base_field_custom_preprocess_skipping' => [
++        'node',
++        'taxonomy_term',
++        'aggregator_feed',
++        'aggregator_item',
++        'comment',
++      ],
++      'enable_page_title_template' => [
++        'node',
++        'taxonomy_term',
++        'aggregator_feed',
++        'media',
++      ],
++    ];
++    foreach ($attributes as $property => $types) {
++      foreach ($types as $type) {
++        if (isset($entity_types[$type])) {
++          $entity_types[$type]->set($property, TRUE);
++        }
++      }
++    }
++    if (isset($entity_types['user'])) {
++      // Set user name as a label else it gets printed twice on the user page.
++      $keys = $entity_types['user']->get('entity_keys');
++      $keys['label'] = 'name';
++      $entity_types['user']->set('entity_keys', $keys);
++    }
++  }
++
++  /**
++   * Implements hook_entity_base_field_info_alter().
++   */
++  #[Hook('entity_base_field_info_alter')]
++  public function entityBaseFieldInfoAlter(&$base_field_definitions, EntityTypeInterface $entity_type) {
++    $info = manage_display_base_field_info($entity_type->id());
++    foreach ($info as $field => $options) {
++      $base_field_definitions[$field]->setDisplayConfigurable('view', TRUE)->setDisplayOptions('view', $options);
++    }
++  }
++
++  /**
++   * Implements hook_entity_view_alter().
++   */
++  #[Hook('entity_view_alter')]
++  public function entityViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
++    $owner_key = $entity->getEntityType()->getKey('owner');
++    $owner_formatter = $build[$owner_key]['#formatter'] ?? '';
++    if ($owner_formatter == 'submitted') {
++      // Build the submitted render element.
++      $build['submitted'] = [
++        '#theme' => 'submitted',
++        '#entity' => $entity,
++        '#weight' => $build[$owner_key]['#weight'],
++        '#author_name' => $build[$owner_key] + [
++          '#is_inline' => TRUE,
++        ],
++      ];
++      if ($user_picture = $build[$owner_key]['user_picture'] ?? NULL) {
++        $build['submitted']['#user_picture'] = $user_picture;
++      }
++      unset($build[$owner_key]);
++      $created_type = $build['created']['#field_type'] ?? '';
++      if ($created_type == 'created') {
++        $build['submitted']['#date'] = $build['created'] + [
++          '#is_inline' => TRUE,
++        ];
++        unset($build['created']);
++      }
++      if (isset($build['pid'][0]) && $entity->getEntityTypeId() == 'comment') {
++        $build['submitted']['#parent'] = $build['pid'] + [
++          '#is_inline' => TRUE,
++        ];
++        unset($build['pid']);
++      }
++    }
++  }
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme() {
++    $node_path = \Drupal::service('extension.path.resolver')->getPath('module', 'node');
++    return [
++      'submitted' => [
++        'variables' => [
++          'author_name' => NULL,
++          'date' => NULL,
++          'user_picture' => NULL,
++          'entity' => NULL,
++                  // For comments.
++          'parent' => NULL,
++        ],
++      ],
++      'submitted__comment' => [
++        'base hook' => 'submitted',
++      ],
++      'in_reply_to' => [
++        'render element' => 'elements',
++      ],
++          // Reuse the special 'inline' node templates for other entity types.
++      'field__uid' => [
++        'base hook' => 'field',
++        'path' => $node_path . '/templates',
++        'template' => 'field--node--uid',
++      ],
++      'field__created' => [
++        'base hook' => 'field',
++        'path' => $node_path . '/templates',
++        'template' => 'field--node--created',
++      ],
++      'field__comment__pid' => [
++        'base hook' => 'field',
++        'path' => $node_path . '/templates',
++        'template' => 'field--node--title',
++      ],
++    ];
++  }
++
++  /**
++   * Implements hook_theme_suggestions_HOOK() for 'submitted'.
++   */
++  #[Hook('theme_suggestions_submitted')]
++  public function themeSuggestionsSubmitted(array $variables) {
++    return [
++      'submitted__' . $variables['entity']->getEntityTypeId(),
++    ];
++  }
++
++  /**
++   * Implements hook_preprocess_HOOK() for 'field'.
++   *
++   * @todo Use a more specific hook field_comment_subject or field_comment.
++   * Currently that doesn't work because of ambiguity that causes the wrong
++   * template to be used. The hook field_comment is widely used to refer to
++   * #field_name = comment.
++   *
++   * @see system_theme_suggestions_field()
++   * @see olivero_preprocess_field__comment()
++   * @see https://www.drupal.org/project/drupal/issues/1367354
++   */
++  #[Hook('preprocess_field')]
++  public function preprocessField(&$variables) {
++    _manage_display_preprocess_inline_field($variables);
++    $element = $variables['element'];
++    if ($element['#entity_type'] == 'comment' && !$element['#object']->isNew()) {
++      $formatters = [
++        'subject' => [
++          'title' => TRUE,
++          'string' => TRUE,
++        ],
++        'uid' => [
++          'submitted' => TRUE,
++          'author' => TRUE,
++        ],
++      ];
++      if (!empty($formatters[$element['#field_name']][$element['#formatter']])) {
++        foreach ($variables['items'] as &$item) {
++          _manage_display_fix_comment_item($item['content'], $element['#field_name'], $element['#object']);
++        }
++      }
++    }
++  }
++
++  /**
++   * Implements hook_preprocess_HOOK() for 'field__node_created'.
++   *
++   * We have to implement this more specific hook to run after
++   * node_preprocess_field__node().
++   */
++  #[Hook('preprocess_field__node__created')]
++  public function preprocessFieldNodeCreated(&$variables) {
++    _manage_display_preprocess_inline_field($variables);
++  }
++
++  /**
++   * Implements hook_preprocess_HOOK() for 'field__node__uid'.
++   *
++   * We have to implement this more specific hook to run after
++   * node_preprocess_field__node().
++   */
++  #[Hook('preprocess_field__node__uid')]
++  public function preprocessFieldNodeUid(&$variables) {
++    _manage_display_preprocess_inline_field($variables);
++  }
++
++  /**
++   * Implements hook_preprocess_HOOK() for 'submitted__comment'.
++   */
++  #[Hook('preprocess_submitted__comment')]
++  public function preprocessSubmittedComment(&$variables) {
++    // Set extra variables.
++    $comment = $variables['entity'];
++    $variables['permalink_url'] = $comment->isNew() ? Url::fromRoute('<front>') : $comment->permalink();
++    $variables['permalink'] = Link::fromTextAndUrl($this->t('Permalink'), $variables['permalink_url'])->toString();
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   */
++  #[Hook('form_node_type_form_alter')]
++  public function formNodeTypeFormAlter(&$form, FormStateInterface $form_state, $form_id) {
++    // Hide display_submitted in GUI.
++    $form['display']['#access'] = FALSE;
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   */
++  #[Hook('form_system_theme_settings_alter')]
++  public function formSystemThemeSettingsAlter(&$form, FormStateInterface $form_state, $form_id) {
++    // Hide the theme settings for user_pictures because the submitted formatter
++    // has its own setting.
++    $form['theme_settings']['toggle_node_user_picture']['#access'] = FALSE;
++    $form['theme_settings']['toggle_comment_user_picture']['#access'] = FALSE;
++  }
++
++}
+diff --git a/tests/src/Functional/CommentManageDisplayTest.php b/tests/src/Functional/CommentManageDisplayTest.php
+index 1985a53456d9ee68974367fd94d3286b34d1660e..38a4dff3bcf4ac9b01f99c78e5db025ca2407a74 100644
+--- a/tests/src/Functional/CommentManageDisplayTest.php
++++ b/tests/src/Functional/CommentManageDisplayTest.php
+@@ -2,6 +2,10 @@
+ 
+ namespace Drupal\Tests\manage_display\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\comment\AnonymousContact;
+ use Drupal\comment\CommentInterface;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\Tests\comment\Functional\CommentTestBase;
+@@ -12,6 +16,8 @@ use Drupal\user\RoleInterface;
+  *
+  * @group field
+  */
++#[Group('field')]
++#[RunTestsInSeparateProcesses]
+ class CommentManageDisplayTest extends CommentTestBase {
+ 
+   /**
+@@ -38,7 +44,7 @@ class CommentManageDisplayTest extends CommentTestBase {
+     BrowserTestBase::setUp();
+     $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+     $this->addDefaultCommentField('node', 'article');
+-    $this->setCommentAnonymous(CommentInterface::ANONYMOUS_MAY_CONTACT);
++    $this->setCommentAnonymous(DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => AnonymousContact::Allowed, fn() => CommentInterface::ANONYMOUS_MAY_CONTACT));
+ 
+     // Enable anonymous user comments.
+     user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, [
+diff --git a/tests/src/Functional/NodeManageDisplayTest.php b/tests/src/Functional/NodeManageDisplayTest.php
+index 777d3dc134b2491929907a05114177d82428f2b4..91540f60156e8a916d722b800c72d8a37947d0dd 100644
+--- a/tests/src/Functional/NodeManageDisplayTest.php
++++ b/tests/src/Functional/NodeManageDisplayTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\manage_display\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Entity\Entity\EntityViewDisplay;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -10,6 +12,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group field
+  */
++#[Group('field')]
++#[RunTestsInSeparateProcesses]
+ class NodeManageDisplayTest extends BrowserTestBase {
+ 
+   /**

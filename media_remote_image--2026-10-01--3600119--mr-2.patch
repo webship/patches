@@ -1,0 +1,213 @@
+diff --git a/media_remote_image.info.yml b/media_remote_image.info.yml
+index 52d7f5492da68de8c52ca10fbb5b88a71351fbc9..a696ba88885a46b19a082069f1956980db5c435b 100644
+--- a/media_remote_image.info.yml
++++ b/media_remote_image.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Remote Image'
+ type: module
+ package: 'Media'
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ description: 'Provides a media source for various oEmbed image providers.'
+ dependencies:
+   - drupal:media
+diff --git a/media_remote_image.module b/media_remote_image.module
+index fe98984aa6dbb5fe19a003d40652f9a52bce7267..fd2c5e03d72cb977e0dd2f9ef2a0e638bb4544e3 100644
+--- a/media_remote_image.module
++++ b/media_remote_image.module
+@@ -4,45 +4,24 @@
+  * @file
+  * Implements hook_media_source_info_alter() for the following providers: Flickr, Getty Images, GIPHY
+  */
+-
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\media_remote_image\Hook\MediaRemoteImageHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\media\Plugin\media\Source\OEmbed;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function media_remote_image_help($route_name, RouteMatchInterface $arg) {
+-  switch ($route_name) {
+-    case 'help.page.media_remote_image':
+-      $output = '';
+-      $output .= '<p>' . t('Creates a Remote image media type for easily adding oEmbed images') . '</p>';
+-      return ['#markup' => $output];
+-  }
++  return \Drupal::service(MediaRemoteImageHooks::class)->help($route_name, $arg);
+ }
+ 
+ /**
+  * Implements hook_media_source_info_alter().
+  */
+-function media_remote_image_media_source_info_alter(array &$definitions) {
+-  // Reuse certain values from core's oEmbed video source.
+-  $base_definition = $definitions['oembed:video'];
+-
+-  $definitions['oembed:image'] = [
+-    'id' => 'oembed:image',
+-    'label' => t('Remote image'),
+-    'description' => t('Add images from Flickr, Getty Images, GIPHY.'),
+-    'allowed_field_types' => ['string'],
+-    'default_name_metadata_attribute' => $base_definition['default_name_metadata_attribute'],
+-    'default_thumbnail_filename' => 'no-thumbnail.png',
+-    'thumbnail_uri_metadata_attribute' => $base_definition['thumbnail_uri_metadata_attribute'],
+-    'thumbnail_width_metadata_attribute' => $base_definition['thumbnail_width_metadata_attribute'],
+-    'thumbnail_height_metadata_attribute' => $base_definition['thumbnail_height_metadata_attribute'],
+-    'thumbnail_alt_metadata_attribute' => 'title',
+-    'providers' => ['Flickr', 'Getty Images', 'GIPHY'],
+-    'class' => OEmbed::class,
+-    'provider' => 'media_remote_image',
+-  ];
+-  if (Drupal::moduleHandler()->moduleExists('media_library')) {
+-    $definitions['oembed:image']['forms']['media_library_add'] = $base_definition['forms']['media_library_add'];
+-  }
++#[LegacyHook]
++function media_remote_image_media_source_info_alter(array &$definitions)
++{
++    \Drupal::service(MediaRemoteImageHooks::class)->mediaSourceInfoAlter($definitions);
+ }
+diff --git a/media_remote_image.services.yml b/media_remote_image.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..376648a89ac569f0b0f465eedfcb5f6dae42766f
+--- /dev/null
++++ b/media_remote_image.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\media_remote_image\Hook\MediaRemoteImageHooks:
++    class: Drupal\media_remote_image\Hook\MediaRemoteImageHooks
++    autowire: true
+diff --git a/src/Hook/MediaRemoteImageHooks.php b/src/Hook/MediaRemoteImageHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..14a08cb5071807938ccb4915b0cc54c02a29ce9d
+--- /dev/null
++++ b/src/Hook/MediaRemoteImageHooks.php
+@@ -0,0 +1,63 @@
++<?php
++
++namespace Drupal\media_remote_image\Hook;
++
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\media\Plugin\media\Source\OEmbed;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++/**
++ * Hook implementations for media_remote_image.
++ */
++class MediaRemoteImageHooks
++{
++    use StringTranslationTrait;
++    /**
++     * Implements hook_help().
++     */
++    #[Hook('help')]
++    public function help($route_name, \Drupal\Core\Routing\RouteMatchInterface $arg)
++    {
++        switch ($route_name) {
++            case 'help.page.media_remote_image':
++                $output = '';
++                $output .= '<p>' . $this->t('Creates a Remote image media type for easily adding oEmbed images') . '</p>';
++                return [
++                    '#markup' => $output,
++                ];
++        }
++    }
++    /**
++     * Implements hook_media_source_info_alter().
++     */
++    #[Hook('media_source_info_alter')]
++    public function mediaSourceInfoAlter(array &$definitions)
++    {
++        // Reuse certain values from core's oEmbed video source.
++        $base_definition = $definitions['oembed:video'];
++        $definitions['oembed:image'] = [
++            'id' => 'oembed:image',
++            'label' => $this->t('Remote image'),
++            'description' => $this->t('Add images from Flickr, Getty Images, GIPHY.'),
++            'allowed_field_types' => [
++                'string',
++            ],
++            'default_name_metadata_attribute' => $base_definition['default_name_metadata_attribute'],
++            'default_thumbnail_filename' => 'no-thumbnail.png',
++            'thumbnail_uri_metadata_attribute' => $base_definition['thumbnail_uri_metadata_attribute'],
++            'thumbnail_width_metadata_attribute' => $base_definition['thumbnail_width_metadata_attribute'],
++            'thumbnail_height_metadata_attribute' => $base_definition['thumbnail_height_metadata_attribute'],
++            'thumbnail_alt_metadata_attribute' => 'title',
++            'providers' => [
++                'Flickr',
++                'Getty Images',
++                'GIPHY',
++            ],
++            'class' => \Drupal\media\Plugin\media\Source\OEmbed::class,
++            'provider' => 'media_remote_image',
++        ];
++        if (\Drupal::moduleHandler()->moduleExists('media_library')) {
++            $definitions['oembed:image']['forms']['media_library_add'] = $base_definition['forms']['media_library_add'];
++        }
++    }
++}
+diff --git a/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php b/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php
+index dd23b8fc1a0371cbed68f7b229f81e615e031dd7..50d1bed8110e575d31d5aa6d06fad94f0c76029d 100644
+--- a/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php
++++ b/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\media_remote_image\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
+ use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
+@@ -11,6 +13,8 @@ use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
+  *
+  * @group media_remote_image
+  */
++#[Group('media_remote_image')]
++#[RunTestsInSeparateProcesses]
+ class MediaLibraryIntegrationTest extends WebDriverTestBase {
+ 
+   use EntityReferenceFieldCreationTrait;
+diff --git a/tests/src/Kernel/RemoteImageMediaTest.php b/tests/src/Kernel/RemoteImageMediaTest.php
+index 1191bc8907794262cc1acdfa084365aa8503c307..dde832532660c9c043cf0fdb7dd9f6e08e8c926a 100644
+--- a/tests/src/Kernel/RemoteImageMediaTest.php
++++ b/tests/src/Kernel/RemoteImageMediaTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\media_remote_image\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\media\Entity\Media;
+ use Drupal\media_remote_image_test\ResourceMiddleware;
+@@ -11,6 +14,8 @@ use Drupal\media_remote_image_test\ResourceMiddleware;
+  *
+  * @group media_remote_image
+  */
++#[Group('media_remote_image')]
++#[RunTestsInSeparateProcesses]
+ class RemoteImageMediaTest extends KernelTestBase {
+ 
+   /**
+@@ -76,6 +81,7 @@ class RemoteImageMediaTest extends KernelTestBase {
+    *
+    * @dataProvider providerRemoteImageMedia
+    */
++  #[DataProvider('providerRemoteImageMedia')]
+   public function testRemoteImageMedia(string $url, string $fixture_file): void {
+     $media = $this->createRemoteImageMedia($url, $fixture_file);
+ 
+@@ -115,7 +121,7 @@ class RemoteImageMediaTest extends KernelTestBase {
+       ->getThumbnailUrl();
+     $this->assertNotEmpty($thumbnail_url);
+     $thumbnail_url = $thumbnail_url->toString();
+-    $paths[$thumbnail_url] = $this->getDrupalRoot() . '/core/misc/druplicon.png';
++    $paths[$thumbnail_url] = $this->root . '/core/misc/druplicon.png';
+     $state->set(ResourceMiddleware::class, $paths);
+ 
+     // Ensure we can create a remote image media item from the given fixture.

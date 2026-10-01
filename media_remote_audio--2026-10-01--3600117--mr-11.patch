@@ -1,0 +1,221 @@
+diff --git a/media_remote_audio.info.yml b/media_remote_audio.info.yml
+index fedeaf6f134ed5ac5238a6ec853462be2dac8507..f6ab8e5b75ea7778aa921e2443f54816970f207b 100644
+--- a/media_remote_audio.info.yml
++++ b/media_remote_audio.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Remote Audio'
+ type: module
+ package: 'Media'
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ description: 'Provides a media source for various oEmbed audio providers.'
+ dependencies:
+   - drupal:media
+diff --git a/media_remote_audio.module b/media_remote_audio.module
+index e8d9a645f98c53a3245be64038256b40947f9fda..75cd01e81dd6fa162f5717adfca30a219f365c53 100644
+--- a/media_remote_audio.module
++++ b/media_remote_audio.module
+@@ -5,44 +5,22 @@
+  * Implements hook_media_source_info_alter() for the following providers: SoundCloud and Spotify.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\media_remote_audio\Hook\MediaRemoteAudioHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+-use Drupal\media\Plugin\media\Source\OEmbed;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function media_remote_audio_help($route_name, RouteMatchInterface $arg) {
+-  switch ($route_name) {
+-    case 'help.page.media_remote_audio':
+-      $output = '';
+-      $output .= '<p>' . t('Creates a Remote audio Media type for easily adding oEmbed audio from Spotify or SoundCloud.') . '</p>';
+-      return ['#markup' => $output];
+-  }
++  return \Drupal::service(MediaRemoteAudioHooks::class)->help($route_name, $arg);
+ }
+ 
+ /**
+  * Implements hook_media_source_info_alter().
+  */
++#[LegacyHook]
+ function media_remote_audio_media_source_info_alter(array &$definitions) {
+-  // Reuse certain values from core's oEmbed video source.
+-  $base_definition = $definitions['oembed:video'];
+-
+-  $definitions['oembed:audio'] = [
+-    'id' => 'oembed:audio',
+-    'label' => t('Remote audio'),
+-    'description' => t('Stream audio from SoundCloud, Spotify, and iHeartRadio.'),
+-    'allowed_field_types' => ['string'],
+-    'default_name_metadata_attribute' => $base_definition['default_name_metadata_attribute'],
+-    'default_thumbnail_filename' => 'no-thumbnail.png',
+-    'thumbnail_uri_metadata_attribute' => $base_definition['thumbnail_uri_metadata_attribute'],
+-    'thumbnail_width_metadata_attribute' => $base_definition['thumbnail_width_metadata_attribute'],
+-    'thumbnail_height_metadata_attribute' => $base_definition['thumbnail_height_metadata_attribute'],
+-    'thumbnail_alt_metadata_attribute' => 'title',
+-    'providers' => ['iHeartRadio', 'SoundCloud', 'Spotify'],
+-    'class' => OEmbed::class,
+-    'provider' => 'media_remote_audio',
+-  ];
+-  if (Drupal::moduleHandler()->moduleExists('media_library')) {
+-    $definitions['oembed:audio']['forms']['media_library_add'] = $base_definition['forms']['media_library_add'];
+-  }
++  \Drupal::service(MediaRemoteAudioHooks::class)->mediaSourceInfoAlter($definitions);
+ }
+diff --git a/media_remote_audio.services.yml b/media_remote_audio.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..061e79e6e0322e5c92472bb4bc2250d0474a14bd
+--- /dev/null
++++ b/media_remote_audio.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\media_remote_audio\Hook\MediaRemoteAudioHooks:
++    class: Drupal\media_remote_audio\Hook\MediaRemoteAudioHooks
++    autowire: true
+diff --git a/src/Hook/MediaRemoteAudioHooks.php b/src/Hook/MediaRemoteAudioHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..89ac124099df208241908ec51dd189ec259906d3
+--- /dev/null
++++ b/src/Hook/MediaRemoteAudioHooks.php
+@@ -0,0 +1,64 @@
++<?php
++
++namespace Drupal\media_remote_audio\Hook;
++
++use Drupal\media\Plugin\media\Source\OEmbed;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for media_remote_audio.
++ */
++class MediaRemoteAudioHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $arg) {
++    switch ($route_name) {
++      case 'help.page.media_remote_audio':
++        $output = '';
++        $output .= '<p>' . $this->t('Creates a Remote audio Media type for easily adding oEmbed audio from Spotify or SoundCloud.') . '</p>';
++        return [
++          '#markup' => $output,
++        ];
++    }
++  }
++
++  /**
++   * Implements hook_media_source_info_alter().
++   */
++  #[Hook('media_source_info_alter')]
++  public function mediaSourceInfoAlter(array &$definitions) {
++    // Reuse certain values from core's oEmbed video source.
++    $base_definition = $definitions['oembed:video'];
++    $definitions['oembed:audio'] = [
++      'id' => 'oembed:audio',
++      'label' => $this->t('Remote audio'),
++      'description' => $this->t('Stream audio from SoundCloud, Spotify, and iHeartRadio.'),
++      'allowed_field_types' => [
++        'string',
++      ],
++      'default_name_metadata_attribute' => $base_definition['default_name_metadata_attribute'],
++      'default_thumbnail_filename' => 'no-thumbnail.png',
++      'thumbnail_uri_metadata_attribute' => $base_definition['thumbnail_uri_metadata_attribute'],
++      'thumbnail_width_metadata_attribute' => $base_definition['thumbnail_width_metadata_attribute'],
++      'thumbnail_height_metadata_attribute' => $base_definition['thumbnail_height_metadata_attribute'],
++      'thumbnail_alt_metadata_attribute' => 'title',
++      'providers' => [
++        'iHeartRadio',
++        'SoundCloud',
++        'Spotify',
++      ],
++      'class' => OEmbed::class,
++      'provider' => 'media_remote_audio',
++    ];
++    if (\Drupal::moduleHandler()->moduleExists('media_library')) {
++      $definitions['oembed:audio']['forms']['media_library_add'] = $base_definition['forms']['media_library_add'];
++    }
++  }
++
++}
+diff --git a/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php b/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php
+index 9e68aa56e0b85ae8a18f2366436ab4cce102a246..f8e324c7c9c5ccccf6b757a685180d75d0cbecdd 100644
+--- a/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php
++++ b/tests/src/FunctionalJavascript/MediaLibraryIntegrationTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\media_remote_audio\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
+ use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
+@@ -11,6 +13,8 @@ use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
+  *
+  * @group media_remote_audio
+  */
++#[Group('media_remote_audio')]
++#[RunTestsInSeparateProcesses]
+ class MediaLibraryIntegrationTest extends WebDriverTestBase {
+ 
+   use EntityReferenceFieldCreationTrait;
+diff --git a/tests/src/Kernel/RemoteAudioMediaTest.php b/tests/src/Kernel/RemoteAudioMediaTest.php
+index b246679961eac50fabae94e1037ceb91e13aebf5..3516457d472ed2e0735cbb72f9262b31f5a519a5 100644
+--- a/tests/src/Kernel/RemoteAudioMediaTest.php
++++ b/tests/src/Kernel/RemoteAudioMediaTest.php
+@@ -2,6 +2,10 @@
+ 
+ namespace Drupal\Tests\media_remote_audio\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
++use PHPUnit\Framework\Attributes\TestWith;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\media\Entity\Media;
+ use Drupal\media_remote_audio_test\ResourceMiddleware;
+@@ -11,6 +15,8 @@ use Drupal\media_remote_audio_test\ResourceMiddleware;
+  *
+  * @group media_remote_audio
+  */
++#[Group('media_remote_audio')]
++#[RunTestsInSeparateProcesses]
+ class RemoteAudioMediaTest extends KernelTestBase {
+ 
+   /**
+@@ -72,6 +78,7 @@ class RemoteAudioMediaTest extends KernelTestBase {
+    *
+    * @dataProvider providerRemoteAudioMedia
+    */
++  #[DataProvider('providerRemoteAudioMedia')]
+   public function testRemoteAudioMedia(string $url, string $fixture_file): void {
+     $media = $this->createRemoteAudioMedia($url, $fixture_file);
+ 
+@@ -94,6 +101,8 @@ class RemoteAudioMediaTest extends KernelTestBase {
+    * @testWith ["SoundCloud-thumbnail_size_in_url.xml", 500, 500]
+    *   ["SoundCloud-no_thumbnail_size.xml", 200, 200]
+    */
++  #[TestWith(['SoundCloud-thumbnail_size_in_url.xml', 500, 500])]
++  #[TestWith(['SoundCloud-no_thumbnail_size.xml', 200, 200])]
+   public function testSoundCloudThumbnailSize(string $fixture_file, int $expected_thumbnail_width, int $expected_thumbnail_height): void {
+     $fixture_file = __DIR__ . '/../../fixtures/' . $fixture_file;
+ 
+@@ -133,7 +142,7 @@ class RemoteAudioMediaTest extends KernelTestBase {
+       ->getThumbnailUrl();
+     $this->assertNotEmpty($thumbnail_url);
+     $thumbnail_url = $thumbnail_url->toString();
+-    $paths[$thumbnail_url] = $this->getDrupalRoot() . '/core/misc/druplicon.png';
++    $paths[$thumbnail_url] = $this->root . '/core/misc/druplicon.png';
+     $state->set(ResourceMiddleware::class, $paths);
+ 
+     // Ensure we can create a remote audio media item from the given fixture.

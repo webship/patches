@@ -1,0 +1,13 @@
+diff --git a/friendlycaptcha.info.yml b/friendlycaptcha.info.yml
+index 26cbbb3..0d2bb62 100644
+--- a/friendlycaptcha.info.yml
++++ b/friendlycaptcha.info.yml
+@@ -2,7 +2,7 @@ name: 'Friendly Captcha'
+ type: module
+ description: 'Protect your website from spam and abuse while letting real people pass through with ease.'
+ package: Spam control
+-core_version_requirement: ^8.9 || ^9 || ^10 || ^11
++core_version_requirement: ^8.9 || ^9 || ^10 || ^11 || ^12
+ configure: friendlycaptcha.admin_settings_form
+ dependencies:
+   - captcha:captcha

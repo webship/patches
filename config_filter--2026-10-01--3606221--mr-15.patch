@@ -1,0 +1,273 @@
+diff --git a/config_filter.info.yml b/config_filter.info.yml
+index efc8bf17db1cb3384acca5e71193ea5548cb1dd8..7cd5003041863a0cba7959d9ecb34fd55a995954 100644
+--- a/config_filter.info.yml
++++ b/config_filter.info.yml
+@@ -1,5 +1,5 @@
+ name: Configuration Filter
+ type: module
+ description: Configuration Filter allows other modules to interact with a ConfigStorage through filter plugins.
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ package: Configuration
+diff --git a/config_filter.install b/config_filter.install
+index 6d2e4278ac76dbb3094a22bfcb7641a414094dcb..0f471ca88054cb8285734d1992297ed01ff81bae 100644
+--- a/config_filter.install
++++ b/config_filter.install
+@@ -1,5 +1,12 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
++
+ /**
+  * @file
+  * Install, update and uninstall hooks for the config_filter module.
+@@ -29,7 +36,7 @@ function config_filter_requirements($phase) {
+     $requirements['config_filter_disable'] = [
+       'title' => t('Configuration Filter'),
+       'value' => t('Configuration Filter is enabled, but no modules require this module. You can safely disable Config Filter.'),
+-      'severity' => REQUIREMENT_WARNING,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+     ];
+   }
+ 
+diff --git a/src/ConfigFilterEventSubscriber.php b/src/ConfigFilterEventSubscriber.php
+index 408df67970850c383339f4de1eb8867ea2d8c5bd..afbc7d8392cf75374d846f10afc39034f178d116 100644
+--- a/src/ConfigFilterEventSubscriber.php
++++ b/src/ConfigFilterEventSubscriber.php
+@@ -83,7 +83,7 @@ public function onExportTransform(StorageTransformEvent $event) {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function getSubscribedEvents() {
++  public static function getSubscribedEvents(): array {
+     // @todo Use class constants when they get added in #2991683
+     $events['config.transform.import'][] = ['onImportTransform'];
+     $events['config.transform.export'][] = ['onExportTransform'];
+diff --git a/src/Tests/FilteredStorageTest.php b/src/Tests/FilteredStorageTest.php
+index 3c43f93d8ea4936d319d69edfc4199d296de5549..560cbe7e4e12646f004955a7dd6e2b96a297a937 100644
+--- a/src/Tests/FilteredStorageTest.php
++++ b/src/Tests/FilteredStorageTest.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\config_filter\Tests;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Config\MemoryStorage;
+ use Drupal\Core\Config\StorageInterface;
+ use Drupal\KernelTests\Core\Config\Storage\MemoryStorageTest;
+@@ -17,6 +20,8 @@
+  *
+  * @group config_filter
+  */
++#[Group('config_filter')]
++#[RunTestsInSeparateProcesses]
+ class FilteredStorageTest extends MemoryStorageTest {
+ 
+   /**
+@@ -42,7 +47,6 @@ public function testSettingStorages() {
+       $this->assertInstanceOf(ReadOnlyStorage::class, $readonly);
+       $readonlyReflection = new \ReflectionClass(ReadOnlyStorage::class);
+       $storageProperty = $readonlyReflection->getProperty('storage');
+-      $storageProperty->setAccessible(TRUE);
+       $source = $storageProperty->getValue($readonly);
+       $this->assertInstanceOf(MemoryStorage::class, $source);
+ 
+@@ -134,6 +138,7 @@ public function testGetAllCollectionNamesFilter() {
+    *
+    * @dataProvider readFilterProvider
+    */
++  #[DataProvider('readFilterProvider')]
+   public function testReadFilter($name, $storageMethod, $filterMethod, $data, $expected) {
+     $source = $this->prophesize(StorageInterface::class);
+     $filterA = $this->prophesizeFilter();
+@@ -208,6 +213,7 @@ public function testReadMultipleWithEmptyResults() {
+    *
+    * @dataProvider writeFilterProvider
+    */
++  #[DataProvider('writeFilterProvider')]
+   public function testWriteFilter($interim, $expected, $exists = TRUE) {
+     $name = $this->randomString();
+     $data = $this->randomArray();
+@@ -278,6 +284,7 @@ public function testWriteFilterDeleting() {
+    *
+    * @dataProvider deleteFilterProvider
+    */
++  #[DataProvider('deleteFilterProvider')]
+   public function testDeleteFilter($interim, $expected) {
+     $name = $this->randomString();
+     $source = $this->prophesize(StorageInterface::class);
+@@ -315,6 +322,7 @@ public static function deleteFilterProvider() {
+    *
+    * @dataProvider renameFilterProvider
+    */
++  #[DataProvider('renameFilterProvider')]
+   public function testRenameFilter($interim, $expected) {
+     $name = $this->randomString();
+     $name2 = $this->randomString();
+@@ -353,6 +361,7 @@ public static function renameFilterProvider() {
+    *
+    * @dataProvider deleteAllFilterProvider
+    */
++  #[DataProvider('deleteAllFilterProvider')]
+   public function testDeleteAllFilter($interim, $expected) {
+     $name = $this->randomString();
+     $source = $this->prophesize(StorageInterface::class);
+@@ -432,7 +441,6 @@ protected function prophesizeFilter() {
+   protected static function getProtectedFilters(StorageInterface $storage) {
+     $filterReflection = new \ReflectionClass(FilteredStorage::class);
+     $filtersProperty = $filterReflection->getProperty('filters');
+-    $filtersProperty->setAccessible(TRUE);
+ 
+     return $filtersProperty->getValue($storage);
+   }
+diff --git a/src/Tests/GhostStorageTest.php b/src/Tests/GhostStorageTest.php
+index 9847c3308c7271836148a06b31fb817c75ed023a..6fdec1ecc17f506cad3508c5603ce96127872d00 100644
+--- a/src/Tests/GhostStorageTest.php
++++ b/src/Tests/GhostStorageTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\config_filter\Tests;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Config\StorageInterface;
+ use Drupal\config_filter\Config\GhostStorage;
+ use Prophecy\Argument;
+@@ -11,6 +13,7 @@
+  *
+  * @group config_filter
+  */
++#[Group('config_filter')]
+ class GhostStorageTest extends ReadonlyStorageTest {
+ 
+   /**
+@@ -31,6 +34,7 @@ protected function getStorage(StorageInterface $source) {
+    *
+    * @dataProvider writeMethodsProvider
+    */
++  #[DataProvider('writeMethodsProvider')]
+   public function testWriteOperations($method, $arguments) {
+     $source = $this->prophesize(StorageInterface::class);
+     $source->$method(Argument::any())->shouldNotBeCalled();
+diff --git a/src/Tests/ReadonlyStorageTest.php b/src/Tests/ReadonlyStorageTest.php
+index c885e296d6f8a0b8cc2acef719281fcf301ddd2b..56cd50699914c751ecb780c07005d68681b8a449 100644
+--- a/src/Tests/ReadonlyStorageTest.php
++++ b/src/Tests/ReadonlyStorageTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\config_filter\Tests;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Config\StorageInterface;
+ use Drupal\Tests\UnitTestCase;
+ use Drupal\config_filter\Config\ReadOnlyStorage;
+@@ -14,6 +16,7 @@
+  *
+  * @group config_filter
+  */
++#[Group('config_filter')]
+ class ReadonlyStorageTest extends UnitTestCase {
+ 
+   /**
+@@ -36,6 +39,7 @@ protected function getStorage(StorageInterface $source) {
+    *
+    * @dataProvider readMethodsProvider
+    */
++  #[DataProvider('readMethodsProvider')]
+   public function testReadOperations($method, $arguments, $returnValue) {
+     $source = $this->prophesize(StorageInterface::class);
+     $methodProhecy = new MethodProphecy($source, $method, $arguments);
+@@ -87,7 +91,6 @@ public function testCreateCollection() {
+ 
+     $readonlyReflection = new \ReflectionClass(ReadOnlyStorage::class);
+     $storageProperty = $readonlyReflection->getProperty('storage');
+-    $storageProperty->setAccessible(TRUE);
+     $actualSource = $storageProperty->getValue($collectionStorage);
+     $this->assertEquals($collectionSource, $actualSource);
+   }
+@@ -97,6 +100,7 @@ public function testCreateCollection() {
+    *
+    * @dataProvider writeMethodsProvider
+    */
++  #[DataProvider('writeMethodsProvider')]
+   public function testWriteOperations($method, $arguments) {
+     $source = $this->prophesize(StorageInterface::class);
+     $source->$method(Argument::any())->shouldNotBeCalled();
+diff --git a/tests/modules/config_filter_split_test/config_filter_split_test.info.yml b/tests/modules/config_filter_split_test/config_filter_split_test.info.yml
+index c5080a1612134fd234ad0a72a11d7b8bdb199abb..a538bd1cb8b9e8cfb008b456ba89fe722e10f5d4 100644
+--- a/tests/modules/config_filter_split_test/config_filter_split_test.info.yml
++++ b/tests/modules/config_filter_split_test/config_filter_split_test.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Simple split filter'
+ type: module
+ description: Test module with a simple filter.
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ package: Testing
+ dependencies:
+   - config_filter:config_filter
+diff --git a/tests/modules/config_filter_test/config_filter_test.info.yml b/tests/modules/config_filter_test/config_filter_test.info.yml
+index 40a56e5868944e9c0f1d55248164875af8cee7a3..2daff4d3391036034596c08b6fbe55b274018a45 100644
+--- a/tests/modules/config_filter_test/config_filter_test.info.yml
++++ b/tests/modules/config_filter_test/config_filter_test.info.yml
+@@ -1,7 +1,7 @@
+ name: Config Filter Test
+ type: module
+ description: Test module with a simple filter.
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^10.1 || ^11 || ^12
+ package: Testing
+ dependencies:
+   - config_filter:config_filter
+diff --git a/tests/src/Kernel/ConfigFilterStorageFactoryTest.php b/tests/src/Kernel/ConfigFilterStorageFactoryTest.php
+index b0b0776f8ee1c4bf1a25aeb67a7adc5c819436d0..01581a0137c53dfa29064bde48434d7acaf45e3f 100644
+--- a/tests/src/Kernel/ConfigFilterStorageFactoryTest.php
++++ b/tests/src/Kernel/ConfigFilterStorageFactoryTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_filter\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Config\DatabaseStorage;
+ use Drupal\Core\Config\StorageComparer;
+ use Drupal\KernelTests\KernelTestBase;
+@@ -11,6 +13,8 @@
+  *
+  * @group config_filter
+  */
++#[Group('config_filter')]
++#[RunTestsInSeparateProcesses]
+ class ConfigFilterStorageFactoryTest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/ExampleStorageKernelTest.php b/tests/src/Kernel/ExampleStorageKernelTest.php
+index 86c5fc39a4be9fe80c65851e7cc8cd7ffda56f80..6ad952c5310a374e6f3ffa697bf5b2092c094879 100644
+--- a/tests/src/Kernel/ExampleStorageKernelTest.php
++++ b/tests/src/Kernel/ExampleStorageKernelTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\config_filter\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Config\MemoryStorage;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+@@ -10,6 +12,8 @@
+  *
+  * @group config_filter_example
+  */
++#[Group('config_filter_example')]
++#[RunTestsInSeparateProcesses]
+ class ExampleStorageKernelTest extends KernelTestBase {
+ 
+   use ConfigStorageTestTrait;

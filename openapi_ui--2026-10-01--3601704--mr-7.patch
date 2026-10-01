@@ -1,0 +1,11 @@
+diff --git a/openapi_ui.info.yml b/openapi_ui.info.yml
+index 1604ddff8e2f6a4e29ad2bebe6828857a7a9600d..88fd0ccff11c4c02e3673b690e4166b84f07805d 100644
+--- a/openapi_ui.info.yml
++++ b/openapi_ui.info.yml
+@@ -1,5 +1,5 @@
+ name: OpenAPI UI
+ type: module
+ description: Provides plugin system for OpenAPI/Swagger Interface libraries.
+-core_version_requirement: ^10.1.3 || ^11
++core_version_requirement: ^10.1.3 || ^11 || ^12
+ package: OpenAPI

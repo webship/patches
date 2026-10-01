@@ -1,0 +1,13 @@
+diff --git a/klaro.info.yml b/klaro.info.yml
+index b3dbcf4..f8af7c4 100644
+--- a/klaro.info.yml
++++ b/klaro.info.yml
+@@ -3,7 +3,7 @@ description: Implements the <a href="https://github.com/klaro-org/klaro-js" targ
+ 
+ type: module
+ package: User interface
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ 
+ configure: klaro.admin
+ 

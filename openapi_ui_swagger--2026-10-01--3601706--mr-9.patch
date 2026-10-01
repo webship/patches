@@ -1,0 +1,13 @@
+diff --git a/openapi_ui_swagger.info.yml b/openapi_ui_swagger.info.yml
+index 66b23b3a3253a00febc0559bd4d39c9e7c694830..95a3888766fc560484fed852accc87bef4429b89 100644
+--- a/openapi_ui_swagger.info.yml
++++ b/openapi_ui_swagger.info.yml
+@@ -1,7 +1,7 @@
+ name: Swagger UI for OpenAPI UI
+ type: module
+ description: Provides display of OpenAPI docs using the Swagger UI plugin.
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ package: OpenAPI
+ dependencies:
+   - openapi_ui:openapi_ui

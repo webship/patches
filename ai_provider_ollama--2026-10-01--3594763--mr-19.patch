@@ -1,0 +1,13 @@
+diff --git a/ai_provider_ollama.info.yml b/ai_provider_ollama.info.yml
+index bc52dd396181fe1b1358012d03630ecbaeac5267..c469fcf611637100970bf81ac6fc7d25adc63024 100644
+--- a/ai_provider_ollama.info.yml
++++ b/ai_provider_ollama.info.yml
+@@ -2,7 +2,7 @@ name: Ollama Provider
+ description: This enables the use of Ollama for the AI module.
+ package: AI Providers
+ type: module
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ configure: ai_provider_ollama.settings_form
+ 
+ dependencies:

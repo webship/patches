@@ -1,0 +1,13 @@
+diff --git a/antibot.info.yml b/antibot.info.yml
+index 9bddbaf..29d3633 100644
+--- a/antibot.info.yml
++++ b/antibot.info.yml
+@@ -2,7 +2,7 @@ name: Antibot
+ type: module
+ description: Prevent forms from being submitted without JavaScript enabled
+ package: Spam control
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^8.8 || ^9 || ^10 || ^11 || ^12
+ configure: antibot.settings
+ 
+ # Information added by Drupal.org packaging script on 2026-06-21

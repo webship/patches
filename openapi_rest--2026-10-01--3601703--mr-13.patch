@@ -1,0 +1,13 @@
+diff --git a/openapi_rest.info.yml b/openapi_rest.info.yml
+index 9a0f1d6a5afde62a8eb8765c4e1d59badf46c41e..6e6be47c766c851f1364090add4c4f9869b6c57c 100644
+--- a/openapi_rest.info.yml
++++ b/openapi_rest.info.yml
+@@ -2,7 +2,7 @@ name: OpenAPI REST
+ description: OpenAPI support for the REST module.
+ type: module
+ package: Web Services
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ dependencies:
+   - drupal:rest
+   - openapi:openapi (>=8.x-2.0-rc1)

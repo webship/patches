@@ -1,0 +1,13 @@
+diff --git a/ai_content_suggestions.info.yml b/ai_content_suggestions.info.yml
+index 31a89fc..d58a08a 100644
+--- a/ai_content_suggestions.info.yml
++++ b/ai_content_suggestions.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Content Suggestions'
+ type: module
+ description: 'Allows a configured AI to be passed content to suggest alterations'
+ package: AI
+-core_version_requirement: ^10.4 || ^11
++core_version_requirement: ^10.4 || ^11 || ^12
+ configure: ai_content_suggestions.settings
+ dependencies:
+   - ai:ai

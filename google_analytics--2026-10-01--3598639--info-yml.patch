@@ -1,0 +1,13 @@
+diff --git a/google_analytics.info.yml b/google_analytics.info.yml
+index c333ce5..f81618e 100644
+--- a/google_analytics.info.yml
++++ b/google_analytics.info.yml
+@@ -2,7 +2,7 @@ name: 'Google Analytics'
+ type: module
+ description: 'Allows your site to be tracked by Google Analytics by adding a Javascript tracking code to every page.'
+ package: Statistics
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^9.5 || ^10 || ^11 || ^12
+ configure: google_analytics.admin_settings_form
+ dependencies:
+   - drupal:path_alias

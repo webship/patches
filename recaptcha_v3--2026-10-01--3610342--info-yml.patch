@@ -1,0 +1,13 @@
+diff --git a/recaptcha_v3.info.yml b/recaptcha_v3.info.yml
+index 773f89e..4c3f69d 100644
+--- a/recaptcha_v3.info.yml
++++ b/recaptcha_v3.info.yml
+@@ -1,7 +1,7 @@
+ name: "reCAPTCHA v3"
+ type: module
+ description: "The reCaptcha V3 module provides integration with Google reCaptcha V3 and CAPTCHA module."
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ package: Spam control
+ configure: recaptcha_v3.settings
+ dependencies:

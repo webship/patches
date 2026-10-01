@@ -1,0 +1,13 @@
+diff --git a/openapi.info.yml b/openapi.info.yml
+index 244ed4a..c3f6748 100644
+--- a/openapi.info.yml
++++ b/openapi.info.yml
+@@ -1,7 +1,7 @@
+ name: OpenAPI
+ type: module
+ description: Connects Drupal to the OpenAPI Javascript Library
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ package: OpenAPI
+ dependencies:
+   - drupal:serialization

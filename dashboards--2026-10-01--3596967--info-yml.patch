@@ -1,0 +1,78 @@
+diff --git a/dashboards.info.yml b/dashboards.info.yml
+index 84b9bb8..c0fc29b 100644
+--- a/dashboards.info.yml
++++ b/dashboards.info.yml
+@@ -1,7 +1,7 @@
+ name: Dashboards
+ description: "Dashboards based on layout builder."
+ package: Dashboards
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ type: module
+ configure: entity.dashboard.collection
+ dependencies:
+diff --git a/modules/dashboards_comments/dashboards_comments.info.yml b/modules/dashboards_comments/dashboards_comments.info.yml
+index 643ef0b..acd4abb 100644
+--- a/modules/dashboards_comments/dashboards_comments.info.yml
++++ b/modules/dashboards_comments/dashboards_comments.info.yml
+@@ -2,7 +2,7 @@ name: Dashboards comments
+ description: 'Comment statistics.'
+ package: Dashboards
+ 
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ type: module
+ 
+ dependencies:
+diff --git a/modules/dashboards_matomo/dashboards_matomo.info.yml b/modules/dashboards_matomo/dashboards_matomo.info.yml
+index f9a98da..9752675 100644
+--- a/modules/dashboards_matomo/dashboards_matomo.info.yml
++++ b/modules/dashboards_matomo/dashboards_matomo.info.yml
+@@ -2,7 +2,7 @@ name: Dashboards matomo
+ description: 'Components for core statistics.'
+ package: Dashboards
+ 
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ type: module
+ 
+ dependencies:
+diff --git a/modules/dashboards_statistic/dashboards_statistic.info.yml b/modules/dashboards_statistic/dashboards_statistic.info.yml
+index d5c13fc..a659bed 100644
+--- a/modules/dashboards_statistic/dashboards_statistic.info.yml
++++ b/modules/dashboards_statistic/dashboards_statistic.info.yml
+@@ -2,7 +2,7 @@ name: Dashboards statistics
+ description: 'Components for core statistics.'
+ package: Dashboards
+ 
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ type: module
+ 
+ dependencies:
+diff --git a/modules/dashboards_views/dashboards_views.info.yml b/modules/dashboards_views/dashboards_views.info.yml
+index 5c8fb79..a5b14c5 100644
+--- a/modules/dashboards_views/dashboards_views.info.yml
++++ b/modules/dashboards_views/dashboards_views.info.yml
+@@ -2,7 +2,7 @@ name: Dashboards views
+ description: 'Setup some views for dashboard.'
+ package: Dashboards
+ 
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ type: module
+ 
+ dependencies:
+diff --git a/modules/dashboards_webform/dashboards_webform.info.yml b/modules/dashboards_webform/dashboards_webform.info.yml
+index bac0192..48503f7 100644
+--- a/modules/dashboards_webform/dashboards_webform.info.yml
++++ b/modules/dashboards_webform/dashboards_webform.info.yml
+@@ -2,7 +2,7 @@ name: Dashboards webform
+ description: 'Webform integration.'
+ package: Dashboards
+ 
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ type: module
+ 
+ dependencies:

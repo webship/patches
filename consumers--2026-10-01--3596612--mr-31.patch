@@ -1,0 +1,256 @@
+diff --git a/consumers.info.yml b/consumers.info.yml
+index a2b21a26d29563b028d74b158a40cd70cb0b0e87..34413c9f51da1253d1e6523c514701b3c25c67b1 100644
+--- a/consumers.info.yml
++++ b/consumers.info.yml
+@@ -1,7 +1,7 @@
+ name: Consumers
+ type: module
+ description: 'Declare all the consumers of your API'
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ package: Authentication
+ php: 8.0
+ configure: entity.consumer.collection
+diff --git a/consumers.module b/consumers.module
+index f3a83ecb0add3a3e301c041269209a196014e8e3..7dd35be11ecb78dc1e12f74091184ddd423a093d 100644
+--- a/consumers.module
++++ b/consumers.module
+@@ -5,7 +5,8 @@
+  * Module implementation file.
+  */
+ 
+-use Drupal\Core\Access\AccessResult;
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\consumers\Hook\ConsumersHooks;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Render\Element;
+ use Drupal\Core\Session\AccountInterface;
+@@ -13,12 +14,9 @@ use Drupal\Core\Session\AccountInterface;
+ /**
+  * Implements hook_theme().
+  */
++#[LegacyHook]
+ function consumers_theme($existing, $type, $theme, $path) {
+-  return [
+-    'consumer' => [
+-      'render element' => 'elements',
+-    ],
+-  ];
++  return \Drupal::service(ConsumersHooks::class)->theme($existing, $type, $theme, $path);
+ }
+ 
+ /**
+@@ -49,11 +47,7 @@ function template_preprocess_consumer(array &$variables) {
+ /**
+  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
+  */
++#[LegacyHook]
+ function consumers_jsonapi_consumer_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
+-  return [
+-    JSONAPI_FILTER_AMONG_OWN => AccessResult::allowedIfHasPermission(
+-      $account,
+-      'view own consumer entities'
+-    ),
+-  ];
++  return \Drupal::service(ConsumersHooks::class)->jsonapiConsumerFilterAccess($entity_type, $account);
+ }
+diff --git a/consumers.services.yml b/consumers.services.yml
+index c21d4740704022265c48a68db0623de60e3df4b1..107b7857e71fd5d4017044654438846610a68372 100644
+--- a/consumers.services.yml
++++ b/consumers.services.yml
+@@ -22,3 +22,7 @@ services:
+   logger.channel.consumers:
+     parent: logger.channel_base
+     arguments: ['consumers']
++
++  Drupal\consumers\Hook\ConsumersHooks:
++    class: Drupal\consumers\Hook\ConsumersHooks
++    autowire: true
+diff --git a/src/Hook/ConsumersHooks.php b/src/Hook/ConsumersHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..d9a45ded91db812881b489d1290c2cd6d6c90c3a
+--- /dev/null
++++ b/src/Hook/ConsumersHooks.php
+@@ -0,0 +1,40 @@
++<?php
++
++namespace Drupal\consumers\Hook;
++
++use Drupal\Core\Access\AccessResult;
++use Drupal\jsonapi\JsonApiFilter;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Session\AccountInterface;
++use Drupal\Core\Entity\EntityTypeInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for consumers.
++ */
++class ConsumersHooks {
++
++  /**
++   * Implements hook_theme().
++   */
++  #[Hook('theme')]
++  public function theme($existing, $type, $theme, $path) {
++    return [
++      'consumer' => [
++        'render element' => 'elements',
++      ],
++    ];
++  }
++
++  /**
++   * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
++   */
++  #[Hook('jsonapi_consumer_filter_access')]
++  public function jsonapiConsumerFilterAccess(EntityTypeInterface $entity_type, AccountInterface $account) {
++    return [
++      DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.3.0', fn() => JsonApiFilter::AMONG_OWN,
++    fn() => JSONAPI_FILTER_AMONG_OWN) => AccessResult::allowedIfHasPermission($account, 'view own consumer entities'),
++    ];
++  }
++
++}
+diff --git a/tests/modules/consumers_test/consumers_test.module b/tests/modules/consumers_test/consumers_test.module
+index 2e836c5f36dcea5e4094f8b8eb96d4a48910de97..8f5281f13384f34129c9c2fd72d1d90e18d88f4b 100644
+--- a/tests/modules/consumers_test/consumers_test.module
++++ b/tests/modules/consumers_test/consumers_test.module
+@@ -5,22 +5,16 @@
+  * Hooks for the consumers_test module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\consumers_test\Hook\ConsumersTestHooks;
+ use Drupal\Core\Entity\EntityTypeInterface;
+-use Drupal\Core\Field\BaseFieldDefinition;
+ 
+ define('CONSUMERS_TEST_NODE_TYPE', 'test_content_type_name');
+ 
+ /**
+  * Implements hook_entity_base_field_info().
+  */
++#[LegacyHook]
+ function consumers_test_entity_base_field_info(EntityTypeInterface $entity_type) {
+-  $fields = [];
+-  if ($entity_type->id() === 'node') {
+-    $fields['consumer_client_id'] = BaseFieldDefinition::create('string')
+-      ->setLabel(t('Consumer client id'))
+-      ->setDescription(t('The client id of the consumer for test purposes.'))
+-      ->setComputed(TRUE)
+-      ->setClass('\Drupal\consumers_test\ConsumerClientIDTestField');
+-  }
+-  return $fields;
++  return \Drupal::service(ConsumersTestHooks::class)->entityBaseFieldInfo($entity_type);
+ }
+diff --git a/tests/modules/consumers_test/consumers_test.services.yml b/tests/modules/consumers_test/consumers_test.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..a946979e5043395390fc1714568d6eec87363668
+--- /dev/null
++++ b/tests/modules/consumers_test/consumers_test.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\consumers_test\Hook\ConsumersTestHooks:
++    class: Drupal\consumers_test\Hook\ConsumersTestHooks
++    autowire: true
+diff --git a/tests/modules/consumers_test/src/Hook/ConsumersTestHooks.php b/tests/modules/consumers_test/src/Hook/ConsumersTestHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..c8528e31c3fac71fdf20f7ce7eeb87065ad9714a
+--- /dev/null
++++ b/tests/modules/consumers_test/src/Hook/ConsumersTestHooks.php
+@@ -0,0 +1,28 @@
++<?php
++
++namespace Drupal\consumers_test\Hook;
++
++use Drupal\Core\Field\BaseFieldDefinition;
++use Drupal\Core\Entity\EntityTypeInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for consumers_test.
++ */
++class ConsumersTestHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_entity_base_field_info().
++   */
++  #[Hook('entity_base_field_info')]
++  public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
++    $fields = [];
++    if ($entity_type->id() === 'node') {
++      $fields['consumer_client_id'] = BaseFieldDefinition::create('string')->setLabel($this->t('Consumer client id'))->setDescription($this->t('The client id of the consumer for test purposes.'))->setComputed(TRUE)->setClass('\Drupal\consumers_test\ConsumerClientIDTestField');
++    }
++    return $fields;
++  }
++
++}
+diff --git a/tests/src/Functional/CacheabilityTest.php b/tests/src/Functional/CacheabilityTest.php
+index 0a2cb364f12e23877cd19a41cb80226764938082..c28f6b27702cde6c705c5c5692bb9e507bc48280 100644
+--- a/tests/src/Functional/CacheabilityTest.php
++++ b/tests/src/Functional/CacheabilityTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\consumers\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\consumers\Entity\Consumer;
+ use Drupal\consumers\MissingConsumer;
+@@ -12,6 +14,8 @@ use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
+  *
+  * @group consumers
+  */
++#[Group('consumers')]
++#[RunTestsInSeparateProcesses]
+ class CacheabilityTest extends JsonApiFunctionalTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/ConsumerTest.php b/tests/src/Kernel/ConsumerTest.php
+index 868faf66d40c642d51dfaae0261db85afdf6b936..ee1f78bb0169cb7af9462b53980962f9120e27e8 100644
+--- a/tests/src/Kernel/ConsumerTest.php
++++ b/tests/src/Kernel/ConsumerTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\consumers\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\consumers\Entity\Consumer;
+ use Drupal\Core\Access\AccessException;
+@@ -15,6 +17,8 @@ use Symfony\Component\ErrorHandler\BufferingLogger;
+  *
+  * @group consumers
+  */
++#[Group('consumers')]
++#[RunTestsInSeparateProcesses]
+ class ConsumerTest extends KernelTestBase {
+ 
+   use UserCreationTrait;
+diff --git a/tests/src/Kernel/NegotiatorTest.php b/tests/src/Kernel/NegotiatorTest.php
+index 35bae458ace5744b086d542509182c2612f30cd4..85688e91817abe8d0b819bdbf213e575de69f755 100644
+--- a/tests/src/Kernel/NegotiatorTest.php
++++ b/tests/src/Kernel/NegotiatorTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\consumers\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\consumers\Entity\Consumer;
+ use Drupal\consumers\Entity\ConsumerInterface;
+ use Drupal\KernelTests\KernelTestBase;
+@@ -12,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
+  *
+  * @group consumers
+  */
++#[Group('consumers')]
++#[RunTestsInSeparateProcesses]
+ class NegotiatorTest extends KernelTestBase {
+ 
+   /**

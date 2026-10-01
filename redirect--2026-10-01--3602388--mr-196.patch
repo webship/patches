@@ -1,0 +1,1918 @@
+diff --git a/modules/redirect_404/redirect_404.module b/modules/redirect_404/redirect_404.module
+index 8c3c4f4..91e7afb 100644
+--- a/modules/redirect_404/redirect_404.module
++++ b/modules/redirect_404/redirect_404.module
+@@ -5,9 +5,9 @@
+  * Module file for redirect_404.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\redirect_404\Hook\Redirect404Hooks;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Language\LanguageInterface;
+-use Drupal\Core\Url;
+ use Drupal\redirect\Entity\Redirect;
+ 
+ /**
+@@ -15,75 +15,17 @@ use Drupal\redirect\Entity\Redirect;
+  *
+  * Adds clean up job to drop the irrelevant rows from the redirect_404 table.
+  */
++#[LegacyHook]
+ function redirect_404_cron() {
+-  /** @var \Drupal\redirect_404\SqlRedirectNotFoundStorage $redirect_storage */
+-  $redirect_storage = \Drupal::service('redirect.not_found_storage');
+-  $redirect_storage->purgeOldRequests();
+-
+-  $last_daily_reset = \Drupal::state()->get('redirect_404.last_daily_reset', 0);
+-
+-  if (date('d', $last_daily_reset) != date('d')) {
+-    $redirect_storage->resetDailyCount();
+-
+-    \Drupal::state()->set('redirect_404.last_daily_reset', \Drupal::time()->getRequestTime());
+-  }
++  \Drupal::service(Redirect404Hooks::class)->cron();
+ }
+ 
+ /**
+  * Implements hook_form_FORM_ID_alter() for system_logging_settings().
+  */
++#[LegacyHook]
+ function redirect_404_form_redirect_settings_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  $config = \Drupal::configFactory()->getEditable('redirect_404.settings');
+-
+-  $row_limits = [100, 1000, 10000, 100000, 1000000];
+-  $form['row_limit'] = [
+-    '#type' => 'select',
+-    '#title' => t('404 error database logs to keep'),
+-    '#default_value' => $config->get('row_limit'),
+-    '#options' => [0 => t('All')] + array_combine($row_limits, $row_limits),
+-    '#description' => t('The maximum number of 404 error logs to keep in the database log. Requires a <a href=":cron">cron maintenance task</a>.', [':cron' => Url::fromRoute('system.status')->toString()]),
+-  ];
+-
+-  $form['reset_404'] = [
+-    '#type' => 'submit',
+-    '#value' => t('Clear all 404 log entries'),
+-    '#submit' => ['redirect_404_reset_submit'],
+-  ];
+-
+-  $ignored_pages = $config->get('pages');
+-  // Add a new path to be ignored, if there is an ignore argument in the query.
+-  if ($path_to_ignore = \Drupal::request()->query->get('ignore')) {
+-    $ignored_pages .= $path_to_ignore;
+-  }
+-
+-  // Replace '\r\n' with '\n' to keep consistency in tests.
+-  // See: https://www.drupal.org/project/redirect/issues/3244924
+-  $ignored_pages = str_replace("\r\n", "\n", $ignored_pages);
+-
+-  $form['ignore_pages'] = [
+-    '#type' => 'textarea',
+-    '#title' => t('Pages to ignore'),
+-    '#default_value' => $ignored_pages,
+-    '#description' => t("Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
+-      '%user-wildcard' => '/user/*',
+-      '%front' => '<front>',
+-    ]),
+-  ];
+-
+-  $form['clear_ignored'] = [
+-    '#type' => 'checkbox',
+-    '#title' => t('Clear ignored 404 log entries when saving this form'),
+-    '#default_value' => FALSE,
+-  ];
+-
+-  $form['suppress_404'] = [
+-    '#type' => 'checkbox',
+-    '#title' => t("Suppress 'page not found' log messages"),
+-    '#default_value' => $config->get('suppress_404'),
+-    '#description' => t("Prevents logging 'page not found' events. Can be safely enabled when redirect_404 module is used, which stores them separately, nothing else relies on those messages."),
+-  ];
+-
+-  $form['#submit'][] = 'redirect_404_logging_settings_submit';
++  \Drupal::service(Redirect404Hooks::class)->formRedirectSettingsFormAlter($form, $form_state, $form_id);
+ }
+ 
+ /**
+@@ -119,16 +61,9 @@ function redirect_404_logging_settings_submit($form, FormStateInterface $form_st
+ /**
+  * Implements hook_ENTITY_TYPE_presave() for redirect entities.
+  */
++#[LegacyHook]
+ function redirect_404_redirect_presave(Redirect $redirect) {
+-  $path = $redirect->getSourcePathWithQuery();
+-  $langcode = $redirect->get('language')->value;
+-
+-  if ($langcode == LanguageInterface::LANGCODE_NOT_SPECIFIED) {
+-    $langcode = NULL;
+-  }
+-
+-  // Mark a potentially existing log entry for this path as resolved.
+-  \Drupal::service('redirect.not_found_storage')->resolveLogRequest($path, $langcode);
++  \Drupal::service(Redirect404Hooks::class)->redirectPresave($redirect);
+ }
+ 
+ /**
+diff --git a/modules/redirect_404/redirect_404.services.yml b/modules/redirect_404/redirect_404.services.yml
+index 8221015..7e707ad 100644
+--- a/modules/redirect_404/redirect_404.services.yml
++++ b/modules/redirect_404/redirect_404.services.yml
+@@ -14,3 +14,11 @@ services:
+     class: \Drupal\redirect_404\Render\Redirect404LogSuppressor
+     decorates: logger.factory
+     arguments: ['@logger.redirect_404.inner', '@config.factory']
++
++  Drupal\redirect_404\Hook\Redirect404Hooks:
++    class: Drupal\redirect_404\Hook\Redirect404Hooks
++    autowire: true
++
++  Drupal\redirect_404\Hook\Redirect404ViewsHooks:
++    class: Drupal\redirect_404\Hook\Redirect404ViewsHooks
++    autowire: true
+diff --git a/modules/redirect_404/redirect_404.views.inc b/modules/redirect_404/redirect_404.views.inc
+index dcc8320..13e0835 100644
+--- a/modules/redirect_404/redirect_404.views.inc
++++ b/modules/redirect_404/redirect_404.views.inc
+@@ -5,107 +5,13 @@
+  * Provide views data for redirect_404.module.
+  */
+ 
+-use Drupal\redirect_404\SqlRedirectNotFoundStorage;
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\redirect_404\Hook\Redirect404ViewsHooks;
+ 
+ /**
+  * Implements hook_views_data().
+  */
++#[LegacyHook]
+ function redirect_404_views_data() {
+-  $data = [];
+-
+-  // Only define views data if the service uses our specific implementation.
+-  if (!\Drupal::service('redirect.not_found_storage') instanceof SqlRedirectNotFoundStorage) {
+-    return $data;
+-  }
+-
+-  $data['redirect_404']['table']['group'] = t('Redirect 404');
+-
+-  $data['redirect_404']['table']['base'] = [
+-    'field' => '',
+-    'title' => t('Fix 404 pages'),
+-    'help' => t('Overview for 404 error paths with no redirect assigned yet.'),
+-  ];
+-
+-  $data['redirect_404']['path'] = [
+-    'title' => t('Path'),
+-    'help' => t('The path of the request.'),
+-    'field' => [
+-      'id' => 'standard',
+-    ],
+-    'filter' => [
+-      'id' => 'string',
+-    ],
+-  ];
+-
+-  $data['redirect_404']['langcode'] = [
+-    'title' => t('Language'),
+-    'help' => t('The language of this request.'),
+-    'field' => [
+-      'id' => 'redirect_404_langcode',
+-    ],
+-    'filter' => [
+-      'id' => 'language',
+-    ],
+-  ];
+-
+-  $data['redirect_404']['count'] = [
+-    'title' => t('Count'),
+-    'help' => t('The number of requests with that path and language.'),
+-    'field' => [
+-      'id' => 'numeric',
+-      'click sortable' => TRUE,
+-    ],
+-    'filter' => [
+-      'id' => 'numeric',
+-    ],
+-  ];
+-
+-  $data['redirect_404']['daily_count'] = [
+-    'title' => t('Daily count'),
+-    'help' => t('The number of requests with that path and language in a day.'),
+-    'field' => [
+-      'id' => 'numeric',
+-      'click sortable' => TRUE,
+-    ],
+-    'filter' => [
+-      'id' => 'numeric',
+-    ],
+-  ];
+-
+-  $data['redirect_404']['timestamp'] = [
+-    'title' => t('Timestamp'),
+-    'help' => t('The timestamp of the last request with that path and language.'),
+-    'field' => [
+-      'id' => 'date',
+-      'click sortable' => TRUE,
+-    ],
+-    'filter' => [
+-      'id' => 'date',
+-    ],
+-  ];
+-
+-  $data['redirect_404']['resolved'] = [
+-    'title' => t('Resolved'),
+-    'help' => t('Whether or not this path has a redirect assigned.'),
+-    'field' => [
+-      'id' => 'boolean',
+-    ],
+-    'filter' => [
+-      'id' => 'boolean',
+-      'label' => t('Resolved'),
+-      'use_equal' => TRUE,
+-    ],
+-  ];
+-
+-  $data['redirect_404']['redirect_404_operations'] = [
+-    'title' => t('Operations'),
+-    'help' => t('Provide operation buttons to handle the 404 path.'),
+-    'field' => [
+-      'id' => 'redirect_404_operations',
+-      'additional fields' => ['path', 'langcode'],
+-      'real field' => 'path',
+-    ],
+-  ];
+-
+-  return $data;
++  return \Drupal::service(Redirect404ViewsHooks::class)->viewsData();
+ }
+diff --git a/modules/redirect_404/src/Hook/Redirect404Hooks.php b/modules/redirect_404/src/Hook/Redirect404Hooks.php
+new file mode 100644
+index 0000000..547b432
+--- /dev/null
++++ b/modules/redirect_404/src/Hook/Redirect404Hooks.php
+@@ -0,0 +1,111 @@
++<?php
++
++namespace Drupal\redirect_404\Hook;
++
++use Drupal\Core\Language\LanguageInterface;
++use Drupal\redirect\Entity\Redirect;
++use Drupal\Core\Url;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for redirect_404.
++ */
++class Redirect404Hooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_cron().
++   *
++   * Adds clean up job to drop the irrelevant rows from the redirect_404 table.
++   */
++  #[Hook('cron')]
++  public static function cron() {
++    /** @var \Drupal\redirect_404\SqlRedirectNotFoundStorage $redirect_storage */
++    $redirect_storage = \Drupal::service('redirect.not_found_storage');
++    $redirect_storage->purgeOldRequests();
++    $last_daily_reset = \Drupal::state()->get('redirect_404.last_daily_reset', 0);
++    if (date('d', $last_daily_reset) != date('d')) {
++      $redirect_storage->resetDailyCount();
++      \Drupal::state()->set('redirect_404.last_daily_reset', \Drupal::time()->getRequestTime());
++    }
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter() for system_logging_settings().
++   */
++  #[Hook('form_redirect_settings_form_alter')]
++  public function formRedirectSettingsFormAlter(&$form, FormStateInterface $form_state, $form_id) {
++    $config = \Drupal::configFactory()->getEditable('redirect_404.settings');
++    $row_limits = [
++      100,
++      1000,
++      10000,
++      100000,
++      1000000,
++    ];
++    $form['row_limit'] = [
++      '#type' => 'select',
++      '#title' => $this->t('404 error database logs to keep'),
++      '#default_value' => $config->get('row_limit'),
++      '#options' => [
++        0 => $this->t('All'),
++      ] + array_combine($row_limits, $row_limits),
++      '#description' => $this->t('The maximum number of 404 error logs to keep in the database log. Requires a <a href=":cron">cron maintenance task</a>.', [
++        ':cron' => Url::fromRoute('system.status')->toString(),
++      ]),
++    ];
++    $form['reset_404'] = [
++      '#type' => 'submit',
++      '#value' => $this->t('Clear all 404 log entries'),
++      '#submit' => [
++        'redirect_404_reset_submit',
++      ],
++    ];
++    $ignored_pages = $config->get('pages');
++    // Add a new path to be ignored, if there is an ignore argument in the query.
++    if ($path_to_ignore = \Drupal::request()->query->get('ignore')) {
++      $ignored_pages .= $path_to_ignore;
++    }
++    // Replace '\r\n' with '\n' to keep consistency in tests.
++    // See: https://www.drupal.org/project/redirect/issues/3244924
++    $ignored_pages = str_replace("\r\n", "\n", $ignored_pages);
++    $form['ignore_pages'] = [
++      '#type' => 'textarea',
++      '#title' => $this->t('Pages to ignore'),
++      '#default_value' => $ignored_pages,
++      '#description' => $this->t("Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
++        '%user-wildcard' => '/user/*',
++        '%front' => '<front>',
++      ]),
++    ];
++    $form['clear_ignored'] = [
++      '#type' => 'checkbox',
++      '#title' => $this->t('Clear ignored 404 log entries when saving this form'),
++      '#default_value' => FALSE,
++    ];
++    $form['suppress_404'] = [
++      '#type' => 'checkbox',
++      '#title' => $this->t("Suppress 'page not found' log messages"),
++      '#default_value' => $config->get('suppress_404'),
++      '#description' => $this->t("Prevents logging 'page not found' events. Can be safely enabled when redirect_404 module is used, which stores them separately, nothing else relies on those messages."),
++    ];
++    $form['#submit'][] = 'redirect_404_logging_settings_submit';
++  }
++
++  /**
++   * Implements hook_ENTITY_TYPE_presave() for redirect entities.
++   */
++  #[Hook('redirect_presave')]
++  public static function redirectPresave(Redirect $redirect) {
++    $path = $redirect->getSourcePathWithQuery();
++    $langcode = $redirect->get('language')->value;
++    if ($langcode == LanguageInterface::LANGCODE_NOT_SPECIFIED) {
++      $langcode = NULL;
++    }
++    // Mark a potentially existing log entry for this path as resolved.
++    \Drupal::service('redirect.not_found_storage')->resolveLogRequest($path, $langcode);
++  }
++
++}
+diff --git a/modules/redirect_404/src/Hook/Redirect404ViewsHooks.php b/modules/redirect_404/src/Hook/Redirect404ViewsHooks.php
+new file mode 100644
+index 0000000..b719eed
+--- /dev/null
++++ b/modules/redirect_404/src/Hook/Redirect404ViewsHooks.php
+@@ -0,0 +1,111 @@
++<?php
++
++namespace Drupal\redirect_404\Hook;
++
++use Drupal\redirect_404\SqlRedirectNotFoundStorage;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for redirect_404.
++ */
++class Redirect404ViewsHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_views_data().
++   */
++  #[Hook('views_data')]
++  public function viewsData() {
++    $data = [];
++    // Only define views data if the service uses our specific implementation.
++    if (!\Drupal::service('redirect.not_found_storage') instanceof SqlRedirectNotFoundStorage) {
++      return $data;
++    }
++    $data['redirect_404']['table']['group'] = $this->t('Redirect 404');
++    $data['redirect_404']['table']['base'] = [
++      'field' => '',
++      'title' => $this->t('Fix 404 pages'),
++      'help' => $this->t('Overview for 404 error paths with no redirect assigned yet.'),
++    ];
++    $data['redirect_404']['path'] = [
++      'title' => $this->t('Path'),
++      'help' => $this->t('The path of the request.'),
++      'field' => [
++        'id' => 'standard',
++      ],
++      'filter' => [
++        'id' => 'string',
++      ],
++    ];
++    $data['redirect_404']['langcode'] = [
++      'title' => $this->t('Language'),
++      'help' => $this->t('The language of this request.'),
++      'field' => [
++        'id' => 'redirect_404_langcode',
++      ],
++      'filter' => [
++        'id' => 'language',
++      ],
++    ];
++    $data['redirect_404']['count'] = [
++      'title' => $this->t('Count'),
++      'help' => $this->t('The number of requests with that path and language.'),
++      'field' => [
++        'id' => 'numeric',
++        'click sortable' => TRUE,
++      ],
++      'filter' => [
++        'id' => 'numeric',
++      ],
++    ];
++    $data['redirect_404']['daily_count'] = [
++      'title' => $this->t('Daily count'),
++      'help' => $this->t('The number of requests with that path and language in a day.'),
++      'field' => [
++        'id' => 'numeric',
++        'click sortable' => TRUE,
++      ],
++      'filter' => [
++        'id' => 'numeric',
++      ],
++    ];
++    $data['redirect_404']['timestamp'] = [
++      'title' => $this->t('Timestamp'),
++      'help' => $this->t('The timestamp of the last request with that path and language.'),
++      'field' => [
++        'id' => 'date',
++        'click sortable' => TRUE,
++      ],
++      'filter' => [
++        'id' => 'date',
++      ],
++    ];
++    $data['redirect_404']['resolved'] = [
++      'title' => $this->t('Resolved'),
++      'help' => $this->t('Whether or not this path has a redirect assigned.'),
++      'field' => [
++        'id' => 'boolean',
++      ],
++      'filter' => [
++        'id' => 'boolean',
++        'label' => $this->t('Resolved'),
++        'use_equal' => TRUE,
++      ],
++    ];
++    $data['redirect_404']['redirect_404_operations'] = [
++      'title' => $this->t('Operations'),
++      'help' => $this->t('Provide operation buttons to handle the 404 path.'),
++      'field' => [
++        'id' => 'redirect_404_operations',
++        'additional fields' => [
++          'path',
++          'langcode',
++        ],
++        'real field' => 'path',
++      ],
++    ];
++    return $data;
++  }
++
++}
+diff --git a/modules/redirect_404/tests/src/Functional/Fix404RedirectUILanguageTest.php b/modules/redirect_404/tests/src/Functional/Fix404RedirectUILanguageTest.php
+index 4af5a02..6b8c777 100644
+--- a/modules/redirect_404/tests/src/Functional/Fix404RedirectUILanguageTest.php
++++ b/modules/redirect_404/tests/src/Functional/Fix404RedirectUILanguageTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_404\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Component\Utility\UrlHelper;
+ use Drupal\Core\Language\LanguageInterface;
+ use Drupal\Core\Url;
+@@ -18,6 +20,8 @@ use Drupal\Tests\redirect\Functional\AssertRedirectTrait;
+  *
+  * @group redirect_404
+  */
++#[Group('redirect_404')]
++#[RunTestsInSeparateProcesses]
+ class Fix404RedirectUILanguageTest extends Redirect404TestBase {
+ 
+   use AssertRedirectTrait;
+diff --git a/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php b/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php
+index 42c21d8..1699a00 100644
+--- a/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php
++++ b/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_404\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Component\Utility\UrlHelper;
+ use Drupal\Core\Url;
+ 
+@@ -12,6 +14,8 @@ use Drupal\Core\Url;
+  *
+  * @group redirect_404
+  */
++#[Group('redirect_404')]
++#[RunTestsInSeparateProcesses]
+ class Fix404RedirectUITest extends Redirect404TestBase {
+ 
+   /**
+diff --git a/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php b/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php
+index b8c2332..9398a61 100644
+--- a/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php
++++ b/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_404\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Database\Database;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Core\Database\Database;
+  *
+  * @group redirect_404
+  */
++#[Group('redirect_404')]
++#[RunTestsInSeparateProcesses]
+ class Redirect404LogSuppressorTest extends Redirect404TestBase {
+ 
+   /**
+diff --git a/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php b/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php
+index 4dd2971..de0c3ef 100644
+--- a/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php
++++ b/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_404\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\Core\Database\Database;
+ 
+@@ -12,6 +14,8 @@ use Drupal\Core\Database\Database;
+  *
+  * @group redirect_404
+  */
++#[Group('redirect_404')]
++#[RunTestsInSeparateProcesses]
+ class Fix404RedirectCronJobTest extends KernelTestBase {
+ 
+   /**
+diff --git a/modules/redirect_404/tests/src/Unit/SqlRedirectNotFoundStorageTest.php b/modules/redirect_404/tests/src/Unit/SqlRedirectNotFoundStorageTest.php
+index 8b89074..e3c3d5d 100644
+--- a/modules/redirect_404/tests/src/Unit/SqlRedirectNotFoundStorageTest.php
++++ b/modules/redirect_404/tests/src/Unit/SqlRedirectNotFoundStorageTest.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_404\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\Component\Datetime\TimeInterface;
+ use Drupal\Core\Database\Connection;
+ use Drupal\Core\Language\LanguageInterface;
+@@ -15,6 +16,7 @@ use Drupal\Tests\UnitTestCase;
+  *
+  * @group redirect_404
+  */
++#[Group('redirect_404')]
+ class SqlRedirectNotFoundStorageTest extends UnitTestCase {
+ 
+   /**
+diff --git a/modules/redirect_domain/redirect_domain.module b/modules/redirect_domain/redirect_domain.module
+index 0a27ae4..ceeea2f 100644
+--- a/modules/redirect_domain/redirect_domain.module
++++ b/modules/redirect_domain/redirect_domain.module
+@@ -5,48 +5,14 @@
+  * The redirect domain module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\redirect_domain\Hook\RedirectDomainHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function redirect_domain_help($route_name, RouteMatchInterface $route_match) {
+-  $output = '';
+-  switch ($route_name) {
+-    case 'help.page.redirect_domain':
+-      $output = '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('The Redirect domain module allows users to redirect between domains.') . '</p>';
+-      $output .= '<h3>' . t('Uses') . '</h3>';
+-      $output .= '<dt>' . t('Manage domain redirects') . '</dt>';
+-      $output .= '<dd>' . t('The domain redirect is accessed through <a href=":domainlist">Domain Redirects</a>. The user can add the domain redirects through the domain redirect table which consists of the domain from which it needs to be redirected, the sub path and the complete url destination to which it needs to be redirected. The module also supports the usage of a wildcard redirecting, thus many requests can be handled with one instance of domain redirect.', [':domainlist' => Url::fromRoute('redirect_domain.domain_list')->toString()]) . '</dd>';
+-      return $output;
+-
+-    case 'redirect_domain.domain_list':
+-      $output = '<p>' . t('The domain redirect table consists of the domain from which it needs to be redirected, the sub path and the complete url destination to which it needs to be redirected.') . '</p>';
+-      $output .= '<h5>' . t('Example Configuration') . '</h5>';
+-      $output .= '<ul>';
+-      $output .= '<li> example.com/redirect => redirected.com/example-path </li>';
+-      $output .= '<li> foo.com/* => bar.com </li>';
+-      $output .= '</ul>';
+-      $output .= '<h5>' . t('Example Redirects') . '</h5>';
+-      $output .= '<ul>';
+-      $output .= '<li>' . t('Request: example.com/redirect => Response: redirected.com/example-path') . '</li>';
+-      $output .= '<li>' . t('Request: foo.com/any-path => Response: bar.com') . '</li>';
+-      $output .= '</ul>';
+-      $output .= '<h5>' . t('Precedence') . '</h5>';
+-      $output .= t('Top-down precedence is used. This means the first matching redirect that is found will be taken. For example, assume these redirect rules:') . '</p>';
+-      $output .= '<ul>';
+-      $output .= '<li>' . t('foo.com/some/path => some-domain.com/path') . '</li>';
+-      $output .= '<li>' . t('foo.com/* => wildcard-redirect.com') . '</li>';
+-      $output .= '<li>' . t('foo.com/other/path => other-domain.com/path') . '</li>';
+-      $output .= '</ul>';
+-      $output .= '<p>' . t('The following redirects would actually occur:') . '</p>';
+-      $output .= '<ul>';
+-      $output .= '<li>' . t('foo.com/some/path => some-domain.com/path') . '</li>';
+-      $output .= '<li>' . t('foo.com/other/path => wildcard-redirect.com') . '</li>';
+-      $output .= '</ul>';
+-
+-      return $output;
+-  }
++  return \Drupal::service(RedirectDomainHooks::class)->help($route_name, $route_match);
+ }
+diff --git a/modules/redirect_domain/redirect_domain.services.yml b/modules/redirect_domain/redirect_domain.services.yml
+index 94503c6..5154b8f 100644
+--- a/modules/redirect_domain/redirect_domain.services.yml
++++ b/modules/redirect_domain/redirect_domain.services.yml
+@@ -4,3 +4,7 @@ services:
+     arguments: ['@config.factory', '@redirect.checker', '@path.matcher']
+     tags:
+       - { name: event_subscriber }
++
++  Drupal\redirect_domain\Hook\RedirectDomainHooks:
++    class: Drupal\redirect_domain\Hook\RedirectDomainHooks
++    autowire: true
+diff --git a/modules/redirect_domain/src/Hook/RedirectDomainHooks.php b/modules/redirect_domain/src/Hook/RedirectDomainHooks.php
+new file mode 100644
+index 0000000..35c9d00
+--- /dev/null
++++ b/modules/redirect_domain/src/Hook/RedirectDomainHooks.php
+@@ -0,0 +1,61 @@
++<?php
++
++namespace Drupal\redirect_domain\Hook;
++
++use Drupal\Core\Url;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for redirect_domain.
++ */
++class RedirectDomainHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    $output = '';
++    switch ($route_name) {
++      case 'help.page.redirect_domain':
++        $output = '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t('The Redirect domain module allows users to redirect between domains.') . '</p>';
++        $output .= '<h3>' . $this->t('Uses') . '</h3>';
++        $output .= '<dt>' . $this->t('Manage domain redirects') . '</dt>';
++        $output .= '<dd>' . $this->t('The domain redirect is accessed through <a href=":domainlist">Domain Redirects</a>. The user can add the domain redirects through the domain redirect table which consists of the domain from which it needs to be redirected, the sub path and the complete url destination to which it needs to be redirected. The module also supports the usage of a wildcard redirecting, thus many requests can be handled with one instance of domain redirect.', [
++          ':domainlist' => Url::fromRoute('redirect_domain.domain_list')->toString(),
++        ]) . '</dd>';
++        return $output;
++
++      case 'redirect_domain.domain_list':
++        $output = '<p>' . $this->t('The domain redirect table consists of the domain from which it needs to be redirected, the sub path and the complete url destination to which it needs to be redirected.') . '</p>';
++        $output .= '<h5>' . $this->t('Example Configuration') . '</h5>';
++        $output .= '<ul>';
++        $output .= '<li> example.com/redirect => redirected.com/example-path </li>';
++        $output .= '<li> foo.com/* => bar.com </li>';
++        $output .= '</ul>';
++        $output .= '<h5>' . $this->t('Example Redirects') . '</h5>';
++        $output .= '<ul>';
++        $output .= '<li>' . $this->t('Request: example.com/redirect => Response: redirected.com/example-path') . '</li>';
++        $output .= '<li>' . $this->t('Request: foo.com/any-path => Response: bar.com') . '</li>';
++        $output .= '</ul>';
++        $output .= '<h5>' . $this->t('Precedence') . '</h5>';
++        $output .= $this->t('Top-down precedence is used. This means the first matching redirect that is found will be taken. For example, assume these redirect rules:') . '</p>';
++        $output .= '<ul>';
++        $output .= '<li>' . $this->t('foo.com/some/path => some-domain.com/path') . '</li>';
++        $output .= '<li>' . $this->t('foo.com/* => wildcard-redirect.com') . '</li>';
++        $output .= '<li>' . $this->t('foo.com/other/path => other-domain.com/path') . '</li>';
++        $output .= '</ul>';
++        $output .= '<p>' . $this->t('The following redirects would actually occur:') . '</p>';
++        $output .= '<ul>';
++        $output .= '<li>' . $this->t('foo.com/some/path => some-domain.com/path') . '</li>';
++        $output .= '<li>' . $this->t('foo.com/other/path => wildcard-redirect.com') . '</li>';
++        $output .= '</ul>';
++        return $output;
++    }
++  }
++
++}
+diff --git a/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php b/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php
+index ed3403a..c9c7261 100644
+--- a/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php
++++ b/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_domain\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+  *
+  * @group redirect_domain
+  */
++#[Group('redirect_domain')]
++#[RunTestsInSeparateProcesses]
+ class RedirectDomainUITest extends WebDriverTestBase {
+ 
+   /**
+diff --git a/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php b/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php
+index abc49c2..c038a07 100644
+--- a/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php
++++ b/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect_domain\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Path\PathMatcher;
+ 
+ use Drupal\Core\Routing\RouteMatchInterface;
+@@ -22,6 +24,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
+  *
+  * @coversDefaultClass \Drupal\redirect_domain\EventSubscriber\DomainRedirectRequestSubscriber
+  */
++#[Group('redirect_domain')]
+ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
+ 
+   /**
+@@ -29,6 +32,7 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
+    *
+    * @dataProvider providerDomains
+    */
++  #[DataProvider('providerDomains')]
+   public function testDomainRedirect($request_url, $response_url) {
+     $data = [
+       'redirect_domain.domains' => [
+diff --git a/redirect.api.php b/redirect.api.php
+index b4ef40c..01ff777 100644
+--- a/redirect.api.php
++++ b/redirect.api.php
+@@ -5,6 +5,7 @@
+  * Hooks provided by the Redirect module.
+  */
+ 
++use Drupal\redirect\Entity\Redirect;
+ use Drupal\Core\Routing\TrustedRedirectResponse;
+ 
+ /**
+@@ -70,7 +71,7 @@ use Drupal\Core\Routing\TrustedRedirectResponse;
+  *
+  * @ingroup redirect_api_hooks
+  */
+-function hook_redirect_response_alter(TrustedRedirectResponse $response, \Drupal\redirect\Entity\Redirect $redirect) {
++function hook_redirect_response_alter(TrustedRedirectResponse $response, Redirect $redirect) {
+   // Set a drupal message.
+   if (!$redirect->getRedirectUrl()->isExternal()) {
+     \Drupal::messenger()->addWarning(t('You are not being directed off-site.'));
+diff --git a/redirect.install b/redirect.install
+index a7d5d42..1f2351e 100644
+--- a/redirect.install
++++ b/redirect.install
+@@ -5,6 +5,7 @@
+  * Update hooks for the Redirect module.
+  */
+ 
++use Drupal\Component\Utility\DeprecationHelper;
+ use Drupal\Core\Config\FileStorage;
+ use Drupal\Core\Config\InstallStorage;
+ use Drupal\Core\Database\Database;
+@@ -147,7 +148,7 @@ function redirect_update_8103() {
+   if (!View::load('redirect') && \Drupal::moduleHandler()->moduleExists('views')) {
+     $config_path = \Drupal::service('extension.list.module')->getPath('redirect') . '/config/install/views.view.redirect.yml';
+     $data = Yaml::parse(file_get_contents($config_path));
+-    \Drupal::configFactory()->getEditable('views.view.redirect')->setData($data)->save(TRUE);
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => \Drupal::configFactory()->getEditable('views.view.redirect')->setData($data)->save(), fn() => \Drupal::configFactory()->getEditable('views.view.redirect')->setData($data)->save(TRUE));
+     $message = 'The new redirect view has been created.';
+   }
+   else {
+@@ -167,10 +168,12 @@ function redirect_update_8104() {
+     // Save the bulk delete action to config.
+     $config_install_path = $module_handler->getModule('redirect')->getPath() . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
+     $storage = new FileStorage($config_install_path);
+-    $entity_type_manager
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $entity_type_manager
++      ->getStorage('action')
++      ->create($storage->read('system.action.redirect_delete_action')), fn() => $entity_type_manager
+       ->getStorage('action')
+       ->create($storage->read('system.action.redirect_delete_action'))
+-      ->trustData()
++      ->trustData())
+       ->save();
+   }
+ }
+diff --git a/redirect.module b/redirect.module
+index 154c6f6..53d027b 100644
+--- a/redirect.module
++++ b/redirect.module
+@@ -5,15 +5,12 @@
+  * The redirect module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\redirect\Hook\RedirectHooks;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Language\Language;
+ use Drupal\Core\Routing\RouteMatchInterface;
+-use Drupal\Core\Url;
+ use Drupal\path_alias\PathAliasInterface;
+-use Drupal\redirect\Entity\Redirect;
+-use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
+-use Symfony\Component\Routing\Exception\RouteNotFoundException;
+ 
+ /**
+  * Implements hook_hook_info().
+@@ -37,30 +34,9 @@ function redirect_hook_info() {
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function redirect_help($route_name, RouteMatchInterface $route_match) {
+-  $output = '';
+-  switch ($route_name) {
+-    case 'help.page.redirect':
+-      $output = '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('The Redirect module allows users to redirect from old URLs to new URLs.   For more information, see the <a href=":online">online documentation for Redirect</a>.', [':online' => 'https://www.drupal.org/documentation/modules/path-redirect']) . '</p>';
+-      $output .= '<dl>';
+-      $output .= '<h3>' . t('Uses') . '</h3>';
+-      $output .= '<dd>' . t('Redirect is accessed from three tabs that help you manage <a href=":list">URL Redirects</a>.', [':list' => Url::fromRoute('redirect.list')->toString()]) . '</dd>';
+-      $output .= '<dt>' . t('Manage URL Redirects') . '</dt>';
+-      $output .= '<dd>' . t('The <a href=":redirect">"URL Redirects"</a> page is used to setup and manage URL Redirects.  New redirects are created here using the <a href=":add_form">Add redirect</a> button which presents a form to simplify the creation of redirects . The URL redirects page provides a list of all redirects on the site and allows you to edit them.', [':redirect' => Url::fromRoute('redirect.list')->toString(), ':add_form' => Url::fromRoute('redirect.add')->toString()]) . '</dd>';
+-      if (\Drupal::moduleHandler()->moduleExists('redirect_404')) {
+-        $output .= '<dt>' . t('Fix 404 pages') . '</dt>';
+-        $output .= '<dd>' . t('<a href=":fix_404">"Fix 404 pages"</a> lists all paths that have resulted in 404 errors and do not yet have any redirects assigned to them. This 404 (or Not Found) error message is an HTTP standard response code indicating that the client was able to communicate with a given server, but the server could not find what was requested.', [':fix_404' => Url::fromRoute('redirect_404.fix_404')->toString()]) . '</dd>';
+-      }
+-      elseif (!\Drupal::moduleHandler()->moduleExists('redirect_404') && \Drupal::currentUser()->hasPermission('administer modules')) {
+-        $output .= '<dt>' . t('Fix 404 pages') . '</dt>';
+-        $output .= '<dd>' . t('404 (or Not Found) error message is an HTTP standard response code indicating that the client was able to communicate with a given server, but the server could not find what was requested. Please install the <a href=":extend">Redirect 404</a> submodule to be able to log all paths that have resulted in 404 errors.', [':extend' => Url::fromRoute('system.modules_list')->toString()]) . '</dd>';
+-      }
+-      $output .= '<dt>' . t('Configure Global Redirects') . '</dt>';
+-      $output .= '<dd>' . t('The <a href=":settings">"Settings"</a> page presents you with a number of means to adjust redirect settings.', [':settings' => Url::fromRoute('redirect.settings')->toString()]) . '</dd>';
+-      $output .= '</dl>';
+-      return $output;
+-  }
++  return \Drupal::service(RedirectHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+@@ -68,53 +44,25 @@ function redirect_help($route_name, RouteMatchInterface $route_match) {
+  *
+  * Will delete redirects based on the entity URL.
+  */
++#[LegacyHook]
+ function redirect_entity_predelete(EntityInterface $entity) {
+-  try {
+-    if ($entity->getEntityType()->hasLinkTemplate('canonical') && $entity->toUrl('canonical')->isRouted()) {
+-      redirect_delete_by_path('internal:/' . $entity->toUrl('canonical')->getInternalPath());
+-      redirect_delete_by_path('entity:' . $entity->getEntityTypeId() . '/' . $entity->id());
+-    }
+-  }
+-  catch (RouteNotFoundException | MissingMandatoryParametersException) {
+-    // This can happen if a module incorrectly defines a link template, ignore
+-    // such errors.
+-  }
++  \Drupal::service(RedirectHooks::class)->entityPredelete($entity);
+ }
+ 
+ /**
+  * Implements hook_ENTITY_TYPE_update() for path_alias.
+  */
++#[LegacyHook]
+ function redirect_path_alias_update(PathAliasInterface $path_alias) {
+-  $config = \Drupal::config('redirect.settings');
+-  if (!$config->get('auto_redirect')) {
+-    return;
+-  }
+-
+-  /** @var \Drupal\path_alias\PathAliasInterface $original_path_alias */
+-  $original_path_alias = $path_alias->original;
+-
+-  // Delete all redirects having the same source as this alias.
+-  redirect_delete_by_path($path_alias->getAlias(), $path_alias->language()->getId(), FALSE);
+-
+-  // Create redirect from the old path alias to the new one.
+-  if ($original_path_alias->getAlias() != $path_alias->getAlias()) {
+-    if (!redirect_repository()->findMatchingRedirect($original_path_alias->getAlias(), [], $original_path_alias->language()->getId())) {
+-      $redirect = Redirect::create();
+-      $redirect->setSource($original_path_alias->getAlias());
+-      $redirect->setRedirect($path_alias->getPath());
+-      $redirect->setLanguage($original_path_alias->language()->getId());
+-      $redirect->setStatusCode($config->get('default_status_code'));
+-      $redirect->save();
+-    }
+-  }
++  \Drupal::service(RedirectHooks::class)->pathAliasUpdate($path_alias);
+ }
+ 
+ /**
+  * Implements hook_ENTITY_TYPE_insert() for path_alias.
+  */
++#[LegacyHook]
+ function redirect_path_alias_insert(PathAliasInterface $path_alias) {
+-  // Delete all redirects having the same source as this alias.
+-  redirect_delete_by_path($path_alias->getAlias(), $path_alias->language()->getId(), FALSE);
++  \Drupal::service(RedirectHooks::class)->pathAliasInsert($path_alias);
+ }
+ 
+ /**
+@@ -192,6 +140,9 @@ function redirect_sort_recursive(&$array, $callback = 'sort') {
+   return $result;
+ }
+ 
++/**
++ *
++ */
+ function redirect_status_code_options($code = NULL) {
+   $codes = [
+     300 => t('300 Multiple Choices'),
+@@ -210,126 +161,23 @@ function redirect_status_code_options($code = NULL) {
+  *
+  * (on behalf of locale.module)
+  */
++#[LegacyHook]
+ function locale_form_redirect_edit_form_alter(array &$form, FormStateInterface $form_state) {
+-  $form['language'] = [
+-    '#type' => 'select',
+-    '#title' => t('Language'),
+-    '#options' => [Language::LANGCODE_NOT_SPECIFIED => t('All languages')] + \Drupal::languageManager()->getLanguages(),
+-    '#default_value' => $form['language']['#value'],
+-    '#description' => t('A redirect set for a specific language will always be used when requesting this page in that language, and takes precedence over redirects set for <em>All languages</em>.'),
+-  ];
++  \Drupal::service(RedirectHooks::class)->localeFormRedirectEditFormAlter($form, $form_state);
+ }
+ 
+ /**
+  * Implements hook_entity_extra_field_info().
+  */
++#[LegacyHook]
+ function redirect_entity_extra_field_info() {
+-  $extra = [];
+-
+-  if (\Drupal::service('module_handler')->moduleExists('node')) {
+-    $node_types = \Drupal::entityTypeManager()
+-      ->getStorage('node_type')
+-      ->loadMultiple();
+-
+-    foreach ($node_types as $node_type) {
+-      $extra['node'][$node_type->id()]['form']['url_redirects'] = [
+-        'label' => t('URL redirects'),
+-        'description' => t('Redirect module form elements'),
+-        'weight' => 50,
+-      ];
+-    }
+-  }
+-
+-  return $extra;
++  return \Drupal::service(RedirectHooks::class)->entityExtraFieldInfo();
+ }
+ 
+ /**
+  * Implements hook_form_node_form_alter().
+  */
++#[LegacyHook]
+ function redirect_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+-  /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
+-  $form_object = $form_state->getFormObject();
+-  /** @var \Drupal\node\NodeInterface $node */
+-  $node = $form_object->getEntity();
+-  if (!$node->isNew() && $node->toUrl()->isRouted() && \Drupal::currentUser()->hasPermission('administer redirects')) {
+-
+-    $nid = $node->id();
+-
+-    // Find redirects to this node.
+-    $redirects = \Drupal::service('redirect.repository')
+-      ->findByDestinationUri(["internal:/node/$nid", "entity:node/$nid"]);
+-
+-    // Assemble the rows for the table.
+-    $rows = [];
+-    /** @var \Drupal\Core\Entity\EntityListBuilder $list_builder */
+-    $list_builder = \Drupal::service('entity_type.manager')->getListBuilder('redirect');
+-    /** @var \Drupal\redirect\Entity\Redirect[] $redirects */
+-    foreach ($redirects as $redirect) {
+-      $row = [];
+-      $path = $redirect->getSourcePathWithQuery();
+-      $row['path'] = [
+-        'class' => ['redirect-table__path'],
+-        'data' => ['#plain_text' => $path],
+-        'title' => $path,
+-      ];
+-      $row['operations'] = [
+-        'data' => [
+-          '#type' => 'operations',
+-          '#links' => $list_builder->getOperations($redirect),
+-        ],
+-      ];
+-      $rows[] = $row;
+-    }
+-
+-    // Add the list to the vertical tabs section of the form.
+-    $header = [
+-      ['class' => ['redirect-table__path'], 'data' => t('From')],
+-      ['class' => ['redirect-table__operations'], 'data' => t('Operations')],
+-    ];
+-    $form['url_redirects'] = [
+-      '#type' => 'details',
+-      '#title' => t('URL redirects'),
+-      '#group' => 'advanced',
+-      '#open' => FALSE,
+-      'table' => [
+-        '#type' => 'table',
+-        '#header' => $header,
+-        '#rows' => $rows,
+-        '#empty' => t('No URL redirects available.'),
+-        '#attributes' => ['class' => ['redirect-table']],
+-      ],
+-      '#attached' => [
+-        'library' => [
+-          'redirect/drupal.redirect.admin',
+-        ],
+-      ],
+-    ];
+-
+-    if (!empty($rows)) {
+-      $form['url_redirects']['warning'] = [
+-        '#markup' => t('Note: links open in the current window.'),
+-        '#prefix' => '<p>',
+-        '#suffix' => '</p>',
+-      ];
+-    }
+-
+-    $form['url_redirects']['actions'] = [
+-      '#theme' => 'links',
+-      '#links' => [],
+-      '#attributes' => ['class' => ['action-links']],
+-    ];
+-    $form['url_redirects']['actions']['#links']['add'] = [
+-      'title' => t('Add URL redirect'),
+-      'url' => Url::fromRoute('redirect.add', [
+-        'redirect' => $node->toUrl()->getInternalPath(),
+-        'destination' => \Drupal::destination()->get(),
+-      ]),
+-      'attributes' => [
+-        'class' => [
+-          'button',
+-        ],
+-        'target' => '_blank',
+-      ],
+-    ];
+-  }
++  \Drupal::service(RedirectHooks::class)->formNodeFormAlter($form, $form_state, $form_id);
+ }
+diff --git a/redirect.services.yml b/redirect.services.yml
+index be5cc53..4e6a169 100644
+--- a/redirect.services.yml
++++ b/redirect.services.yml
+@@ -39,3 +39,7 @@ services:
+     autowire: true
+     arguments:
+       $config_factory: '@config.factory'
++
++  Drupal\redirect\Hook\RedirectHooks:
++    class: Drupal\redirect\Hook\RedirectHooks
++    autowire: true
+diff --git a/src/EventSubscriber/RouteNormalizerRequestSubscriber.php b/src/EventSubscriber/RouteNormalizerRequestSubscriber.php
+index e1a1b5d..b36a678 100644
+--- a/src/EventSubscriber/RouteNormalizerRequestSubscriber.php
++++ b/src/EventSubscriber/RouteNormalizerRequestSubscriber.php
+@@ -108,9 +108,6 @@ class RouteNormalizerRequestSubscriber implements EventSubscriberInterface {
+       // The path alias preload cache has been removed, see
+       // https://www.drupal.org/node/3532412.
+       if ($this->aliasManager instanceof AliasManager && version_compare(\Drupal::VERSION, '11.3', '<')) {
+-        // Explicitly replicate PathAliasSubscriber::onKernelController() to set
+-        // the cache key.
+-        $this->aliasManager->setCacheKey(rtrim($this->currentPath->getPath($event->getRequest()), '/'));
+       }
+ 
+       // Don't pass in the query here using $request->query->all()
+diff --git a/src/Hook/RedirectHooks.php b/src/Hook/RedirectHooks.php
+new file mode 100644
+index 0000000..1c8eb14
+--- /dev/null
++++ b/src/Hook/RedirectHooks.php
+@@ -0,0 +1,268 @@
++<?php
++
++namespace Drupal\redirect\Hook;
++
++use Drupal\Core\Language\Language;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\redirect\Entity\Redirect;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\path_alias\PathAliasInterface;
++use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
++use Symfony\Component\Routing\Exception\RouteNotFoundException;
++use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Url;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for redirect.
++ */
++class RedirectHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    $output = '';
++    switch ($route_name) {
++      case 'help.page.redirect':
++        $output = '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t('The Redirect module allows users to redirect from old URLs to new URLs.   For more information, see the <a href=":online">online documentation for Redirect</a>.', [
++          ':online' => 'https://www.drupal.org/documentation/modules/path-redirect',
++        ]) . '</p>';
++        $output .= '<dl>';
++        $output .= '<h3>' . $this->t('Uses') . '</h3>';
++        $output .= '<dd>' . $this->t('Redirect is accessed from three tabs that help you manage <a href=":list">URL Redirects</a>.', [
++          ':list' => Url::fromRoute('redirect.list')->toString(),
++        ]) . '</dd>';
++        $output .= '<dt>' . $this->t('Manage URL Redirects') . '</dt>';
++        $output .= '<dd>' . $this->t('The <a href=":redirect">"URL Redirects"</a> page is used to setup and manage URL Redirects.  New redirects are created here using the <a href=":add_form">Add redirect</a> button which presents a form to simplify the creation of redirects . The URL redirects page provides a list of all redirects on the site and allows you to edit them.', [
++          ':redirect' => Url::fromRoute('redirect.list')->toString(),
++          ':add_form' => Url::fromRoute('redirect.add')->toString(),
++        ]) . '</dd>';
++        if (\Drupal::moduleHandler()->moduleExists('redirect_404')) {
++          $output .= '<dt>' . $this->t('Fix 404 pages') . '</dt>';
++          $output .= '<dd>' . $this->t('<a href=":fix_404">"Fix 404 pages"</a> lists all paths that have resulted in 404 errors and do not yet have any redirects assigned to them. This 404 (or Not Found) error message is an HTTP standard response code indicating that the client was able to communicate with a given server, but the server could not find what was requested.', [
++            ':fix_404' => Url::fromRoute('redirect_404.fix_404')->toString(),
++          ]) . '</dd>';
++        }
++        elseif (!\Drupal::moduleHandler()->moduleExists('redirect_404') && \Drupal::currentUser()->hasPermission('administer modules')) {
++          $output .= '<dt>' . $this->t('Fix 404 pages') . '</dt>';
++          $output .= '<dd>' . $this->t('404 (or Not Found) error message is an HTTP standard response code indicating that the client was able to communicate with a given server, but the server could not find what was requested. Please install the <a href=":extend">Redirect 404</a> submodule to be able to log all paths that have resulted in 404 errors.', [
++            ':extend' => Url::fromRoute('system.modules_list')->toString(),
++          ]) . '</dd>';
++        }
++        $output .= '<dt>' . $this->t('Configure Global Redirects') . '</dt>';
++        $output .= '<dd>' . $this->t('The <a href=":settings">"Settings"</a> page presents you with a number of means to adjust redirect settings.', [
++          ':settings' => Url::fromRoute('redirect.settings')->toString(),
++        ]) . '</dd>';
++        $output .= '</dl>';
++        return $output;
++    }
++  }
++
++  /**
++   * Implements hook_entity_predelete().
++   *
++   * Will delete redirects based on the entity URL.
++   */
++  #[Hook('entity_predelete')]
++  public static function entityPredelete(EntityInterface $entity) {
++    try {
++      if ($entity->getEntityType()->hasLinkTemplate('canonical') && $entity->toUrl('canonical')->isRouted()) {
++        redirect_delete_by_path('internal:/' . $entity->toUrl('canonical')->getInternalPath());
++        redirect_delete_by_path('entity:' . $entity->getEntityTypeId() . '/' . $entity->id());
++      }
++    }
++    catch (RouteNotFoundException | MissingMandatoryParametersException) {
++      // This can happen if a module incorrectly defines a link template, ignore
++      // such errors.
++    }
++  }
++
++  /**
++   * Implements hook_ENTITY_TYPE_update() for path_alias.
++   */
++  #[Hook('path_alias_update')]
++  public static function pathAliasUpdate(PathAliasInterface $path_alias) {
++    $config = \Drupal::config('redirect.settings');
++    if (!$config->get('auto_redirect')) {
++      return;
++    }
++    /** @var \Drupal\path_alias\PathAliasInterface $original_path_alias */
++    $original_path_alias = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => $path_alias->getOriginal(), fn() => $path_alias->original);
++    // Delete all redirects having the same source as this alias.
++    redirect_delete_by_path($path_alias->getAlias(), $path_alias->language()->getId(), FALSE);
++    // Create redirect from the old path alias to the new one.
++    if ($original_path_alias->getAlias() != $path_alias->getAlias()) {
++      if (!redirect_repository()->findMatchingRedirect($original_path_alias->getAlias(), [], $original_path_alias->language()->getId())) {
++        $redirect = Redirect::create();
++        $redirect->setSource($original_path_alias->getAlias());
++        $redirect->setRedirect($path_alias->getPath());
++        $redirect->setLanguage($original_path_alias->language()->getId());
++        $redirect->setStatusCode($config->get('default_status_code'));
++        $redirect->save();
++      }
++    }
++  }
++
++  /**
++   * Implements hook_ENTITY_TYPE_insert() for path_alias.
++   */
++  #[Hook('path_alias_insert')]
++  public static function pathAliasInsert(PathAliasInterface $path_alias) {
++    // Delete all redirects having the same source as this alias.
++    redirect_delete_by_path($path_alias->getAlias(), $path_alias->language()->getId(), FALSE);
++  }
++
++  /**
++   * Implements hook_form_FORM_ID_alter().
++   *
++   * (on behalf of locale.module)
++   */
++  #[Hook('form_redirect_edit_form_alter', module: 'locale')]
++  public function localeFormRedirectEditFormAlter(array &$form, FormStateInterface $form_state) {
++    $form['language'] = [
++      '#type' => 'select',
++      '#title' => $this->t('Language'),
++      '#options' => [
++        Language::LANGCODE_NOT_SPECIFIED => $this->t('All languages'),
++      ] + \Drupal::languageManager()->getLanguages(),
++      '#default_value' => $form['language']['#value'],
++      '#description' => $this->t('A redirect set for a specific language will always be used when requesting this page in that language, and takes precedence over redirects set for <em>All languages</em>.'),
++    ];
++  }
++
++  /**
++   * Implements hook_entity_extra_field_info().
++   */
++  #[Hook('entity_extra_field_info')]
++  public function entityExtraFieldInfo() {
++    $extra = [];
++    if (\Drupal::service('module_handler')->moduleExists('node')) {
++      $node_types = \Drupal::entityTypeManager()->getStorage('node_type')->loadMultiple();
++      foreach ($node_types as $node_type) {
++        $extra['node'][$node_type->id()]['form']['url_redirects'] = [
++          'label' => $this->t('URL redirects'),
++          'description' => $this->t('Redirect module form elements'),
++          'weight' => 50,
++        ];
++      }
++    }
++    return $extra;
++  }
++
++  /**
++   * Implements hook_form_node_form_alter().
++   */
++  #[Hook('form_node_form_alter')]
++  public function formNodeFormAlter(&$form, FormStateInterface $form_state, $form_id) {
++    /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
++    $form_object = $form_state->getFormObject();
++    /** @var \Drupal\node\NodeInterface $node */
++    $node = $form_object->getEntity();
++    if (!$node->isNew() && $node->toUrl()->isRouted() && \Drupal::currentUser()->hasPermission('administer redirects')) {
++      $nid = $node->id();
++      // Find redirects to this node.
++      $redirects = \Drupal::service('redirect.repository')->findByDestinationUri([
++        "internal:/node/{$nid}",
++        "entity:node/{$nid}",
++      ]);
++      // Assemble the rows for the table.
++      $rows = [];
++      /** @var \Drupal\Core\Entity\EntityListBuilder $list_builder */
++      $list_builder = \Drupal::service('entity_type.manager')->getListBuilder('redirect');
++      /** @var \Drupal\redirect\Entity\Redirect[] $redirects */
++      foreach ($redirects as $redirect) {
++        $row = [];
++        $path = $redirect->getSourcePathWithQuery();
++        $row['path'] = [
++          'class' => [
++            'redirect-table__path',
++          ],
++          'data' => [
++            '#plain_text' => $path,
++          ],
++          'title' => $path,
++        ];
++        $row['operations'] = [
++          'data' => [
++            '#type' => 'operations',
++            '#links' => $list_builder->getOperations($redirect),
++          ],
++        ];
++        $rows[] = $row;
++      }
++      // Add the list to the vertical tabs section of the form.
++      $header = [
++            [
++              'class' => [
++                'redirect-table__path',
++              ],
++              'data' => $this->t('From'),
++            ],
++            [
++              'class' => [
++                'redirect-table__operations',
++              ],
++              'data' => $this->t('Operations'),
++            ],
++      ];
++      $form['url_redirects'] = [
++        '#type' => 'details',
++        '#title' => $this->t('URL redirects'),
++        '#group' => 'advanced',
++        '#open' => FALSE,
++        'table' => [
++          '#type' => 'table',
++          '#header' => $header,
++          '#rows' => $rows,
++          '#empty' => $this->t('No URL redirects available.'),
++          '#attributes' => [
++            'class' => [
++              'redirect-table',
++            ],
++          ],
++        ],
++        '#attached' => [
++          'library' => [
++            'redirect/drupal.redirect.admin',
++          ],
++        ],
++      ];
++      if (!empty($rows)) {
++        $form['url_redirects']['warning'] = [
++          '#markup' => $this->t('Note: links open in the current window.'),
++          '#prefix' => '<p>',
++          '#suffix' => '</p>',
++        ];
++      }
++      $form['url_redirects']['actions'] = [
++        '#theme' => 'links',
++        '#links' => [],
++        '#attributes' => [
++          'class' => [
++            'action-links',
++          ],
++        ],
++      ];
++      $form['url_redirects']['actions']['#links']['add'] = [
++        'title' => $this->t('Add URL redirect'),
++        'url' => Url::fromRoute('redirect.add', [
++          'redirect' => $node->toUrl()->getInternalPath(),
++          'destination' => \Drupal::destination()->get(),
++        ]),
++        'attributes' => [
++          'class' => [
++            'button',
++          ],
++          'target' => '_blank',
++        ],
++      ];
++    }
++  }
++
++}
+diff --git a/tests/modules/redirect_test/redirect_test.module b/tests/modules/redirect_test/redirect_test.module
+index 0fa8f07..0444449 100644
+--- a/tests/modules/redirect_test/redirect_test.module
++++ b/tests/modules/redirect_test/redirect_test.module
+@@ -7,16 +7,15 @@
+ 
+ declare(strict_types=1);
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\redirect_test\Hook\RedirectTestHooks;
+ use Drupal\Core\Routing\TrustedRedirectResponse;
+ use Drupal\redirect\Entity\Redirect;
+ 
+ /**
+  * Implements hook_redirect_response_alter().
+  */
++#[LegacyHook]
+ function redirect_test_redirect_response_alter(TrustedRedirectResponse $response, Redirect $redirect) {
+-  $path = 'test/redirect/2/successful';
+-  $replace = 'test/redirect/other';
+-  if ($redirect->getRedirect()['uri'] == "internal:/" . $path) {
+-    $response->setTargetUrl(str_replace($path, $replace, $redirect->getRedirectUrl()->setAbsolute()->toString()));
+-  }
++  \Drupal::service(RedirectTestHooks::class)->redirectResponseAlter($response, $redirect);
+ }
+diff --git a/tests/modules/redirect_test/redirect_test.services.yml b/tests/modules/redirect_test/redirect_test.services.yml
+new file mode 100644
+index 0000000..1ad6ac6
+--- /dev/null
++++ b/tests/modules/redirect_test/redirect_test.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\redirect_test\Hook\RedirectTestHooks:
++    class: Drupal\redirect_test\Hook\RedirectTestHooks
++    autowire: true
+diff --git a/tests/modules/redirect_test/src/Hook/RedirectTestHooks.php b/tests/modules/redirect_test/src/Hook/RedirectTestHooks.php
+new file mode 100644
+index 0000000..fffb6d6
+--- /dev/null
++++ b/tests/modules/redirect_test/src/Hook/RedirectTestHooks.php
+@@ -0,0 +1,26 @@
++<?php
++
++namespace Drupal\redirect_test\Hook;
++
++use Drupal\redirect\Entity\Redirect;
++use Drupal\Core\Routing\TrustedRedirectResponse;
++use Drupal\Core\Hook\Attribute\Hook;
++
++/**
++ * Hook implementations for redirect_test.
++ */
++class RedirectTestHooks {
++
++  /**
++   * Implements hook_redirect_response_alter().
++   */
++  #[Hook('redirect_response_alter')]
++  public static function redirectResponseAlter(TrustedRedirectResponse $response, Redirect $redirect) {
++    $path = 'test/redirect/2/successful';
++    $replace = 'test/redirect/other';
++    if ($redirect->getRedirect()['uri'] == "internal:/" . $path) {
++      $response->setTargetUrl(str_replace($path, $replace, $redirect->getRedirectUrl()->setAbsolute()->toString()));
++    }
++  }
++
++}
+diff --git a/tests/src/Functional/GlobalRedirectTest.php b/tests/src/Functional/GlobalRedirectTest.php
+index fc435f8..48985e2 100644
+--- a/tests/src/Functional/GlobalRedirectTest.php
++++ b/tests/src/Functional/GlobalRedirectTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Language\Language;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ use Drupal\taxonomy\Entity\Term;
+@@ -16,6 +18,8 @@ use Drupal\Tests\Traits\Core\PathAliasTestTrait;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class GlobalRedirectTest extends BrowserTestBase {
+ 
+   use PathAliasTestTrait;
+@@ -179,7 +183,7 @@ class GlobalRedirectTest extends BrowserTestBase {
+       ->getClient()
+       ->post($this->getAbsoluteUrl('Test-node'), [
+         // Do not follow redirects. This way, we can assert that the server did
+-        // not even _try_ to redirect us
++        // not even _try_ to redirect us.
+         'allow_redirects' => FALSE,
+         'headers' => [
+           'Accept' => 'application/json',
+@@ -198,7 +202,6 @@ class GlobalRedirectTest extends BrowserTestBase {
+     // @todo Here it seems that the access check runs prior to our redirecting
+     //   check why so and enable the test.
+     //   $this->assertRedirect('admin/config/system/site-information', 'site-info');
+-
+     // Test original query string is preserved with alias normalization.
+     $this->assertRedirect('Test-node?&foo&.bar=baz', 'test-node?&foo&.bar=baz');
+ 
+diff --git a/tests/src/Functional/RedirectCacheTest.php b/tests/src/Functional/RedirectCacheTest.php
+index d6c5920..113971d 100644
+--- a/tests/src/Functional/RedirectCacheTest.php
++++ b/tests/src/Functional/RedirectCacheTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectCacheTest extends BrowserTestBase {
+ 
+   use AssertRedirectTrait;
+diff --git a/tests/src/Functional/RedirectHooksTest.php b/tests/src/Functional/RedirectHooksTest.php
+index 94f4c07..bdbf930 100644
+--- a/tests/src/Functional/RedirectHooksTest.php
++++ b/tests/src/Functional/RedirectHooksTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -14,6 +16,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectHooksTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/RedirectNodeFormTest.php b/tests/src/Functional/RedirectNodeFormTest.php
+index 9d719ed..1aa8279 100644
+--- a/tests/src/Functional/RedirectNodeFormTest.php
++++ b/tests/src/Functional/RedirectNodeFormTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectNodeFormTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/RedirectRelativeUrlTest.php b/tests/src/Functional/RedirectRelativeUrlTest.php
+index 25f6f67..f5886ea 100644
+--- a/tests/src/Functional/RedirectRelativeUrlTest.php
++++ b/tests/src/Functional/RedirectRelativeUrlTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectRelativeUrlTest extends BrowserTestBase {
+ 
+   use AssertRedirectTrait;
+diff --git a/tests/src/Functional/RedirectUILanguageTest.php b/tests/src/Functional/RedirectUILanguageTest.php
+index 686c1d4..380a43b 100644
+--- a/tests/src/Functional/RedirectUILanguageTest.php
++++ b/tests/src/Functional/RedirectUILanguageTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ 
+ /**
+@@ -14,6 +16,8 @@ use Drupal\language\Entity\ConfigurableLanguage;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectUILanguageTest extends RedirectUITest {
+ 
+   /**
+diff --git a/tests/src/Functional/RedirectUITest.php b/tests/src/Functional/RedirectUITest.php
+index b0af832..ae2e1a9 100644
+--- a/tests/src/Functional/RedirectUITest.php
++++ b/tests/src/Functional/RedirectUITest.php
+@@ -4,6 +4,10 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\filter\FilterFormatRepositoryInterface;
+ use Drupal\Core\Language\Language;
+ use Drupal\Core\Logger\RfcLogLevel;
+ use Drupal\Core\Url;
+@@ -16,6 +20,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectUITest extends BrowserTestBase {
+ 
+   use AssertRedirectTrait;
+@@ -268,7 +274,7 @@ class RedirectUITest extends BrowserTestBase {
+    * Returns a new term with random properties in vocabulary $vid.
+    */
+   public function createTerm($vocabulary) {
+-    $filter_formats = filter_formats();
++    $filter_formats = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => \Drupal::service(FilterFormatRepositoryInterface::class)->getAllFormats(), fn() => filter_formats());
+     $format = array_pop($filter_formats);
+     $term = Term::create([
+       'name' => $this->randomMachineName(),
+diff --git a/tests/src/FunctionalJavascript/RedirectJavascriptTest.php b/tests/src/FunctionalJavascript/RedirectJavascriptTest.php
+index 9ecfdad..9ab11f2 100644
+--- a/tests/src/FunctionalJavascript/RedirectJavascriptTest.php
++++ b/tests/src/FunctionalJavascript/RedirectJavascriptTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Url;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ 
+@@ -12,6 +14,8 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectJavascriptTest extends WebDriverTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/RedirectPerformanceTest.php b/tests/src/FunctionalJavascript/RedirectPerformanceTest.php
+index 0fd5b11..ce8f683 100644
+--- a/tests/src/FunctionalJavascript/RedirectPerformanceTest.php
++++ b/tests/src/FunctionalJavascript/RedirectPerformanceTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\FunctionalJavascriptTests\PerformanceTestBase;
+ use Drupal\user\UserInterface;
+ 
+@@ -12,6 +14,8 @@ use Drupal\user\UserInterface;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectPerformanceTest extends PerformanceTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/Migrate/d6/PathRedirectTest.php b/tests/src/Kernel/Migrate/d6/PathRedirectTest.php
+index 9220e2a..92df59f 100644
+--- a/tests/src/Kernel/Migrate/d6/PathRedirectTest.php
++++ b/tests/src/Kernel/Migrate/d6/PathRedirectTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Kernel\Migrate\d6;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Tests\migrate_drupal\Kernel\MigrateDrupalTestBase;
+ 
+@@ -12,6 +14,8 @@ use Drupal\Tests\migrate_drupal\Kernel\MigrateDrupalTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class PathRedirectTest extends MigrateDrupalTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php b/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php
+index eee1109..a3679a0 100644
+--- a/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php
++++ b/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Kernel\Migrate\d7;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\migrate\Kernel\MigrateSqlSourceTestBase;
+ 
+ /**
+@@ -12,6 +14,8 @@ use Drupal\Tests\migrate\Kernel\MigrateSqlSourceTestBase;
+  * @group redirect
+  * @covers Drupal\redirect\Plugin\migrate\source\d7\PathRedirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class PathRedirectSourceTest extends MigrateSqlSourceTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/Migrate/d7/PathRedirectTest.php b/tests/src/Kernel/Migrate/d7/PathRedirectTest.php
+index 58cd9ea..b1c6ab2 100644
+--- a/tests/src/Kernel/Migrate/d7/PathRedirectTest.php
++++ b/tests/src/Kernel/Migrate/d7/PathRedirectTest.php
+@@ -4,11 +4,16 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Kernel\Migrate\d7;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests the d7_path_redirect source plugin.
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class PathRedirectTest extends PathRedirectTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/Migrate/d7/PathRedirectTestBase.php b/tests/src/Kernel/Migrate/d7/PathRedirectTestBase.php
+index 7894346..5aba13b 100644
+--- a/tests/src/Kernel/Migrate/d7/PathRedirectTestBase.php
++++ b/tests/src/Kernel/Migrate/d7/PathRedirectTestBase.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Kernel\Migrate\d7;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Tests\migrate_drupal\Kernel\MigrateDrupalTestBase;
+ 
+@@ -12,6 +13,7 @@ use Drupal\Tests\migrate_drupal\Kernel\MigrateDrupalTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
+ abstract class PathRedirectTestBase extends MigrateDrupalTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/Migrate/d7/PathRedirectWithoutDefaultTest.php b/tests/src/Kernel/Migrate/d7/PathRedirectWithoutDefaultTest.php
+index dcb1a5c..660d3b5 100644
+--- a/tests/src/Kernel/Migrate/d7/PathRedirectWithoutDefaultTest.php
++++ b/tests/src/Kernel/Migrate/d7/PathRedirectWithoutDefaultTest.php
+@@ -4,11 +4,16 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Kernel\Migrate\d7;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests the d7_path_redirect source plugin, without d7 default status code.
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class PathRedirectWithoutDefaultTest extends PathRedirectTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/RedirectAPITest.php b/tests/src/Kernel/RedirectAPITest.php
+index 9d1fa4e..8be4a04 100644
+--- a/tests/src/Kernel/RedirectAPITest.php
++++ b/tests/src/Kernel/RedirectAPITest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Core\Language\Language;
+@@ -15,6 +17,8 @@ use Drupal\KernelTests\KernelTestBase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
++#[RunTestsInSeparateProcesses]
+ class RedirectAPITest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Unit/RedirectCheckerTest.php b/tests/src/Unit/RedirectCheckerTest.php
+index 06a9653..06f38bc 100644
+--- a/tests/src/Unit/RedirectCheckerTest.php
++++ b/tests/src/Unit/RedirectCheckerTest.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\redirect\RedirectChecker;
+ use Drupal\Tests\UnitTestCase;
+ use Symfony\Component\HttpFoundation\InputBag;
+@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Route;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
+ class RedirectCheckerTest extends UnitTestCase {
+ 
+   /**
+diff --git a/tests/src/Unit/RedirectRequestSubscriberTest.php b/tests/src/Unit/RedirectRequestSubscriberTest.php
+index fcf424a..b063382 100644
+--- a/tests/src/Unit/RedirectRequestSubscriberTest.php
++++ b/tests/src/Unit/RedirectRequestSubscriberTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Language\Language;
+@@ -24,12 +26,14 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
+  *
+  * @coversDefaultClass \Drupal\redirect\EventSubscriber\RedirectRequestSubscriber
+  */
++#[Group('redirect')]
+ class RedirectRequestSubscriberTest extends UnitTestCase {
+ 
+   /**
+    * @covers ::onKernelRequestCheckRedirect
+    * @dataProvider getRedirectData
+    */
++  #[DataProvider('getRedirectData')]
+   public function testRedirectLogicWithQueryRetaining($request_uri, $request_query, $redirect_uri, $redirect_query) {
+ 
+     // The expected final query. This query must contain values defined
+@@ -69,6 +73,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
+    * @covers ::onKernelRequestCheckRedirect
+    * @dataProvider getRedirectData
+    */
++  #[DataProvider('getRedirectData')]
+   public function testRedirectLogicWithoutQueryRetaining($request_uri, $request_query, $redirect_uri) {
+ 
+     $url = $this->createMock('Drupal\Core\Url');
+diff --git a/tests/src/Unit/RedirectSourceWidgetTest.php b/tests/src/Unit/RedirectSourceWidgetTest.php
+index 301aa53..064be00 100644
+--- a/tests/src/Unit/RedirectSourceWidgetTest.php
++++ b/tests/src/Unit/RedirectSourceWidgetTest.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\redirect\Plugin\Field\FieldWidget\RedirectSourceWidget;
+ use Drupal\Tests\UnitTestCase;
+@@ -13,6 +14,7 @@ use Drupal\Tests\UnitTestCase;
+  *
+  * @group redirect
+  */
++#[Group('redirect')]
+ class RedirectSourceWidgetTest extends UnitTestCase {
+ 
+   /**
+diff --git a/tests/src/Unit/RouteNormalizerRequestSubscriberTest.php b/tests/src/Unit/RouteNormalizerRequestSubscriberTest.php
+index fc053aa..a45820b 100644
+--- a/tests/src/Unit/RouteNormalizerRequestSubscriberTest.php
++++ b/tests/src/Unit/RouteNormalizerRequestSubscriberTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\redirect\Unit;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\DataProvider;
+ use Drupal\Core\Path\CurrentPathStack;
+ use Drupal\path_alias\AliasManager;
+ use Drupal\Tests\UnitTestCase;
+@@ -21,6 +23,7 @@ use Drupal\Core\DependencyInjection\ContainerBuilder;
+  *
+  * @coversDefaultClass \Drupal\redirect\EventSubscriber\RouteNormalizerRequestSubscriber
+  */
++#[Group('redirect')]
+ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
+ 
+   /**
+@@ -85,6 +88,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
+    * @covers ::onKernelRequestRedirect
+    * @dataProvider getTestUrls
+    */
++  #[DataProvider('getTestUrls')]
+   public function testOnKernelRequestRedirect($request_uri, $request_query, $expected, $expect_normalization) {
+     $event = $this->getGetRequestEventStub($request_uri, http_build_query($request_query));
+     $subscriber = $this->getSubscriber($request_uri);

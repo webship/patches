@@ -1,0 +1,30 @@
+diff --git a/ai_penpot.info.yml b/ai_penpot.info.yml
+index fb1de533c92b41c731d7d612ba85ce8f59be4e91..66bae241a26ebeb7cfa8ceb970fe50de68839c9e 100644
+--- a/ai_penpot.info.yml
++++ b/ai_penpot.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Penpot'
+ type: module
+ description: 'Reads live Penpot design context via the Penpot API and exposes it to Drupal AI Agent tools, so the Drupal Canvas AI assistant can build from a real design. Config-driven, theme- and framework-agnostic.'
+ package: 'AI'
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ dependencies:
+   - ai:ai
+   - ai_agents:ai_agents
+diff --git a/composer.json b/composer.json
+index 70b2d88eb5642a00cf8ee676d38ac3c89ab26a62..af14dcb1c817fe351185983c194bf5e43cdaea69 100644
+--- a/composer.json
++++ b/composer.json
+@@ -26,10 +26,10 @@
+     },
+     "require": {
+         "php": ">=8.3",
+-        "drupal/core": "^11",
+         "drupal/ai": "^1",
+         "drupal/ai_agents": "^1",
+         "drupal/key": "^1",
+-        "drupal/easy_encryption": "^1"
++        "drupal/easy_encryption": "^1",
++        "drupal/core": "^11 || ^12"
+     }
+ }

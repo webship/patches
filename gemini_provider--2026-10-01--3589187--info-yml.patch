@@ -1,0 +1,13 @@
+diff --git a/gemini_provider.info.yml b/gemini_provider.info.yml
+index f718307..2322cb7 100644
+--- a/gemini_provider.info.yml
++++ b/gemini_provider.info.yml
+@@ -2,7 +2,7 @@ name: 'Gemini Provider'
+ type: module
+ description: 'This enables the use of Gemini for AI module.'
+ package: AI Providers
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ configure: gemini_provider.settings_form
+ 
+ dependencies:

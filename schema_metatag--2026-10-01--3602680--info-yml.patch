@@ -1,0 +1,299 @@
+diff --git a/schema_article/schema_article.info.yml b/schema_article/schema_article.info.yml
+index 470c5ed..fc9bf9c 100644
+--- a/schema_article/schema_article.info.yml
++++ b/schema_article/schema_article.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Article
+ type: module
+ description: 'Adds Schema.org/Article to the JSON LD array. Creates Article, BlogPosting, SocialMediaPosting, Report, ScholarlyArticle, TechArticle or APIReference.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_article_example/schema_article_example.info.yml b/schema_article_example/schema_article_example.info.yml
+index 03374b8..2354d72 100644
+--- a/schema_article_example/schema_article_example.info.yml
++++ b/schema_article_example/schema_article_example.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Metatag Example
+ type: module
+ description: 'Example of how to add more fields to Schema.org.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_article
+diff --git a/schema_book/schema_book.info.yml b/schema_book/schema_book.info.yml
+index 232b001..53477cb 100644
+--- a/schema_book/schema_book.info.yml
++++ b/schema_book/schema_book.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Book
+ type: module
+ description: 'Adds Schema.org/Book to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_course/schema_course.info.yml b/schema_course/schema_course.info.yml
+index b63c58c..d9413cb 100644
+--- a/schema_course/schema_course.info.yml
++++ b/schema_course/schema_course.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Course
+ type: module
+ description: 'Adds Schema.org/Course to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_event/schema_event.info.yml b/schema_event/schema_event.info.yml
+index 0ba95cb..0e8e11b 100644
+--- a/schema_event/schema_event.info.yml
++++ b/schema_event/schema_event.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Event
+ type: module
+ description: 'Adds Schema.org/Event to the JSON-LD array. Creates Event and Offer.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_how_to/schema_how_to.info.yml b/schema_how_to/schema_how_to.info.yml
+index 4ad15ab..b85a6a3 100644
+--- a/schema_how_to/schema_how_to.info.yml
++++ b/schema_how_to/schema_how_to.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org HowTo
+ type: module
+ description: 'Adds Schema.org/HowTo to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_image_object/schema_image_object.info.yml b/schema_image_object/schema_image_object.info.yml
+index e3629c8..0cbdd2b 100644
+--- a/schema_image_object/schema_image_object.info.yml
++++ b/schema_image_object/schema_image_object.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Image Object
+ type: module
+ description: 'Adds Schema.org/ImageObject to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_item_list/schema_item_list.info.yml b/schema_item_list/schema_item_list.info.yml
+index a658ab2..cb4ad4d 100644
+--- a/schema_item_list/schema_item_list.info.yml
++++ b/schema_item_list/schema_item_list.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org ItemList
+ type: module
+ description: 'Adds Schema.org/ItemList to the JSON LD array.'
+-core_version_requirement: ^9 || ^10  || ^11
++core_version_requirement: ^9 || ^10  || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_job_posting/schema_job_posting.info.yml b/schema_job_posting/schema_job_posting.info.yml
+index 4831f8d..7643a51 100644
+--- a/schema_job_posting/schema_job_posting.info.yml
++++ b/schema_job_posting/schema_job_posting.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org JobPosting
+ type: module
+ description: 'Add Schema.org/JobPosting to the JSON LD array. Creates JobPosting.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_metatag.info.yml b/schema_metatag.info.yml
+index dd0a60c..790815b 100644
+--- a/schema_metatag.info.yml
++++ b/schema_metatag.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Metatag
+ type: module
+ description: 'Base module for creating Schema.org JSON-LD structured data defined with Metatag module.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ php: 8.0
+ dependencies:
+diff --git a/schema_movie/schema_movie.info.yml b/schema_movie/schema_movie.info.yml
+index aef447f..bea6424 100644
+--- a/schema_movie/schema_movie.info.yml
++++ b/schema_movie/schema_movie.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Movie, Series, Season, Episode
+ type: module
+ description: 'Adds Schema.org Movie, Series, Season, Episode to the JSON LD array. Creates Movie, Series, Season, and Episode.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_organization/schema_organization.info.yml b/schema_organization/schema_organization.info.yml
+index eaf1801..f0c511e 100644
+--- a/schema_organization/schema_organization.info.yml
++++ b/schema_organization/schema_organization.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Organization
+ type: module
+ description: 'Adds Schema.org/Organization to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_person/schema_person.info.yml b/schema_person/schema_person.info.yml
+index 4c483b3..3f177d9 100644
+--- a/schema_person/schema_person.info.yml
++++ b/schema_person/schema_person.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Person
+ type: module
+ description: 'Adds Schema.org/Person to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_place/schema_place.info.yml b/schema_place/schema_place.info.yml
+index 6dba5a2..db58fd9 100644
+--- a/schema_place/schema_place.info.yml
++++ b/schema_place/schema_place.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Place
+ type: module
+ description: Adds Schema.org/Place to the JSON LD array.
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_product/schema_product.info.yml b/schema_product/schema_product.info.yml
+index 1142dcf..f4c642d 100644
+--- a/schema_product/schema_product.info.yml
++++ b/schema_product/schema_product.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Product
+ type: module
+ description: 'Adds Schema.org/Product to the JSON LD array. Creates Product.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_qa_page/schema_qa_page.info.yml b/schema_qa_page/schema_qa_page.info.yml
+index 8747aeb..086e421 100644
+--- a/schema_qa_page/schema_qa_page.info.yml
++++ b/schema_qa_page/schema_qa_page.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org QAPage and FAQPage
+ type: module
+ description: 'Adds Schema.org/QAPage and FAQPage to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_recipe/schema_recipe.info.yml b/schema_recipe/schema_recipe.info.yml
+index f91849d..95066ae 100644
+--- a/schema_recipe/schema_recipe.info.yml
++++ b/schema_recipe/schema_recipe.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Recipe
+ type: module
+ description: 'Adds Schema.org/Recipe to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_review/schema_review.info.yml b/schema_review/schema_review.info.yml
+index 6c00241..c59808d 100644
+--- a/schema_review/schema_review.info.yml
++++ b/schema_review/schema_review.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Review
+ type: module
+ description: 'Adds Schema.org/Review to the JSON LD array. Creates Review.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_service/schema_service.info.yml b/schema_service/schema_service.info.yml
+index 6d40f33..1a36042 100644
+--- a/schema_service/schema_service.info.yml
++++ b/schema_service/schema_service.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Service
+ type: module
+ description: 'Adds Schema.org/Service to the JSON LD array. Creates Service.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_special_announcement/schema_special_announcement.info.yml b/schema_special_announcement/schema_special_announcement.info.yml
+index 2677fb0..b4dd439 100644
+--- a/schema_special_announcement/schema_special_announcement.info.yml
++++ b/schema_special_announcement/schema_special_announcement.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org SpecialAnnouncement
+ type: module
+ description: Adds Schema.org/SpecialAnnouncement to the JSON LD array. Creates SpecialAnnouncement.
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_video_object/schema_video_object.info.yml b/schema_video_object/schema_video_object.info.yml
+index 1dbfa01..0488c0e 100644
+--- a/schema_video_object/schema_video_object.info.yml
++++ b/schema_video_object/schema_video_object.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org Video Object
+ type: module
+ description: 'Adds Schema.org/VideoObject to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_web_page/schema_web_page.info.yml b/schema_web_page/schema_web_page.info.yml
+index af78d51..c35fb3a 100644
+--- a/schema_web_page/schema_web_page.info.yml
++++ b/schema_web_page/schema_web_page.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org WebPage
+ type: module
+ description: 'Adds Schema.org/WebPage to the JSON LD array. Creates WebPage, ItemPage, AboutPage, CheckoutPage, ContactPage, CollectionPage, ProfilePage, SearchResultsPage.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag
+diff --git a/schema_web_site/schema_web_site.info.yml b/schema_web_site/schema_web_site.info.yml
+index e57f389..564b0a1 100644
+--- a/schema_web_site/schema_web_site.info.yml
++++ b/schema_web_site/schema_web_site.info.yml
+@@ -1,7 +1,7 @@
+ name: Schema.org WebSite
+ type: module
+ description: 'Adds Schema.org/WebSite to the JSON LD array.'
+-core_version_requirement: ^9 || ^10 || ^11
++core_version_requirement: ^9 || ^10 || ^11 || ^12
+ package: SEO
+ dependencies:
+   - schema_metatag:schema_metatag

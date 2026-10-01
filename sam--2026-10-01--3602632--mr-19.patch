@@ -1,0 +1,370 @@
+diff --git a/sam.module b/sam.module
+index c61b9cc3e223818e89ea8d9b9277b25d1c8f0ac8..d54aca13e27fe099430343bf7dfdb94e112bd709 100644
+--- a/sam.module
++++ b/sam.module
+@@ -7,9 +7,9 @@
+ 
+ declare(strict_types=1);
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\sam\Hook\SamHooks;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Core\Field\WidgetBaseInterface;
+ use Drupal\Core\Field\WidgetInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element;
+@@ -38,86 +38,25 @@ const SAM_ALLOWED_WIDGET_TYPES = [
+ /**
+  * Implements hook_field_widget_complete_form_alter().
+  */
++#[LegacyHook]
+ function sam_field_widget_complete_form_alter(&$field_widget_complete_form, FormStateInterface $form_state, $context) {
+-  $widget = $context['widget'] ?? NULL;
+-  assert($widget instanceof WidgetBaseInterface);
+-  $field_definition = $context['items']->getFieldDefinition() ?? NULL;
+-  assert($field_definition instanceof FieldDefinitionInterface);
+-  if (empty($widget) || empty($field_definition)) {
+-    return;
+-  }
+-  // Abort early if this is a widget whose markup we can't simplify, or if the
+-  // field cardinality isn't limited > 1.
+-  if (sam_skip_widget($widget, $field_definition)) {
+-    return;
+-  }
+-  $items = $context['items'];
+-  assert($items instanceof FieldItemListInterface);
+-  // We only have something to simplify if the maximum cardinality hasn't
+-  // already been reached.
+-  $should_simplify = FALSE;
+-  $deltas = array_filter(Element::children($field_widget_complete_form['widget']), 'is_numeric');
+-  foreach ($deltas as $delta) {
+-    $item = $items->get($delta);
+-    // We trust the field telling us it's empty or not. Also, when the field
+-    // has 0 values, we leave the first empty element visible, so we only
+-    // want to affect deltas >= 1 unless they have errors.
+-    if ($item->isEmpty() && $delta > 0) {
+-      // In an ideal world, we would be able to add all we need to the markup
+-      // here. Unfortunately, the field_multiple_value_form theme function
+-      // disregards all item-level attributes when building the table markup.
+-      // See sam_preprocess_field_multiple_value_form() for where this
+-      // flag is being used.
+-      $field_widget_complete_form['widget'][$delta]['#attributes']['data-sam-simplify'] = TRUE;
+-    }
+-  }
+-  // Even if there are no empty items, we still need to process it for adding
+-  // the "Remove" button.
+-  $field_widget_complete_form['widget']['#attributes']['data-sam-wrapper-simplify'] = TRUE;
++  \Drupal::service(SamHooks::class)->fieldWidgetCompleteFormAlter($field_widget_complete_form, $form_state, $context);
+ }
+ 
+ /**
+  * Implements hook_preprocess_HOOK() for field_multiple_value_form().
+  */
++#[LegacyHook]
+ function sam_preprocess_field_multiple_value_form(&$variables) {
+-  // Unfortunately, we don't have the field object available here, to identify
+-  // if the element is empty. Because of this we check that in the form alter,
+-  // and here we just alter the markup where necessary.
+-  // See sam_field_widget_complete_form_alter().
+-  if (!empty($variables['element']['#attributes']['data-sam-wrapper-simplify'])) {
+-    $errored = _sam_find_errors_on_preprocess($variables['element']);
+-    foreach (Element::children($variables['element']) as $delta) {
+-      if (!empty($variables['element'][$delta]['#attributes']['data-sam-simplify']) && ($errored === FALSE || $delta > $errored)) {
+-        $variables['table']['#rows'][$delta]['class'][] = 'sam-simplify';
+-      }
+-    }
+-    $variables['table']['#attributes']['class'][] = 'sam-wrapper-simplify';
+-    $variables['table']['#attached']['library'][] = 'sam/simplify';
+-    $config = \Drupal::config('sam.settings');
+-    $add_more_label = $config->get('add_more_label') ?? t('Add another item');
+-    $help_text_singular = $config->get('help_text_singular') ?? t('@count additional item can be added');
+-    $remove_label = $config->get('remove_label') ?? t('Remove');
+-    $help_text_plural = $config->get('help_text_plural') ?? t('@count additional items can be added');
+-    $variables['#attached']['drupalSettings']['sam']['add_more_label_var'] = $add_more_label;
+-    $variables['#attached']['drupalSettings']['sam']['remove_label_var'] = $remove_label;
+-    $variables['#attached']['drupalSettings']['sam']['help_text_var'] = $help_text_singular;
+-    $variables['#attached']['drupalSettings']['sam']['help_text_plural_var'] = $help_text_plural;
+-  }
++  \Drupal::service(SamHooks::class)->preprocessFieldMultipleValueForm($variables);
+ }
+ 
+ /**
+  * Implements hook_field_widget_third_party_settings_form().
+  */
++#[LegacyHook]
+ function sam_field_widget_third_party_settings_form(WidgetInterface $plugin, FieldDefinitionInterface $field_definition, $form_mode, array $form, FormStateInterface $form_state) {
+-  $element = [];
+-  if (!sam_skip_widget($plugin, $field_definition)) {
+-    $element['skip_simplification'] = [
+-      '#type' => 'checkbox',
+-      '#title' => t('Skip "Simple Add More" simplification (i.e. show all elements, even if empty).'),
+-      '#default_value' => $plugin->getThirdPartySetting('sam', 'skip_simplification'),
+-    ];
+-  }
+-  return $element;
++  return \Drupal::service(SamHooks::class)->fieldWidgetThirdPartySettingsForm($plugin, $field_definition, $form_mode, $form, $form_state);
+ }
+ 
+ /**
+@@ -151,6 +90,9 @@ function sam_skip_widget(WidgetInterface $widget_plugin, FieldDefinitionInterfac
+   return FALSE;
+ }
+ 
++/**
++ *
++ */
+ function _sam_find_errors_on_preprocess($element) {
+   foreach (Element::children($element) as $widget) {
+     if (_sam_check_errors_on_preprocess($element[$widget])) {
+@@ -160,6 +102,9 @@ function _sam_find_errors_on_preprocess($element) {
+   return FALSE;
+ }
+ 
++/**
++ *
++ */
+ function _sam_check_errors_on_preprocess($widget) {
+   if (!empty($widget['#errors'])) {
+     return TRUE;
+diff --git a/sam.services.yml b/sam.services.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..84f380d982c5908d6409e6ceeefc83248ae9bfe4
+--- /dev/null
++++ b/sam.services.yml
+@@ -0,0 +1,5 @@
++
++services:
++  Drupal\sam\Hook\SamHooks:
++    class: Drupal\sam\Hook\SamHooks
++    autowire: true
+diff --git a/src/Hook/SamHooks.php b/src/Hook/SamHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..9453144b59866a0fea3e8265aa985e953bd70b23
+--- /dev/null
++++ b/src/Hook/SamHooks.php
+@@ -0,0 +1,108 @@
++<?php
++
++namespace Drupal\sam\Hook;
++
++use Drupal\Core\Field\WidgetInterface;
++use Drupal\Core\Render\Element;
++use Drupal\Core\Field\FieldItemListInterface;
++use Drupal\Core\Field\FieldDefinitionInterface;
++use Drupal\Core\Field\WidgetBaseInterface;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for sam.
++ */
++class SamHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_field_widget_complete_form_alter().
++   */
++  #[Hook('field_widget_complete_form_alter')]
++  public function fieldWidgetCompleteFormAlter(&$field_widget_complete_form, FormStateInterface $form_state, $context) {
++    $widget = $context['widget'] ?? NULL;
++    assert($widget instanceof WidgetBaseInterface);
++    $field_definition = $context['items']->getFieldDefinition() ?? NULL;
++    assert($field_definition instanceof FieldDefinitionInterface);
++    if (empty($widget) || empty($field_definition)) {
++      return;
++    }
++    // Abort early if this is a widget whose markup we can't simplify, or if the
++    // field cardinality isn't limited > 1.
++    if (sam_skip_widget($widget, $field_definition)) {
++      return;
++    }
++    $items = $context['items'];
++    assert($items instanceof FieldItemListInterface);
++    // We only have something to simplify if the maximum cardinality hasn't
++    // already been reached.
++    $should_simplify = FALSE;
++    $deltas = array_filter(Element::children($field_widget_complete_form['widget']), 'is_numeric');
++    foreach ($deltas as $delta) {
++      $item = $items->get($delta);
++      // We trust the field telling us it's empty or not. Also, when the field
++      // has 0 values, we leave the first empty element visible, so we only
++      // want to affect deltas >= 1 unless they have errors.
++      if ($item->isEmpty() && $delta > 0) {
++        // In an ideal world, we would be able to add all we need to the markup
++        // here. Unfortunately, the field_multiple_value_form theme function
++        // disregards all item-level attributes when building the table markup.
++        // See sam_preprocess_field_multiple_value_form() for where this
++        // flag is being used.
++        $field_widget_complete_form['widget'][$delta]['#attributes']['data-sam-simplify'] = TRUE;
++      }
++    }
++    // Even if there are no empty items, we still need to process it for adding
++    // the "Remove" button.
++    $field_widget_complete_form['widget']['#attributes']['data-sam-wrapper-simplify'] = TRUE;
++  }
++
++  /**
++   * Implements hook_preprocess_HOOK() for field_multiple_value_form().
++   */
++  #[Hook('preprocess_field_multiple_value_form')]
++  public function preprocessFieldMultipleValueForm(&$variables) {
++    // Unfortunately, we don't have the field object available here, to identify
++    // if the element is empty. Because of this we check that in the form alter,
++    // and here we just alter the markup where necessary.
++    // See sam_field_widget_complete_form_alter().
++    if (!empty($variables['element']['#attributes']['data-sam-wrapper-simplify'])) {
++      $errored = _sam_find_errors_on_preprocess($variables['element']);
++      foreach (Element::children($variables['element']) as $delta) {
++        if (!empty($variables['element'][$delta]['#attributes']['data-sam-simplify']) && ($errored === FALSE || $delta > $errored)) {
++          $variables['table']['#rows'][$delta]['class'][] = 'sam-simplify';
++        }
++      }
++      $variables['table']['#attributes']['class'][] = 'sam-wrapper-simplify';
++      $variables['table']['#attached']['library'][] = 'sam/simplify';
++      $config = \Drupal::config('sam.settings');
++      $add_more_label = $config->get('add_more_label') ?? $this->t('Add another item');
++      $help_text_singular = $config->get('help_text_singular') ?? $this->t('@count additional item can be added');
++      $remove_label = $config->get('remove_label') ?? $this->t('Remove');
++      $help_text_plural = $config->get('help_text_plural') ?? $this->t('@count additional items can be added');
++      $variables['#attached']['drupalSettings']['sam']['add_more_label_var'] = $add_more_label;
++      $variables['#attached']['drupalSettings']['sam']['remove_label_var'] = $remove_label;
++      $variables['#attached']['drupalSettings']['sam']['help_text_var'] = $help_text_singular;
++      $variables['#attached']['drupalSettings']['sam']['help_text_plural_var'] = $help_text_plural;
++    }
++  }
++
++  /**
++   * Implements hook_field_widget_third_party_settings_form().
++   */
++  #[Hook('field_widget_third_party_settings_form')]
++  public function fieldWidgetThirdPartySettingsForm(WidgetInterface $plugin, FieldDefinitionInterface $field_definition, $form_mode, array $form, FormStateInterface $form_state) {
++    $element = [];
++    if (!sam_skip_widget($plugin, $field_definition)) {
++      $element['skip_simplification'] = [
++        '#type' => 'checkbox',
++        '#title' => $this->t('Skip "Simple Add More" simplification (i.e. show all elements, even if empty).'),
++        '#default_value' => $plugin->getThirdPartySetting('sam', 'skip_simplification'),
++      ];
++    }
++    return $element;
++  }
++
++}
+diff --git a/tests/src/FunctionalJavascript/ConfigurationFunctionalTest.php b/tests/src/FunctionalJavascript/ConfigurationFunctionalTest.php
+index 0e6240950d1d322d0b7045f81f5a584d10605486..324e342513debf2b24c2420f0b849ab82cd91c08 100644
+--- a/tests/src/FunctionalJavascript/ConfigurationFunctionalTest.php
++++ b/tests/src/FunctionalJavascript/ConfigurationFunctionalTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\sam\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Core\Url;
+ 
+ /**
+@@ -9,6 +11,8 @@ use Drupal\Core\Url;
+  *
+  * @group sam
+  */
++#[Group('sam')]
++#[RunTestsInSeparateProcesses]
+ class ConfigurationFunctionalTest extends SamFunctionalJavascriptTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/IntegrationFunctionalTest.php b/tests/src/FunctionalJavascript/IntegrationFunctionalTest.php
+index d5e992959be62972fc08e479e9a8e64a32186305..c116b6531310ba455743443f05c4785d013d1680 100644
+--- a/tests/src/FunctionalJavascript/IntegrationFunctionalTest.php
++++ b/tests/src/FunctionalJavascript/IntegrationFunctionalTest.php
+@@ -2,11 +2,16 @@
+ 
+ namespace Drupal\Tests\sam\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests the basic functionality of Simple Add More.
+  *
+  * @group sam
+  */
++#[Group('sam')]
++#[RunTestsInSeparateProcesses]
+ class IntegrationFunctionalTest extends SamFunctionalJavascriptTestBase {
+ 
+   /**
+@@ -136,6 +141,9 @@ class IntegrationFunctionalTest extends SamFunctionalJavascriptTestBase {
+     $this->assertFalse($rows[2]->isVisible());
+   }
+ 
++  /**
++   *
++   */
+   public function testFormSimplificationWithAnError() {
+     $assert_session = $this->assertSession();
+     $session = $this->getSession();
+diff --git a/tests/src/FunctionalJavascript/ItemRemovalFunctionalTest.php b/tests/src/FunctionalJavascript/ItemRemovalFunctionalTest.php
+index 3db6a495e0d066bb23e622c757b7fa4b34b67486..5cebbd11d1937624d686864bb7a2312aba005d13 100644
+--- a/tests/src/FunctionalJavascript/ItemRemovalFunctionalTest.php
++++ b/tests/src/FunctionalJavascript/ItemRemovalFunctionalTest.php
+@@ -2,11 +2,16 @@
+ 
+ namespace Drupal\Tests\sam\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++
+ /**
+  * Tests the removal functionality of Simple Add More.
+  *
+  * @group sam
+  */
++#[Group('sam')]
++#[RunTestsInSeparateProcesses]
+ class ItemRemovalFunctionalTest extends SamFunctionalJavascriptTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/ParagraphsFunctionalTest.php b/tests/src/FunctionalJavascript/ParagraphsFunctionalTest.php
+index fc15462a91d73dc991668ac6df2174129fefd045..aeaab649567d5b34f713bd5564e111482550e68c 100644
+--- a/tests/src/FunctionalJavascript/ParagraphsFunctionalTest.php
++++ b/tests/src/FunctionalJavascript/ParagraphsFunctionalTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\sam\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
+ 
+@@ -10,6 +12,8 @@ use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
+  *
+  * @group sam
+  */
++#[Group('sam')]
++#[RunTestsInSeparateProcesses]
+ class ParagraphsFunctionalTest extends SamFunctionalJavascriptTestBase {
+ 
+   use ParagraphsTestBaseTrait;
+diff --git a/tests/src/FunctionalJavascript/SamFunctionalJavascriptTestBase.php b/tests/src/FunctionalJavascript/SamFunctionalJavascriptTestBase.php
+index df9916fc0ad55694c1d9b4702c3260f592c83b6d..6e6749895c9b3542231054f0419936504dfbd46c 100644
+--- a/tests/src/FunctionalJavascript/SamFunctionalJavascriptTestBase.php
++++ b/tests/src/FunctionalJavascript/SamFunctionalJavascriptTestBase.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\Tests\sam\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+@@ -11,6 +12,7 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+  *
+  * @group sam
+  */
++#[Group('sam')]
+ abstract class SamFunctionalJavascriptTestBase extends WebDriverTestBase {
+ 
+   /**

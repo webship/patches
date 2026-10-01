@@ -1,0 +1,52 @@
+diff --git a/ctools.info.yml b/ctools.info.yml
+index 6eb2ab3..895ae88 100644
+--- a/ctools.info.yml
++++ b/ctools.info.yml
+@@ -2,7 +2,7 @@ name: Chaos Tools
+ type: module
+ description: 'Provides a number of utility and helper APIs for Drupal developers and site builders.'
+ package: Chaos tool suite
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ 
+ # Information added by Drupal.org packaging script on 2026-07-24
+ version: '4.1.1'
+diff --git a/modules/ctools_block/ctools_block.info.yml b/modules/ctools_block/ctools_block.info.yml
+index a5dbd79..2514baa 100644
+--- a/modules/ctools_block/ctools_block.info.yml
++++ b/modules/ctools_block/ctools_block.info.yml
+@@ -2,7 +2,7 @@ name: Chaos Tools Blocks
+ type: module
+ description: 'Provides improvements to blocks that will one day be added to Drupal core.'
+ package: Chaos tool suite (Experimental)
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ dependencies:
+   - ctools:ctools
+ 
+diff --git a/modules/ctools_entity_mask/ctools_entity_mask.info.yml b/modules/ctools_entity_mask/ctools_entity_mask.info.yml
+index 7ecb21e..3eb90fa 100644
+--- a/modules/ctools_entity_mask/ctools_entity_mask.info.yml
++++ b/modules/ctools_entity_mask/ctools_entity_mask.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Entity Mask'
+ type: module
+ description: 'Allows an entity type to borrow the fields and display configuration of another entity type.'
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ 
+ # Information added by Drupal.org packaging script on 2026-07-24
+ version: '4.1.1'
+diff --git a/modules/ctools_views/ctools_views.info.yml b/modules/ctools_views/ctools_views.info.yml
+index e9ffb06..74a717f 100644
+--- a/modules/ctools_views/ctools_views.info.yml
++++ b/modules/ctools_views/ctools_views.info.yml
+@@ -2,7 +2,7 @@ name: Chaos Tools Views
+ type: module
+ description: 'A set of improvements to the core Views code that allows for greater control over Blocks.'
+ package: Chaos tool suite (Experimental)
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ dependencies:
+   - drupal:block
+   - drupal:views

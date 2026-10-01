@@ -1,0 +1,223 @@
+diff --git a/shield.install b/shield.install
+index 9a2d60c7131e32fb81b16b6d0669ece5326dcce8..fd5ab4b75c87be356f9b54773c73169ab382fb4e 100644
+--- a/shield.install
++++ b/shield.install
+@@ -12,7 +12,7 @@ function shield_update_8001() {
+   $config = \Drupal::configFactory()->getEditable('shield.settings');
+   $allow_cli = (bool) $config->get('allow_cli');
+   $config->set('allow_cli', $allow_cli);
+-  $config->save(TRUE);
++  $config->save();
+ }
+ 
+ /**
+@@ -25,8 +25,7 @@ function shield_update_8002() {
+     ->set('credentials.shield.user', $config->get('user'))
+     ->set('credentials.shield.pass', $config->get('pass'))
+     ->clear('user')
+-    ->clear('pass')
+-    ->save(TRUE);
++    ->clear('pass')->save();
+ }
+ 
+ /**
+@@ -71,8 +70,7 @@ function shield_update_8004() {
+   $config = \Drupal::configFactory()->getEditable('shield.settings');
+   $config
+     ->set('allowlist', $config->get('whitelist'))
+-    ->clear('whitelist')
+-    ->save(TRUE);
++    ->clear('whitelist')->save();
+ }
+ 
+ /**
+@@ -94,7 +92,7 @@ function shield_update_8005() {
+   if (is_null($config->get('unset_basic_auth_headers'))) {
+     $editable->set('unset_basic_auth_headers', TRUE);
+   }
+-  $editable->save(TRUE);
++  $editable->save();
+ }
+ 
+ /**
+@@ -105,8 +103,7 @@ function shield_update_8006() {
+ 
+   if (is_null($config->get('debug_header'))) {
+     \Drupal::configFactory()->getEditable('shield.settings')
+-      ->set('debug_header', FALSE)
+-      ->save(TRUE);
++      ->set('debug_header', FALSE)->save();
+   }
+ }
+ 
+@@ -121,8 +118,7 @@ function shield_update_8007() {
+   && $config->get('credential_provider') === 'shield'
+   && empty($config->get('credentials.shield.user'))) {
+     \Drupal::configFactory()->getEditable('shield.settings')
+-      ->set('shield_enable', FALSE)
+-      ->save(TRUE);
++      ->set('shield_enable', FALSE)->save();
+   }
+ }
+ 
+@@ -135,6 +131,6 @@ function shield_update_8008() {
+     $editable->set('paths', '');
+   }
+   if ($editable->get('path') !== NULL) {
+-    $editable->clear('path')->save(TRUE);
++    $editable->clear('path')->save();
+   }
+ }
+diff --git a/shield.module b/shield.module
+index 52b18503b5ee571626eec3ca85f819f62ced0680..2e4fd134ef170c15bee9d972c5dcc6d6c621a0b9 100644
+--- a/shield.module
++++ b/shield.module
+@@ -5,22 +5,14 @@
+  * Contains shield.module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\shield\Hook\ShieldHooks;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function shield_help($route_name, RouteMatchInterface $route_match) {
+-  switch ($route_name) {
+-    // Main module help for the shield module.
+-    case 'help.page.shield':
+-      $output = '';
+-      $output .= '<h3>' . t('About') . '</h3>';
+-      $output .= '<p>' . t('It creates a simple shield for the site with HTTP
+-            basic authentication. It hides the sites, if the user does not know a simple
+-        username/password.') . '</p>';
+-      return $output;
+-
+-    default:
+-  }
++  return \Drupal::service(ShieldHooks::class)->help($route_name, $route_match);
+ }
+diff --git a/shield.services.yml b/shield.services.yml
+index 02b1e16ce0b478f5fe3af6a57b98b0f43ccfb0fb..45df2484cc70eb8830a4e39454d551c1e8f11948 100644
+--- a/shield.services.yml
++++ b/shield.services.yml
+@@ -18,3 +18,7 @@ services:
+     arguments: ['@config.factory']
+     tags:
+       - { name: event_subscriber }
++
++  Drupal\shield\Hook\ShieldHooks:
++    class: Drupal\shield\Hook\ShieldHooks
++    autowire: true
+diff --git a/src/EventSubscriber/ShieldSubscriber.php b/src/EventSubscriber/ShieldSubscriber.php
+index 95c8ec4aabf5a0e5c555fe8e085c54ecb55d095a..e6dd2e00d4a9a3545d672e067f5cf5c9f4cb883d 100644
+--- a/src/EventSubscriber/ShieldSubscriber.php
++++ b/src/EventSubscriber/ShieldSubscriber.php
+@@ -33,7 +33,7 @@ class ShieldSubscriber implements EventSubscriberInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function getSubscribedEvents() {
++  public static function getSubscribedEvents(): array {
+     return [KernelEvents::RESPONSE => ['onResponse', 10]];
+   }
+ 
+diff --git a/src/Form/ShieldSettingsForm.php b/src/Form/ShieldSettingsForm.php
+index bf43ffce19066f8c202cdfbfba29604bcd00bd7e..76b3695f774d872bea6d00fd843a09fa68d41485 100644
+--- a/src/Form/ShieldSettingsForm.php
++++ b/src/Form/ShieldSettingsForm.php
+@@ -43,7 +43,7 @@ class ShieldSettingsForm extends ConfigFormBase {
+    * @param \Drupal\key\Plugin\KeyPluginManager|null $keyTypeManager
+    *   The key plugin manager.
+    */
+-  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, ModuleHandlerInterface $moduleHandler, KeyPluginManager $keyTypeManager = NULL) {
++  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, ModuleHandlerInterface $moduleHandler, ?KeyPluginManager $keyTypeManager = NULL) {
+     parent::__construct($config_factory, $typedConfigManager);
+     $this->moduleHandler = $moduleHandler;
+     $this->keyTypeManager = $keyTypeManager;
+diff --git a/src/Hook/ShieldHooks.php b/src/Hook/ShieldHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..95fc6c7d31a2f55af15453325a20500f624d4b54
+--- /dev/null
++++ b/src/Hook/ShieldHooks.php
+@@ -0,0 +1,34 @@
++<?php
++
++namespace Drupal\shield\Hook;
++
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for shield.
++ */
++class ShieldHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match) {
++    switch ($route_name) {
++      // Main module help for the shield module.
++      case 'help.page.shield':
++        $output = '';
++        $output .= '<h3>' . $this->t('About') . '</h3>';
++        $output .= '<p>' . $this->t('It creates a simple shield for the site with HTTP
++            basic authentication. It hides the sites, if the user does not know a simple
++        username/password.') . '</p>';
++        return $output;
++
++      default:
++    }
++  }
++
++}
+diff --git a/tests/src/Functional/ShieldTest.php b/tests/src/Functional/ShieldTest.php
+index 276a41d4769e5264bfd9f0b619a8d8ffc5a1704d..ce809afe58d0e9dd18bd3bad1b953480c56b309f 100644
+--- a/tests/src/Functional/ShieldTest.php
++++ b/tests/src/Functional/ShieldTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\shield\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\key\Entity\Key;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -10,6 +12,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group shield
+  */
++#[Group('shield')]
++#[RunTestsInSeparateProcesses]
+ class ShieldTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/ShieldMigrateTest.php b/tests/src/Kernel/ShieldMigrateTest.php
+index 6cca888c2847395be846fdeeed2a8b76622235ce..f2f7c6cf52f735a7e26480db7c415aa6c865ab09 100644
+--- a/tests/src/Kernel/ShieldMigrateTest.php
++++ b/tests/src/Kernel/ShieldMigrateTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\shield\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
+ 
+ /**
+@@ -9,6 +11,8 @@ use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
+  *
+  * @group shield
+  */
++#[Group('shield')]
++#[RunTestsInSeparateProcesses]
+ class ShieldMigrateTest extends MigrateDrupal7TestBase {
+ 
+   /**

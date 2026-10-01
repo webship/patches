@@ -1,0 +1,26 @@
+diff --git a/themes/yoast_seo_test_theme/yoast_seo_test_theme.info.yml b/themes/yoast_seo_test_theme/yoast_seo_test_theme.info.yml
+index caeff1a..a1e4e4a 100644
+--- a/themes/yoast_seo_test_theme/yoast_seo_test_theme.info.yml
++++ b/themes/yoast_seo_test_theme/yoast_seo_test_theme.info.yml
+@@ -1,7 +1,7 @@
+ name: Real-Time SEO Test Theme
+ type: theme
+ description: A theme to test the support for rendering in a configurable theme
+-core_version_requirement: '>=9.0'
++core_version_requirement: '>=9.0 || ^12'
+ base theme: olivero
+ hidden: true
+ 
+diff --git a/yoast_seo.info.yml b/yoast_seo.info.yml
+index c3cb614..1db6b6d 100644
+--- a/yoast_seo.info.yml
++++ b/yoast_seo.info.yml
+@@ -3,7 +3,7 @@ description: 'Adds Real-time SEO page analysis and configuration.'
+ package: SEO
+ 
+ type: module
+-core_version_requirement: ^8 || ^9 || ^10 || ^11
++core_version_requirement: ^8 || ^9 || ^10 || ^11 || ^12
+ configure: yoast_seo.settings
+ 
+ dependencies:

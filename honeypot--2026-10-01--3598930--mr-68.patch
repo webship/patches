@@ -1,0 +1,237 @@
+diff --git a/tests/src/Functional/HoneypotAdminFormTest.php b/tests/src/Functional/HoneypotAdminFormTest.php
+index 565327ee6c73d4b79822b89b347fef61bb65483a..2aa796855c3e41a7030fcf22f47f4a2ec0c84bcb 100644
+--- a/tests/src/Functional/HoneypotAdminFormTest.php
++++ b/tests/src/Functional/HoneypotAdminFormTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotAdminFormTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/HoneypotFormCacheTest.php b/tests/src/Functional/HoneypotFormCacheTest.php
+index 3ebdf8301ea0372752e94c5636255c524b36bcd7..09d746ae308b86a3e10d4d4f5433b373942d3a18 100644
+--- a/tests/src/Functional/HoneypotFormCacheTest.php
++++ b/tests/src/Functional/HoneypotFormCacheTest.php
+@@ -4,6 +4,10 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\comment\CommentingStatus;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+ use Drupal\comment\Tests\CommentTestTrait;
+@@ -17,6 +21,8 @@ use Drupal\user\UserInterface;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotFormCacheTest extends BrowserTestBase {
+   use CommentTestTrait;
+ 
+@@ -123,7 +129,7 @@ class HoneypotFormCacheTest extends BrowserTestBase {
+     // Set up example node.
+     $this->node = $this->drupalCreateNode([
+       'type' => 'article',
+-      'comment' => CommentItemInterface::OPEN,
++      'comment' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => CommentingStatus::Open, fn() => CommentItemInterface::OPEN),
+     ]);
+ 
+     // Give anonymous users permission to post comments.
+diff --git a/tests/src/Functional/HoneypotFormProgrammaticSubmissionTest.php b/tests/src/Functional/HoneypotFormProgrammaticSubmissionTest.php
+index a095a827d134cdab535150d99a1187c39e722cd3..132f4f15ee30503327bd705cb96121493958004e 100644
+--- a/tests/src/Functional/HoneypotFormProgrammaticSubmissionTest.php
++++ b/tests/src/Functional/HoneypotFormProgrammaticSubmissionTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -12,6 +14,8 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotFormProgrammaticSubmissionTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/HoneypotFormTest.php b/tests/src/Functional/HoneypotFormTest.php
+index f50f4d6451f1f55db2827664781371bc4f4b11f7..f551a3f6fe5301a75907ce91c4c0a717abbe3bc6 100644
+--- a/tests/src/Functional/HoneypotFormTest.php
++++ b/tests/src/Functional/HoneypotFormTest.php
+@@ -4,6 +4,10 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\comment\CommentingStatus;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+ use Drupal\comment\Tests\CommentTestTrait;
+@@ -15,6 +19,8 @@ use Drupal\user\UserInterface;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotFormTest extends BrowserTestBase {
+   use CommentTestTrait;
+ 
+@@ -101,7 +107,7 @@ class HoneypotFormTest extends BrowserTestBase {
+     // Set up example node.
+     $this->node = $this->drupalCreateNode([
+       'type' => 'article',
+-      'comment' => CommentItemInterface::OPEN,
++      'comment' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => CommentingStatus::Open, fn() => CommentItemInterface::OPEN),
+     ]);
+   }
+ 
+diff --git a/tests/src/Functional/HoneypotWebformTest.php b/tests/src/Functional/HoneypotWebformTest.php
+index 72536b7ce7faca097337fb85c880cbbbf7cc1aae..e04f65a216d6b8b0bf1d1279c7c1c11db7c9fff4 100644
+--- a/tests/src/Functional/HoneypotWebformTest.php
++++ b/tests/src/Functional/HoneypotWebformTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Functional;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Component\Serialization\Yaml;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\webform\Entity\Webform;
+@@ -14,6 +16,8 @@ use Drupal\webform\WebformInterface;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotWebformTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/HoneypotFileFieldTest.php b/tests/src/FunctionalJavascript/HoneypotFileFieldTest.php
+index 5720c44da827067e2cd38db0c7cb9e0ab22fc8bc..d295ed3c32fe2dc3634a571919242f1e90cd1d36 100644
+--- a/tests/src/FunctionalJavascript/HoneypotFileFieldTest.php
++++ b/tests/src/FunctionalJavascript/HoneypotFileFieldTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\FunctionalJavascript;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\file\FunctionalJavascript\FileFieldWidgetTest;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\Tests\file\FunctionalJavascript\FileFieldWidgetTest;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotFileFieldTest extends FileFieldWidgetTest {
+ 
+   /**
+diff --git a/tests/src/Kernel/HoneypotLegacyTest.php b/tests/src/Kernel/HoneypotLegacyTest.php
+index ae16955059a7324a0285119acd50f9f24c276bb4..ef9adb6a1530a98b98054adb823df7847c86cdcc 100644
+--- a/tests/src/Kernel/HoneypotLegacyTest.php
++++ b/tests/src/Kernel/HoneypotLegacyTest.php
+@@ -4,6 +4,10 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\IgnoreDeprecations;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
++use Drupal\Component\Utility\DeprecationHelper;
+ use Drupal\Core\Form\FormState;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+@@ -13,6 +17,9 @@ use Drupal\KernelTests\KernelTestBase;
+  * @group honeypot
+  * @group legacy
+  */
++#[Group('honeypot')]
++#[IgnoreDeprecations]
++#[RunTestsInSeparateProcesses]
+ class HoneypotLegacyTest extends KernelTestBase {
+ 
+   /**
+@@ -34,7 +41,7 @@ class HoneypotLegacyTest extends KernelTestBase {
+    * Tests the deprecation message for honeypot_get_protected_forms().
+    */
+   public function testGetProtectedForms(): void {
+-    $this->expectDeprecation("honeypot_get_protected_forms() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->getProtectedForms(). See https://www.drupal.org/node/2949447");
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $this->expectUserDeprecationMessage("honeypot_get_protected_forms() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->getProtectedForms(). See https://www.drupal.org/node/2949447"), fn() => $this->expectDeprecation("honeypot_get_protected_forms() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->getProtectedForms(). See https://www.drupal.org/node/2949447"));
+     $this->assertIsArray(honeypot_get_protected_forms());
+   }
+ 
+@@ -42,7 +49,7 @@ class HoneypotLegacyTest extends KernelTestBase {
+    * Tests the deprecation message for honeypot_add_form_protection().
+    */
+   public function testAddFormProtection(): void {
+-    $this->expectDeprecation("honeypot_add_form_protection() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->addFormProtection(\$form, \$form_state, \$options). See https://www.drupal.org/node/2949447");
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $this->expectUserDeprecationMessage("honeypot_add_form_protection() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->addFormProtection(\$form, \$form_state, \$options). See https://www.drupal.org/node/2949447"), fn() => $this->expectDeprecation("honeypot_add_form_protection() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->addFormProtection(\$form, \$form_state, \$options). See https://www.drupal.org/node/2949447"));
+     $form = [];
+     $form_state = new FormState();
+     honeypot_add_form_protection($form, $form_state, ['honeypot']);
+@@ -52,7 +59,7 @@ class HoneypotLegacyTest extends KernelTestBase {
+    * Tests the deprecation message for honeypot_get_time_limit().
+    */
+   public function testGetTimeLimit(): void {
+-    $this->expectDeprecation("honeypot_get_time_limit() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->getTimeLimit(\$form_values). See https://www.drupal.org/node/2949447");
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $this->expectUserDeprecationMessage("honeypot_get_time_limit() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->getTimeLimit(\$form_values). See https://www.drupal.org/node/2949447"), fn() => $this->expectDeprecation("honeypot_get_time_limit() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->getTimeLimit(\$form_values). See https://www.drupal.org/node/2949447"));
+     $this->assertIsInt(honeypot_get_time_limit());
+   }
+ 
+@@ -60,7 +67,7 @@ class HoneypotLegacyTest extends KernelTestBase {
+    * Tests the deprecation message for honeypot_log_failure().
+    */
+   public function testLogFailure(): void {
+-    $this->expectDeprecation("honeypot_log_failure() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->logFailure(\$form_id, \$type). See https://www.drupal.org/node/2949447");
++    DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.4.0', fn() => $this->expectUserDeprecationMessage("honeypot_log_failure() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->logFailure(\$form_id, \$type). See https://www.drupal.org/node/2949447"), fn() => $this->expectDeprecation("honeypot_log_failure() is deprecated in honeypot:2.1.0 and is removed from honeypot:3.0.0. Use the 'honeypot' service instead. For example, \Drupal::service('honeypot')->logFailure(\$form_id, \$type). See https://www.drupal.org/node/2949447"));
+     honeypot_log_failure('user_login_form', 'honeypot');
+   }
+ 
+diff --git a/tests/src/Kernel/HoneypotTest.php b/tests/src/Kernel/HoneypotTest.php
+index ae3610f6343755a4016ae64dc6d7045651dd8457..d2613ba6c2dafe0e735170eda03970b529efe6c6 100644
+--- a/tests/src/Kernel/HoneypotTest.php
++++ b/tests/src/Kernel/HoneypotTest.php
+@@ -4,6 +4,8 @@ declare(strict_types=1);
+ 
+ namespace Drupal\Tests\honeypot\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+ /**
+@@ -11,6 +13,8 @@ use Drupal\KernelTests\KernelTestBase;
+  *
+  * @group honeypot
+  */
++#[Group('honeypot')]
++#[RunTestsInSeparateProcesses]
+ class HoneypotTest extends KernelTestBase {
+ 
+   /**

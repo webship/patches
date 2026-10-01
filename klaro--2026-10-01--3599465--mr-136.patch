@@ -1,0 +1,882 @@
+diff --git a/klaro.install b/klaro.install
+index bec57e137d9de54d16ce551c5ebdc94f40442089..f5c90599abfeea2f4c03ad198f6a28508e593529 100644
+--- a/klaro.install
++++ b/klaro.install
+@@ -22,8 +22,8 @@ function klaro_update_8201() {
+   // @todo Write update notice for users wanting "no-css" feature.
+   $config_settings->clear('klaro_library');
+ 
+-  $config_settings->save(TRUE);
+-  $config_texts->save(TRUE);
++  $config_settings->save();
++  $config_texts->save();
+ 
+   // Update permissions.
+   $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
+@@ -58,7 +58,7 @@ function klaro_update_10001(&$sandbox) {
+   // Remove old config settings.
+   $config_settings->clear('auto_show');
+ 
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+   // Add new texts.
+   $config_texts->set('contextualConsent.acceptAlways', 'Always');
+@@ -74,7 +74,7 @@ function klaro_update_10001(&$sandbox) {
+  */
+ function klaro_update_10002() {
+   $config = \Drupal::configFactory()->getEditable('klaro.settings');
+-  $config->clear('auto_show')->save(TRUE);
++  $config->clear('auto_show')->save();
+ }
+ 
+ /**
+@@ -87,7 +87,7 @@ function klaro_update_10005(&$sandbox) {
+   // Set new config setting.
+   $config_settings->set('auto_decorate_preprocess_field', TRUE);
+ 
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+ }
+ 
+@@ -101,8 +101,8 @@ function klaro_update_10006(&$sandbox) {
+   $data = $config_settings->get('block_unknown_logger');
+   // Set new config setting.
+   $config_settings->set('log_unknown_resources', $data);
+-  $config_settings->save(TRUE);
+-  $config_settings->clear('block_unknown_logger')->save(TRUE);
++  $config_settings->save();
++  $config_settings->clear('block_unknown_logger')->save();
+ }
+ 
+ /**
+@@ -115,7 +115,7 @@ function klaro_update_10007(&$sandbox) {
+   // Set new config setting.
+   $config_settings->set('get_entity_thumbnail', TRUE);
+ 
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+ }
+ 
+@@ -129,7 +129,7 @@ function klaro_update_10008(&$sandbox) {
+   // Set new config setting.
+   $config_settings->set('show_close_button', FALSE);
+ 
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+ }
+ 
+@@ -151,9 +151,9 @@ function klaro_update_10009(&$sandbox) {
+   }
+   // Set new config setting.
+   $config_settings->set('dialog_mode', $dialog_mode);
+-  $config_settings->save(TRUE);
+-  $config_settings->clear('library.must_consent')->save(TRUE);
+-  $config_settings->clear('library.notice_as_modal')->save(TRUE);
++  $config_settings->save();
++  $config_settings->clear('library.must_consent')->save();
++  $config_settings->clear('library.notice_as_modal')->save();
+ 
+ }
+ 
+@@ -228,7 +228,7 @@ function klaro_update_10012(&$sandbox) {
+   // Set new config setting.
+   $config_settings->set('library.auto_focus', TRUE);
+ 
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+ }
+ 
+@@ -242,7 +242,7 @@ function klaro_update_10013(&$sandbox) {
+   // Set new config setting.
+   $config_settings->set('override_css', FALSE);
+ 
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+ }
+ 
+@@ -254,7 +254,7 @@ function klaro_update_10014(&$sandbox) {
+   $config_settings = $config_factory->getEditable('klaro.settings');
+   // Set new config setting.
+   $config_settings->set('show_notice_title', FALSE);
+-  $config_settings->save(TRUE);
++  $config_settings->save();
+ 
+   $config_texts = $config_factory->getEditable('klaro.texts');
+   $config_texts->set('consentNotice.title', 'Use of personal data and cookies');
+@@ -268,7 +268,7 @@ function klaro_update_10014(&$sandbox) {
+ function klaro_update_10015() {
+   if (($config = \Drupal::configFactory()->getEditable('klaro.klaro_app.posthog')) && (!$config->isNew())) {
+     $newCallbackCode = "// NOTE: \r\n// - On initial call window.posthog and its functions may not be initialized yet:\r\n// - The posthog module detects Klaro and initializes with cookieless_mode: 'on_reject'\r\nif (window.posthog) {\r\n  if (consent === true && window.posthog.opt_in_capturing) {\r\n    window.posthog.opt_in_capturing();\r\n  }\r\n  else if (consent === false && window.posthog.opt_out_capturing) {\r\n    window.posthog.opt_out_capturing();\r\n  }\r\n}";
+-    $config->set('callback_code', $newCallbackCode)->save(TRUE);
++    $config->set('callback_code', $newCallbackCode)->save();
+   }
+ }
+ 
+diff --git a/klaro.module b/klaro.module
+index 5ef78e1e7e98658f9f2e3260ee9a6bf0770ed37f..d80487ff55edd1fd4fe35ea2bcd088344223df95 100644
+--- a/klaro.module
++++ b/klaro.module
+@@ -5,46 +5,25 @@
+  * Module file for the Klaro! module.
+  */
+ 
++use Drupal\Core\Hook\Attribute\LegacyHook;
++use Drupal\klaro\Hook\KlaroHooks;
+ use Drupal\Core\Asset\AttachedAssetsInterface;
+-use Drupal\Core\Render\Markup;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+  * Implements hook_help().
+  */
++#[LegacyHook]
+ function klaro_help($route_name, RouteMatchInterface $route_match): string {
+-  if ($route_name === 'help.page.klaro') {
+-    $output = '<p>' . t('This module implements the Open Source Klaro! consent manager utility into Drupal.') . '</p>';
+-    $output .= '<p>' . t('Website users must decide which data processing services may be used before cookies are set and content is loaded from external sources.') . '</p>';
+-    return $output;
+-  }
+-
+-  return '';
++  return \Drupal::service(KlaroHooks::class)->help($route_name, $route_match);
+ }
+ 
+ /**
+  * Implements hook_page_attachments().
+  */
++#[LegacyHook]
+ function klaro_page_attachments(array &$page) {
+-
+-  $helper = \Drupal::service('klaro.helper');
+-  // Cases in which klaro library will not be added.
+-  if (!$helper->hasAccess() || $helper->onDisabledUri() || $helper->onExcludedUri() || !$helper->consentManagementRequired()) {
+-    return;
+-  }
+-  $config = $helper->getSettings();
+-  $config_texts = $helper->getTexts();
+-  $renderer = $helper->getRenderer();
+-  // Updating klaro config will update cache.
+-  $renderer->addCacheableDependency($page, $config);
+-  $renderer->addCacheableDependency($page, $config_texts);
+-  $page['#attached']['drupalSettings']['klaro'] = $helper->processDrupalSettings();
+-  $page['#attached']['library'][] = 'klaro/klaro';
+-
+-  if ($config->get('override_css')) {
+-    $page['#attached']['library'][] = 'klaro/klaro-override';
+-  }
+-
++  \Drupal::service(KlaroHooks::class)->pageAttachments($page);
+ }
+ 
+ /**
+@@ -67,33 +46,9 @@ function klaro_module_implements_alter(&$implementations, $hook) {
+  *
+  * Handles script files added from libraries.
+  */
++#[LegacyHook]
+ function klaro_js_alter(&$javascript, AttachedAssetsInterface $assets) {
+-  // @todo The assets are cached based on theme, library, langcode etc. so we
+-  // cannot differ based on user permissions.
+-  // @see \Drupal\Core\Asset\AssetResolver::getJsAssets
+-  /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
+-  $helper = \Drupal::service('klaro.helper');
+-
+-  if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->getSettings()->get('auto_decorate_js_alter') || !$helper->consentManagementRequired()) {
+-    return;
+-  }
+-
+-  foreach ($javascript as $path => &$script) {
+-    if ($script['type'] !== 'setting') {
+-      $app = $helper->matchKlaroApp($path);
+-      if ($app) {
+-        // This Klaro app uses both ‘opt_out’ and ‘required’, so it must not be
+-        // blocked server‑side to avoid altering its behavior:
+-        // @todo Should we move this inside "matchKlaroApp" instead, or
+-        // somewhere else?
+-        if ($app->get('opt_out') === TRUE && $app->get('required') === TRUE) {
+-          continue;
+-        }
+-        $script['preprocess'] = FALSE;
+-        $script['klaro'] = $app->id();
+-      }
+-    }
+-  }
++  \Drupal::service(KlaroHooks::class)->jsAlter($javascript, $assets);
+ }
+ 
+ /**
+@@ -101,173 +56,31 @@ function klaro_js_alter(&$javascript, AttachedAssetsInterface $assets) {
+  *
+  * Handles manually attached JS files.
+  */
++#[LegacyHook]
+ function klaro_page_attachments_alter(array &$attachments) {
+-  /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
+-  $helper = \Drupal::service('klaro.helper');
+-  if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->getSettings()->get('auto_decorate_page_attachments') || !$helper->consentManagementRequired()) {
+-    return;
+-  }
+-  /** @var \Drupal\Core\Render\Renderer $renderer */
+-  $renderer = $helper->getRenderer();
+-
+-  $attachment_apps = [];
+-  foreach ($helper->getApps() as $klaro_app) {
+-    foreach ($klaro_app->attachments() as $attachment) {
+-      $attachment_apps[$attachment] = $klaro_app->id();
+-    }
+-    $renderer->addCacheableDependency($attachments, $klaro_app);
+-  }
+-
+-  foreach ($attachments['#attached']['html_head'] as &$attached_html_head) {
+-    $item = &$attached_html_head[0];
+-    $identifier = $attached_html_head[1] ?? '';
+-    if (!$identifier || !isset($attachment_apps[$identifier])) {
+-      continue;
+-    }
+-
+-    if (!isset($item['#attributes']['data-type'])) {
+-      $item['#attributes']['data-type'] = $item['#attributes']['type'] ?? 'text/javascript';
+-    }
+-    $item['#attributes']['type'] = 'text/plain';
+-    $item['#attributes']['data-name'] = $attachment_apps[$identifier];
+-    if (isset($item['#attributes']['src'])) {
+-      $item['#attributes']['data-src'] = $item['#attributes']['src'];
+-      unset($item['#attributes']['src']);
+-    }
+-  }
++  \Drupal::service(KlaroHooks::class)->pageAttachmentsAlter($attachments);
+ }
+ 
+ /**
+  * Implements hook_library_info_alter().
+  */
++#[LegacyHook]
+ function klaro_library_info_alter(&$libraries, $extension) {
+-
+-  if ($extension !== 'klaro') {
+-    return;
+-  }
+-
+-  /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
+-  $helper = \Drupal::service('klaro.helper');
+-
+-  if ($helper->hasLibraryFiles()) {
+-    return;
+-  }
+-  elseif ($helper->hasDeprecatedLibraryFiles()) {
+-    // Backwards compatibility for "old" library-name "klaro-js".
+-    $libraries['library']['js']['/libraries/klaro-js/dist/klaro-no-translations-no-css.js'] = $libraries['library']['js']['/libraries/klaro/dist/klaro-no-translations-no-css.js'];
+-    $libraries['library']['css']['base']['/libraries/klaro-js/dist/klaro.min.css'] = $libraries['library']['css']['base']['/libraries/klaro/dist/klaro.min.css'];
+-    unset($libraries['library']['js']['/libraries/klaro/dist/klaro-no-translations-no-css.js']);
+-    unset($libraries['library']['css']['base']['/libraries/klaro/dist/klaro.min.css']);
+-  }
+-  else {
+-    // Klaro library not found.
+-    $message = "The klaro-js library is not found at libraries folder, please read the install instructions in the README of the Klaro! Drupal module.";
+-    \Drupal::logger('klaro')->error($message);
+-  }
+-
++  \Drupal::service(KlaroHooks::class)->libraryInfoAlter($libraries, $extension);
+ }
+ 
+ /**
+  * Implements hook_preprocess_field().
+  */
++#[LegacyHook]
+ function klaro_preprocess_field(&$variables) {
+-
+-  /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
+-  $helper = \Drupal::service('klaro.helper');
+-
+-  // Early exit function.
+-  if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->getSettings()->get('auto_decorate_preprocess_field') || !$helper->consentManagementRequired()) {
+-    return;
+-  }
+-
+-  // Rewrite src from field type iframe.
+-  if ($variables["field_type"] == "iframe") {
+-    foreach ($variables['items'] as $i => $item) {
+-      $src = $item['content']['#src'];
+-      $app = $helper->matchKlaroApp($src);
+-      if ($app) {
+-        $attributes = $item['content']['#attributes'];
+-        $attributes = $helper->rewriteAttributes($attributes, $app->id());
+-        $variables['items'][$i]['content']['#attributes'] = $attributes;
+-      }
+-    }
+-  }
+-
+-  // Handle different formatters:
+-  if (!isset($variables["element"]['#formatter'])) {
+-    // No formatter at all, nothing to do.
+-    return;
+-  }
+-  elseif ($variables["element"]['#formatter'] == "oembed") {
+-    // Rewrite src from field formatter oembed.
+-    foreach ($variables['items'] as $i => $item) {
+-      $src = $item['content']['#attributes']['src'];
+-      $app = $helper->matchKlaroApp($src);
+-      if ($app) {
+-        $attributes = $item['content']['#attributes'];
+-        $attributes = $helper->rewriteAttributes($attributes, $app->id());
+-        $variables['items'][$i]['content']['#attributes'] = $attributes;
+-      }
+-    }
+-    $url = $helper->getThumbnail($variables['element']['#object']);
+-    if ($url) {
+-      $variables['items'][0]['content']['#attributes']['data-thumbnail'] = $url;
+-    }
+-  }
+-  elseif ($variables["element"]['#formatter'] == "html") {
+-    // Rewrite markup from field formatter html.
+-    foreach ($variables['items'] as $i => $item) {
+-      $html = $item['content']['#children'];
+-      $variables['items'][$i]['content']['#children'] = $helper->processHtml($html);
+-    }
+-  }
+-  elseif ($variables["element"]['#formatter'] == "video_embed_field_video") {
+-    // Rewrite src from field formatter video_embed_field_video.
+-    foreach ($variables['items'] as $i => $item) {
+-      $src = $item['content']['children']['#url'];
+-      if (empty($src)) {
+-        continue;
+-      }
+-      $app = $helper->matchKlaroApp($src);
+-      if ($app) {
+-        $variables['items'][$i]['content']['children']['#attributes']['data-src'] = $src;
+-        $variables['items'][$i]['content']['children']['#url'] = '';
+-        $variables['items'][$i]['content']['children']['#attributes']['data-name'] = $app->id();
+-      }
+-    }
+-    $url = $helper->getThumbnail($variables['element']['#object']);
+-    if ($url) {
+-      $variables['items'][0]['content']['children']['#attributes']['data-thumbnail'] = $url;
+-    }
+-  }
+-  elseif ($variables["element"]['#formatter'] == "simple_gmap") {
+-    // Rewrite markup from field formatter simple_gmap.
+-    foreach ($variables['items'] as $i => &$item) {
+-      // We have to render the field to process the markup.
+-      $output = \Drupal::service('renderer')->render($item['content']);
+-      $output = $helper->processHtml($output);
+-      $item['content'] = [
+-        '#markup' => Markup::create($output),
+-      ];
+-    }
+-  }
+-
++  \Drupal::service(KlaroHooks::class)->preprocessField($variables);
+ }
+ 
+ /**
+  * Implements hook_preprocess_leaflet_map().
+  */
++#[LegacyHook]
+ function klaro_preprocess_leaflet_map(&$variables) {
+-
+-  /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
+-  $helper = \Drupal::service('klaro.helper');
+-
+-  // Early exit function.
+-  if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->hasAccess('leaflet')) {
+-    return;
+-  }
+-
+-  $variables['attributes']['data-name'] = 'leaflet';
+-  $variables['attributes']['data-id'] = $variables['map_id'];
+-  $variables['map_id'] .= '-protected';
++  \Drupal::service(KlaroHooks::class)->preprocessLeafletMap($variables);
+ }
+diff --git a/klaro.services.yml b/klaro.services.yml
+index 37080dbe16e41e8df4b9e8e881f009087764716a..ea0925d2228911214d6b43cd7fc5d56a7d849bab 100644
+--- a/klaro.services.yml
++++ b/klaro.services.yml
+@@ -7,3 +7,7 @@ services:
+     arguments: ['@klaro.helper']
+     tags:
+       - { name: event_subscriber }
++
++  Drupal\klaro\Hook\KlaroHooks:
++    class: Drupal\klaro\Hook\KlaroHooks
++    autowire: true
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index f0d903245d66d74acf8afb2bb09eeec469a82ab9..a067d9365bb426730489a1d840cc505a4c535884 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\klaro\Form;
+ 
++use Drupal\Component\Utility\DeprecationHelper;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -144,12 +145,17 @@ class SettingsForm extends ConfigFormBase {
+       '#group' => 'vertical_tabs',
+     ];
+ 
+-    $form['general_settings']['dialog'] = [
++    $form['general_settings']['dialog'] = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => [
++      '#type' => 'fieldset',
++      '#title' => $this->t('Consent', [], ['context' => 'klaro']),
++      '#description' => $this->t('Some national regulations require a close button for the consent. It can be enabled by the <em>Add close button to the Klaro! dialog</em> option.', [], ['context' => 'klaro']),
++      '#tree' => FALSE,
++    ], fn() => [
+       '#type' => 'fieldgroup',
+       '#title' => $this->t('Consent', [], ['context' => 'klaro']),
+       '#description' => $this->t('Some national regulations require a close button for the consent. It can be enabled by the <em>Add close button to the Klaro! dialog</em> option.', [], ['context' => 'klaro']),
+       '#tree' => FALSE,
+-    ];
++    ]);
+ 
+     $form['general_settings']['dialog']['dialog_mode'] = [
+       '#type' => 'radios',
+@@ -178,11 +184,15 @@ class SettingsForm extends ConfigFormBase {
+       '#default_value' => $config->get('library.auto_focus'),
+     ];
+ 
+-    $form['general_settings']['apps'] = [
++    $form['general_settings']['apps'] = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => [
++      '#type' => 'fieldset',
++      '#title' => $this->t('Services', [], ['context' => 'klaro']),
++      '#tree' => TRUE,
++    ], fn() => [
+       '#type' => 'fieldgroup',
+       '#title' => $this->t('Services', [], ['context' => 'klaro']),
+       '#tree' => TRUE,
+-    ];
++    ]);
+     $form['general_settings']['apps']['group_by_purpose'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Group by purpose', [], ['context' => 'klaro']),
+@@ -196,11 +206,15 @@ class SettingsForm extends ConfigFormBase {
+       '#default_value' => $config->get('process_descriptions'),
+     ];
+ 
+-    $form['general_settings']['buttons'] = [
++    $form['general_settings']['buttons'] = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => [
++      '#type' => 'fieldset',
++      '#title' => $this->t('Buttons', [], ['context' => 'klaro']),
++      '#tree' => TRUE,
++    ], fn() => [
+       '#type' => 'fieldgroup',
+       '#title' => $this->t('Buttons', [], ['context' => 'klaro']),
+       '#tree' => TRUE,
+-    ];
++    ]);
+     $form['general_settings']['buttons']['accept_all'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Accept all', [], ['context' => 'klaro']),
+diff --git a/src/Form/TextSettingsForm.php b/src/Form/TextSettingsForm.php
+index 9114f63e065a0f6c3d6c1f5a17d1bd587bfb7776..67831e4df21630c192525fc28d4dffef36eb29ef 100644
+--- a/src/Form/TextSettingsForm.php
++++ b/src/Form/TextSettingsForm.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\klaro\Form;
+ 
++use Drupal\Component\Utility\DeprecationHelper;
+ use Drupal\Component\Utility\UrlHelper;
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -245,10 +246,13 @@ class TextSettingsForm extends ConfigFormBase {
+     ];
+ 
+     // "Purposes" list.
+-    $form['service']['purpose'] = [
++    $form['service']['purpose'] = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => [
++      '#type' => 'fieldset',
++      '#title' => $this->t('Purpose', [], ['context' => 'klaro']),
++    ], fn() => [
+       '#type' => 'fieldgroup',
+       '#title' => $this->t('Purpose', [], ['context' => 'klaro']),
+-    ];
++    ]);
+     $form['service']['purpose']['singular'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Singular form', [], ['context' => 'klaro']),
+diff --git a/src/Hook/KlaroHooks.php b/src/Hook/KlaroHooks.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..07f9872bf51750db07f1610a4f89548c3032a426
+--- /dev/null
++++ b/src/Hook/KlaroHooks.php
+@@ -0,0 +1,251 @@
++<?php
++
++namespace Drupal\klaro\Hook;
++
++use Drupal\Core\Render\Markup;
++use Drupal\Core\Asset\AttachedAssetsInterface;
++use Drupal\Core\Routing\RouteMatchInterface;
++use Drupal\Core\Hook\Attribute\Hook;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++
++/**
++ * Hook implementations for klaro.
++ */
++class KlaroHooks {
++  use StringTranslationTrait;
++
++  /**
++   * Implements hook_help().
++   */
++  #[Hook('help')]
++  public function help($route_name, RouteMatchInterface $route_match): string {
++    if ($route_name === 'help.page.klaro') {
++      $output = '<p>' . $this->t('This module implements the Open Source Klaro! consent manager utility into Drupal.') . '</p>';
++      $output .= '<p>' . $this->t('Website users must decide which data processing services may be used before cookies are set and content is loaded from external sources.') . '</p>';
++      return $output;
++    }
++    return '';
++  }
++
++  /**
++   * Implements hook_page_attachments().
++   */
++  #[Hook('page_attachments')]
++  public function pageAttachments(array &$page) {
++    $helper = \Drupal::service('klaro.helper');
++    // Cases in which klaro library will not be added.
++    if (!$helper->hasAccess() || $helper->onDisabledUri() || $helper->onExcludedUri() || !$helper->consentManagementRequired()) {
++      return;
++    }
++    $config = $helper->getSettings();
++    $config_texts = $helper->getTexts();
++    $renderer = $helper->getRenderer();
++    // Updating klaro config will update cache.
++    $renderer->addCacheableDependency($page, $config);
++    $renderer->addCacheableDependency($page, $config_texts);
++    $page['#attached']['drupalSettings']['klaro'] = $helper->processDrupalSettings();
++    $page['#attached']['library'][] = 'klaro/klaro';
++    if ($config->get('override_css')) {
++      $page['#attached']['library'][] = 'klaro/klaro-override';
++    }
++  }
++
++  /**
++   * Implements hook_js_alter().
++   *
++   * Handles script files added from libraries.
++   */
++  #[Hook('js_alter')]
++  public function jsAlter(&$javascript, AttachedAssetsInterface $assets) {
++    // @todo The assets are cached based on theme, library, langcode etc. so we
++    // cannot differ based on user permissions.
++    // @see \Drupal\Core\Asset\AssetResolver::getJsAssets
++    /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
++    $helper = \Drupal::service('klaro.helper');
++    if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->getSettings()->get('auto_decorate_js_alter') || !$helper->consentManagementRequired()) {
++      return;
++    }
++    foreach ($javascript as $path => &$script) {
++      if ($script['type'] !== 'setting') {
++        $app = $helper->matchKlaroApp($path);
++        if ($app) {
++          // This Klaro app uses both ‘opt_out’ and ‘required’, so it must not be
++          // blocked server‑side to avoid altering its behavior:
++          // @todo Should we move this inside "matchKlaroApp" instead, or
++          // somewhere else?
++          if ($app->get('opt_out') === TRUE && $app->get('required') === TRUE) {
++            continue;
++          }
++          $script['preprocess'] = FALSE;
++          $script['klaro'] = $app->id();
++        }
++      }
++    }
++  }
++
++  /**
++   * Implements hook_page_attachments_alter().
++   *
++   * Handles manually attached JS files.
++   */
++  #[Hook('page_attachments_alter')]
++  public function pageAttachmentsAlter(array &$attachments) {
++    /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
++    $helper = \Drupal::service('klaro.helper');
++    if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->getSettings()->get('auto_decorate_page_attachments') || !$helper->consentManagementRequired()) {
++      return;
++    }
++    /** @var \Drupal\Core\Render\Renderer $renderer */
++    $renderer = $helper->getRenderer();
++    $attachment_apps = [];
++    foreach ($helper->getApps() as $klaro_app) {
++      foreach ($klaro_app->attachments() as $attachment) {
++        $attachment_apps[$attachment] = $klaro_app->id();
++      }
++      $renderer->addCacheableDependency($attachments, $klaro_app);
++    }
++    foreach ($attachments['#attached']['html_head'] as &$attached_html_head) {
++      $item =& $attached_html_head[0];
++      $identifier = $attached_html_head[1] ?? '';
++      if (!$identifier || !isset($attachment_apps[$identifier])) {
++        continue;
++      }
++      if (!isset($item['#attributes']['data-type'])) {
++        $item['#attributes']['data-type'] = $item['#attributes']['type'] ?? 'text/javascript';
++      }
++      $item['#attributes']['type'] = 'text/plain';
++      $item['#attributes']['data-name'] = $attachment_apps[$identifier];
++      if (isset($item['#attributes']['src'])) {
++        $item['#attributes']['data-src'] = $item['#attributes']['src'];
++        unset($item['#attributes']['src']);
++      }
++    }
++  }
++
++  /**
++   * Implements hook_library_info_alter().
++   */
++  #[Hook('library_info_alter')]
++  public function libraryInfoAlter(&$libraries, $extension) {
++    if ($extension !== 'klaro') {
++      return;
++    }
++    /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
++    $helper = \Drupal::service('klaro.helper');
++    if ($helper->hasLibraryFiles()) {
++      return;
++    }
++    elseif ($helper->hasDeprecatedLibraryFiles()) {
++      // Backwards compatibility for "old" library-name "klaro-js".
++      $libraries['library']['js']['/libraries/klaro-js/dist/klaro-no-translations-no-css.js'] = $libraries['library']['js']['/libraries/klaro/dist/klaro-no-translations-no-css.js'];
++      $libraries['library']['css']['base']['/libraries/klaro-js/dist/klaro.min.css'] = $libraries['library']['css']['base']['/libraries/klaro/dist/klaro.min.css'];
++      unset($libraries['library']['js']['/libraries/klaro/dist/klaro-no-translations-no-css.js']);
++      unset($libraries['library']['css']['base']['/libraries/klaro/dist/klaro.min.css']);
++    }
++    else {
++      // Klaro library not found.
++      $message = "The klaro-js library is not found at libraries folder, please read the install instructions in the README of the Klaro! Drupal module.";
++      \Drupal::logger('klaro')->error($message);
++    }
++  }
++
++  /**
++   * Implements hook_preprocess_field().
++   */
++  #[Hook('preprocess_field')]
++  public function preprocessField(&$variables) {
++    /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
++    $helper = \Drupal::service('klaro.helper');
++    // Early exit function.
++    if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->getSettings()->get('auto_decorate_preprocess_field') || !$helper->consentManagementRequired()) {
++      return;
++    }
++    // Rewrite src from field type iframe.
++    if ($variables["field_type"] == "iframe") {
++      foreach ($variables['items'] as $i => $item) {
++        $src = $item['content']['#src'];
++        $app = $helper->matchKlaroApp($src);
++        if ($app) {
++          $attributes = $item['content']['#attributes'];
++          $attributes = $helper->rewriteAttributes($attributes, $app->id());
++          $variables['items'][$i]['content']['#attributes'] = $attributes;
++        }
++      }
++    }
++    // Handle different formatters:
++    if (!isset($variables["element"]['#formatter'])) {
++      // No formatter at all, nothing to do.
++      return;
++    }
++    elseif ($variables["element"]['#formatter'] == "oembed") {
++      // Rewrite src from field formatter oembed.
++      foreach ($variables['items'] as $i => $item) {
++        $src = $item['content']['#attributes']['src'];
++        $app = $helper->matchKlaroApp($src);
++        if ($app) {
++          $attributes = $item['content']['#attributes'];
++          $attributes = $helper->rewriteAttributes($attributes, $app->id());
++          $variables['items'][$i]['content']['#attributes'] = $attributes;
++        }
++      }
++      $url = $helper->getThumbnail($variables['element']['#object']);
++      if ($url) {
++        $variables['items'][0]['content']['#attributes']['data-thumbnail'] = $url;
++      }
++    }
++    elseif ($variables["element"]['#formatter'] == "html") {
++      // Rewrite markup from field formatter html.
++      foreach ($variables['items'] as $i => $item) {
++        $html = $item['content']['#children'];
++        $variables['items'][$i]['content']['#children'] = $helper->processHtml($html);
++      }
++    }
++    elseif ($variables["element"]['#formatter'] == "video_embed_field_video") {
++      // Rewrite src from field formatter video_embed_field_video.
++      foreach ($variables['items'] as $i => $item) {
++        $src = $item['content']['children']['#url'];
++        if (empty($src)) {
++          continue;
++        }
++        $app = $helper->matchKlaroApp($src);
++        if ($app) {
++          $variables['items'][$i]['content']['children']['#attributes']['data-src'] = $src;
++          $variables['items'][$i]['content']['children']['#url'] = '';
++          $variables['items'][$i]['content']['children']['#attributes']['data-name'] = $app->id();
++        }
++      }
++      $url = $helper->getThumbnail($variables['element']['#object']);
++      if ($url) {
++        $variables['items'][0]['content']['children']['#attributes']['data-thumbnail'] = $url;
++      }
++    }
++    elseif ($variables["element"]['#formatter'] == "simple_gmap") {
++      // Rewrite markup from field formatter simple_gmap.
++      foreach ($variables['items'] as $i => &$item) {
++        // We have to render the field to process the markup.
++        $output = \Drupal::service('renderer')->render($item['content']);
++        $output = $helper->processHtml($output);
++        $item['content'] = [
++          '#markup' => Markup::create($output),
++        ];
++      }
++    }
++  }
++
++  /**
++   * Implements hook_preprocess_leaflet_map().
++   */
++  #[Hook('preprocess_leaflet_map')]
++  public function preprocessLeafletMap(&$variables) {
++    /** @var \Drupal\klaro\Utility\KlaroHelper $helper */
++    $helper = \Drupal::service('klaro.helper');
++    // Early exit function.
++    if (!$helper->hasAccess() || $helper->onDisabledUri() || !$helper->hasAccess('leaflet')) {
++      return;
++    }
++    $variables['attributes']['data-name'] = 'leaflet';
++    $variables['attributes']['data-id'] = $variables['map_id'];
++    $variables['map_id'] .= '-protected';
++  }
++
++}
+diff --git a/tests/src/Functional/PermissionsTest.php b/tests/src/Functional/PermissionsTest.php
+index aa0617353e41911360d622ff919a6ff31f543228..b60ae2185de55df8dafa6e70eb28933a589eec41 100644
+--- a/tests/src/Functional/PermissionsTest.php
++++ b/tests/src/Functional/PermissionsTest.php
+@@ -2,11 +2,13 @@
+ 
+ namespace Drupal\Tests\klaro\Functional;
+ 
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+  * Test the access permissions for klaro.
+  */
++#[RunTestsInSeparateProcesses]
+ class PermissionsTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Functional/TemplateProcessFinalHtmlTest.php b/tests/src/Functional/TemplateProcessFinalHtmlTest.php
+index 57563afe9a16181fa75dbd49af64e2c998500911..f9c9ccec54aa621d9d42b6bb522924519832c9de 100644
+--- a/tests/src/Functional/TemplateProcessFinalHtmlTest.php
++++ b/tests/src/Functional/TemplateProcessFinalHtmlTest.php
+@@ -2,11 +2,13 @@
+ 
+ namespace Drupal\Tests\klaro\Functional;
+ 
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+  * Check if local klaro logic can replace html tag src attributes.
+  */
++#[RunTestsInSeparateProcesses]
+ class TemplateProcessFinalHtmlTest extends BrowserTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/CallbackFieldsTest.php b/tests/src/Kernel/CallbackFieldsTest.php
+index e752e02575a6f83c298b8ffbf88492c13b8b50de..09cbd4dcbecef4e244dc27a9fbd71ae7505a69d1 100644
+--- a/tests/src/Kernel/CallbackFieldsTest.php
++++ b/tests/src/Kernel/CallbackFieldsTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\klaro\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\klaro\Entity\KlaroApp;
+ use Drupal\user\Entity\Role;
+@@ -11,6 +13,8 @@ use Drupal\user\Entity\Role;
+  *
+  * @group klaro
+  */
++#[Group('klaro')]
++#[RunTestsInSeparateProcesses]
+ class CallbackFieldsTest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/JsAlterTest.php b/tests/src/Kernel/JsAlterTest.php
+index b64cde437a46809e531f53405e23f641d816d5af..b56a0857e65ca93b09931e356aab04a0d314c9cb 100644
+--- a/tests/src/Kernel/JsAlterTest.php
++++ b/tests/src/Kernel/JsAlterTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\klaro\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\Core\Asset\AttachedAssetsInterface;
+ use Drupal\klaro\Entity\KlaroApp;
+@@ -12,6 +14,8 @@ use Drupal\user\Entity\Role;
+  *
+  * @group klaro
+  */
++#[Group('klaro')]
++#[RunTestsInSeparateProcesses]
+ class JsAlterTest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/KlaroHelperGetAppsTest.php b/tests/src/Kernel/KlaroHelperGetAppsTest.php
+index 80497c87e2b55db6e661e6433982f81f73fbb293..f1f142c1220f2219ac581a9b95379ef5728d06e5 100644
+--- a/tests/src/Kernel/KlaroHelperGetAppsTest.php
++++ b/tests/src/Kernel/KlaroHelperGetAppsTest.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\Tests\klaro\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\klaro\Entity\KlaroApp;
+ 
+@@ -12,6 +14,8 @@ use Drupal\klaro\Entity\KlaroApp;
+  *
+  * @see \Drupal\klaro\Utility\KlaroHelper::getApps()
+  */
++#[Group('klaro')]
++#[RunTestsInSeparateProcesses]
+ class KlaroHelperGetAppsTest extends KernelTestBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/KlaroHelperTest.php b/tests/src/Kernel/KlaroHelperTest.php
+index 0e442d7ab29c32d87a54879bcf1d7ff6f8762f8d..ea4e6d166b8438e88c880590d2119f4c33e65377 100644
+--- a/tests/src/Kernel/KlaroHelperTest.php
++++ b/tests/src/Kernel/KlaroHelperTest.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\Tests\klaro\Kernel;
+ 
++use PHPUnit\Framework\Attributes\Group;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\Tests\user\Traits\UserCreationTrait;
+ use Drupal\user\Entity\Role;
+@@ -13,6 +14,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+  * @group klaro
+  */
+ #[RunTestsInSeparateProcesses]
++#[Group('klaro')]
+ class KlaroHelperTest extends KernelTestBase {
+ 
+   use UserCreationTrait;
