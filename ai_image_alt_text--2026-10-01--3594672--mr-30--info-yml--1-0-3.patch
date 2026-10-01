@@ -1,0 +1,26 @@
+diff --git a/ai_image_alt_text.info.yml b/ai_image_alt_text.info.yml
+index 1af190a..ce1996e 100644
+--- a/ai_image_alt_text.info.yml
++++ b/ai_image_alt_text.info.yml
+@@ -2,7 +2,7 @@ name: AI Image Alt Text
+ type: module
+ description: 'Provides the possibility to fill out the alt text of an image field using AI.'
+ package: AI Tools
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ configure: ai_image_alt_text.settings_form
+ 
+ dependencies:
+diff --git a/modules/ai_image_bulk_alt_text/ai_image_bulk_alt_text.info.yml b/modules/ai_image_bulk_alt_text/ai_image_bulk_alt_text.info.yml
+index ea1a10a..041feb3 100644
+--- a/modules/ai_image_bulk_alt_text/ai_image_bulk_alt_text.info.yml
++++ b/modules/ai_image_bulk_alt_text/ai_image_bulk_alt_text.info.yml
+@@ -2,7 +2,7 @@ name: AI Image Bulk Alt Text
+ type: module
+ description: Adds the possibility to bulk change the alt text.
+ package: AI Tools
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ dependencies:
+   - ai_image_alt_text:ai_image_alt_text
+ 
