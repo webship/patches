@@ -52,6 +52,9 @@
             "drupal/ai_image_alt_text": {
                 "Issue #3594672: Automated Drupal 12 compatibility fixes for ai_image_alt_text 1.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_image_alt_text--2026-10-01--3594672--mr-30--info-yml--1-0-3.patch"
             },
+            "drupal/ai_logging": {
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_logging--2026-10-04--d12--info-yml.patch"
+            },
             "drupal/ai_penpot": {
                 "Issue #3617097: Automated Drupal 12 compatibility fixes for ai_penpot 1.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_penpot--2026-10-01--3617097--mr-5.patch"
             },
@@ -77,6 +80,15 @@
             "drupal/antibot": {
                 "Issue #3595688: Automated Drupal 12 compatibility fixes for antibot 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/antibot--2026-10-01--3595688--info-yml.patch"
             },
+            "drupal/autocomplete_deluxe": {
+                "Issue #3591908: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/autocomplete_deluxe--2026-10-04--3591908--info-yml.patch"
+            },
+            "drupal/automatic_updates": {
+                "Issue #3595712: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--3595712--info-yml.patch"
+            },
+            "drupal/better_exposed_filters": {
+                "Issue #3595808: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/better_exposed_filters--2026-10-04--3595808--info-yml.patch"
+            },
             "drupal/book": {
                 "Issue #3595865: Automated Drupal 12 compatibility fixes for book 3.0.x-dev (constraints and schema)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/book--2026-10-04--3595865--constraints-schema.patch"
             },
@@ -84,6 +96,9 @@
                 "Issue #3596096: Automated Drupal 12 compatibility fixes for captcha 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/captcha--2026-10-01--3596096--mr-137--info-yml.patch",
                 "Issue #3576948: Fix Drupal 11 and PHPStan compatibility: replace deprecated classes and unsafe new static() usage": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/captcha--2026-10-01--3576948--mr-132.patch",
                 "Issue #3596096: Automated Drupal 12 compatibility fixes for captcha 2.x-dev (RequirementSeverity)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/captcha--2026-10-01--3596096--mr-137--requirements.patch"
+            },
+            "drupal/coffee": {
+                "Issue #3594874: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/coffee--2026-10-04--3594874--info-yml.patch"
             },
             "drupal/config_filter": {
                 "Issue #3606221: Automated Drupal 12 compatibility fixes for config_filter 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/config_filter--2026-10-01--3606221--mr-15.patch"
@@ -100,6 +115,9 @@
             },
             "drupal/config_split": {
                 "Issue #3596578: Automated Drupal 12 compatibility fixes for config_split 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/config_split--2026-10-01--3596578--info-yml.patch"
+            },
+            "drupal/config_update": {
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/config_update--2026-10-04--d12--info-yml.patch"
             },
             "drupal/consumers": {
                 "Issue #3596612: Automated Drupal 12 compatibility fixes for consumers 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/consumers--2026-10-01--3596612--mr-31.patch",
@@ -118,8 +136,14 @@
             "drupal/display_builder": {
                 "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch"
             },
+            "drupal/drupical": {
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/drupical--2026-10-04--d12--info-yml.patch"
+            },
             "drupal/easy_breadcrumb": {
                 "Issue #3597449: Automated Drupal 12 compatibility fixes for easy_breadcrumb 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/easy_breadcrumb--2026-10-01--3597449--info-yml.patch"
+            },
+            "drupal/easy_encryption": {
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/easy_encryption--2026-10-04--d12--info-yml.patch"
             },
             "drupal/editor_advanced_link": {
                 "Issue #3597543: Automated Drupal 12 compatibility fixes for editor_advanced_link 2.3.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/editor_advanced_link--2026-10-01--3597543--mr-56.patch"
@@ -146,6 +170,12 @@
             "drupal/field_validation": {
                 "Issue #3598270: Automated Drupal 12 compatibility fixes for field_validation 3.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/field_validation--2026-10-01--3598270--mr-22.patch",
                 "Issue #3598270: Automated Drupal 12 compatibility fixes for field_validation 3.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/field_validation--2026-10-01--3598270--info-yml.patch"
+            },
+            "drupal/flood_control": {
+                "Issue #3598402: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/flood_control--2026-10-04--3598402--info-yml.patch"
+            },
+            "drupal/focal_point": {
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/focal_point--2026-10-04--d12--info-yml.patch"
             },
             "drupal/friendlycaptcha": {
                 "Issue #3598483: Automated Drupal 12 compatibility fixes for friendlycaptcha 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/friendlycaptcha--2026-10-01--3598483--info-yml.patch",
@@ -189,6 +219,9 @@
                 "Issue #3599465: Automated Drupal 12 compatibility fixes for klaro 3.1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/klaro--2026-10-01--3599465--mr-136.patch",
                 "Issue #3599465: Automated Drupal 12 compatibility fixes for klaro 3.1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/klaro--2026-10-01--3599465--info-yml.patch"
             },
+            "drupal/login_emailusername": {
+                "Issue #3599826: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/login_emailusername--2026-10-04--3599826--info-yml.patch"
+            },
             "drupal/manage_display": {
                 "Issue #3599928: Automated Drupal 12 compatibility fixes for manage_display 3.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/manage_display--2026-10-01--3599928--mr-29.patch"
             },
@@ -224,6 +257,9 @@
             "drupal/pathauto": {
                 "Issue #3601975: Drupal 12 compatibility": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/pathauto--2026-10-01--3601975--b97aadf4.patch"
             },
+            "drupal/project_browser": {
+                "Issue #3602187: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/project_browser--2026-10-04--3602187--info-yml.patch"
+            },
             "drupal/recaptcha_v3": {
                 "Issue #3622964: recaptcha_v3.settings is installed without a langcode": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/recaptcha_v3--2026-09-15--3622964--mr-47.patch",
                 "Issue #3610342: Automated Drupal 12 compatibility fixes for recaptcha_v3 2.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/recaptcha_v3--2026-10-01--3610342--mr-45.patch",
@@ -244,8 +280,14 @@
                 "Issue #3602680: Automated Drupal 12 compatibility fixes for schema_metatag 3.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schema_metatag--2026-10-01--3602680--mr-122.patch",
                 "Issue #3602680: Automated Drupal 12 compatibility fixes for schema_metatag 3.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schema_metatag--2026-10-01--3602680--info-yml.patch"
             },
+            "drupal/schemata": {
+                "Issue #3602703: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schemata--2026-10-04--3602703--info-yml.patch"
+            },
             "drupal/seckit": {
                 "Issue #3602835: Automated Drupal 12 compatibility fixes for seckit 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/seckit--2026-10-01--3602835--mr-62.patch"
+            },
+            "drupal/security_review": {
+                "Issue #3602857: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/security_review--2026-10-04--3602857--info-yml.patch"
             },
             "drupal/shield": {
                 "Issue #3602958: Automated Drupal 12 compatibility fixes for shield 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/shield--2026-10-01--3602958--mr-31.patch",
@@ -257,12 +299,18 @@
             "drupal/smart_trim": {
                 "Issue #3594018: Token filter causing next-major to fail (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/smart_trim--2026-10-01--3594018--info-yml.patch"
             },
+            "drupal/tagify": {
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/tagify--2026-10-04--d12--info-yml.patch"
+            },
             "drupal/token": {
                 "Issue #3604374: Automated Drupal 12 compatibility fixes for token 1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/token--2026-10-01--3604374--info-yml.patch",
                 "Issue #3604374: Automated Drupal 12 compatibility fixes for token 1.x-dev (RequirementSeverity)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/token--2026-10-01--3604374--mr-130--requirements-1-17.patch"
             },
             "drupal/token_filter": {
                 "Issue #3593924: Add support for Drupal 12 (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/token_filter--2026-10-01--3593924--info-yml.patch"
+            },
+            "drupal/tracker": {
+                "Issue #3603829: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/tracker--2026-10-04--3603829--info-yml.patch"
             },
             "drupal/ui_patterns": {
                 "Issue #3623504: Recipe apply fails with a TypeError when Canvas is installed": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-09-16--3623504--mr-566.patch",
@@ -280,7 +328,8 @@
                 "Issue #3604696: Automated Drupal 12 compatibility fixes for views_bulk_edit 3.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/views_bulk_edit--2026-10-01--3604696--info-yml.patch"
             },
             "drupal/views_bulk_operations": {
-                "Issue #3617756: missing return type declaration for getSubscribedEvents()": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/views_bulk_operations--2026-10-01--3617756--mr-168.patch"
+                "Issue #3617756: missing return type declaration for getSubscribedEvents()": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/views_bulk_operations--2026-10-01--3617756--mr-168.patch",
+                "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/views_bulk_operations--2026-10-04--d12--info-yml.patch"
             },
             "drupal/webform": {
                 "Issue #3537358: Support PHP attributes for plugin definitions and convert Webform's own plugins": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3537358--mr-659.patch",
