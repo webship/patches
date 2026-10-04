@@ -85,6 +85,9 @@
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_translate--2026-10-04--d12--signatures.patch",
                 "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_translate--2026-10-04--d12--config-schema.patch"
             },
+            "drupal/ai_validations": {
+                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_validations--2026-10-04--d12--requirement-severity.patch"
+            },
             "drupal/antibot": {
                 "Issue #3595688: Automated Drupal 12 compatibility fixes for antibot 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/antibot--2026-10-01--3595688--info-yml.patch"
             },
@@ -93,7 +96,8 @@
             },
             "drupal/automatic_updates": {
                 "Issue #3595712: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--3595712--info-yml.patch",
-                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--d12--config-schema.patch"
+                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--d12--config-schema.patch",
+                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/better_exposed_filters": {
                 "Issue #3595808: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/better_exposed_filters--2026-10-04--3595808--info-yml.patch",
@@ -123,6 +127,9 @@
             },
             "drupal/config_import_single": {
                 "Issue #3596539: Automated Drupal 12 compatibility fixes for config_import_single 2.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/config_import_single--2026-10-01--3596539--mr-11.patch"
+            },
+            "drupal/config_inspector": {
+                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/config_inspector--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/config_rewrite": {
                 "Issue #3596572: Automated Drupal 12 compatibility fixes for config_rewrite 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/config_rewrite--2026-10-01--3596572--mr-13.patch"
@@ -155,10 +162,12 @@
             },
             "drupal/devel": {
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--signatures.patch",
-                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--plugin-attribute.patch"
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--plugin-attribute.patch",
+                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/display_builder": {
-                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch"
+                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch",
+                "Drupal 12: do not read the protected View::$display (display_builder_views)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--views-display.patch"
             },
             "drupal/display_builder_ai": {
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder_ai--2026-10-04--d12--signatures.patch"
@@ -282,7 +291,8 @@
                 "Issue #3600291: Automated Drupal 12 compatibility fixes for metatag 2.2.x-dev (RequirementSeverity)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/metatag--2026-10-01--3600291--mr-252--requirements.patch",
                 "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/metatag--2026-10-04--d12--plugin-attribute.patch",
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/metatag--2026-10-04--d12--signatures.patch",
-                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/metatag--2026-10-04--d12--config-schema.patch"
+                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/metatag--2026-10-04--d12--config-schema.patch",
+                "PHP 8.5: remove the no-op setAccessible() call": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/metatag--2026-10-04--d12--set-accessible.patch"
             },
             "drupal/openapi": {
                 "Issue #3601701: Automated Drupal 12 compatibility fixes for openapi 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi--2026-10-01--3601701--mr-25.patch",
@@ -338,7 +348,8 @@
                 "Issue #3602835: Automated Drupal 12 compatibility fixes for seckit 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/seckit--2026-10-01--3602835--mr-62.patch"
             },
             "drupal/security_review": {
-                "Issue #3602857: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/security_review--2026-10-04--3602857--info-yml.patch"
+                "Issue #3602857: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/security_review--2026-10-04--3602857--info-yml.patch",
+                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/security_review--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/shield": {
                 "Issue #3602958: Automated Drupal 12 compatibility fixes for shield 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/shield--2026-10-01--3602958--mr-31.patch",
@@ -398,7 +409,7 @@
                 "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (massageFormValues return type)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--massage-form-values.patch"
             },
             "drupal/xmlsitemap": {
-                "Issue #3607528: Automated Drupal 12 compatibility fixes for xmlsitemap 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-01--3607528--mr-82.patch",
+                "Issue #3607528: Automated Drupal 12 compatibility fixes for xmlsitemap 2.x-dev (with the PHP 8.5 fix)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-04--3607528--mr-82-php85.patch",
                 "Issue #3607528: Automated Drupal 12 compatibility fixes for xmlsitemap 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-01--3607528--info-yml.patch",
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-04--d12--signatures.patch"
             },
