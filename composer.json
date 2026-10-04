@@ -112,6 +112,9 @@
                 "Issue #3596967: Automated Drupal 12 compatibility fixes for dashboards 2.1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-01--3596967--mr-41.patch",
                 "Issue #3596967: Automated Drupal 12 compatibility fixes for dashboards 2.1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-01--3596967--info-yml.patch"
             },
+            "drupal/display_builder": {
+                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch"
+            },
             "drupal/easy_breadcrumb": {
                 "Issue #3597449: Automated Drupal 12 compatibility fixes for easy_breadcrumb 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/easy_breadcrumb--2026-10-01--3597449--info-yml.patch"
             },
@@ -173,7 +176,8 @@
             },
             "drupal/key": {
                 "Issue #3599449: Automated Drupal 12 compatibility fixes for key 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/key--2026-10-01--3599449--info-yml.patch",
-                "Issue #3484086: Add attributes to plugins in addition to annotations": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/key--2026-10-01--3484086--mr-34.patch"
+                "Issue #3484086: Add attributes to plugins in addition to annotations": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/key--2026-10-01--3484086--mr-34.patch",
+                "Issue #3627461: Missing CacheableMetadata parameter in KeyListBuilder::getOperations()": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/key--2026-10-04--3627461--mr-75.patch"
             },
             "drupal/klaro": {
                 "Issue #3599465: Automated Drupal 12 compatibility fixes for klaro 3.1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/klaro--2026-10-01--3599465--mr-136.patch",
