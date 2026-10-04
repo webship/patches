@@ -1,0 +1,26 @@
+diff --git a/schemata.info.yml b/schemata.info.yml
+index befb461..bf9f2eb 100644
+--- a/schemata.info.yml
++++ b/schemata.info.yml
+@@ -1,7 +1,7 @@
+ name: Schemata
+ type: module
+ description: Provide schema definitions of Drupal entities for type validation, code generation, and documentation.
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^9.5 || ^10 || ^11 || ^12
+ package: Web services
+ dependencies:
+   - drupal:serialization
+diff --git a/schemata_json_schema/schemata_json_schema.info.yml b/schemata_json_schema/schemata_json_schema.info.yml
+index 4807fb6..eddc008 100644
+--- a/schemata_json_schema/schemata_json_schema.info.yml
++++ b/schemata_json_schema/schemata_json_schema.info.yml
+@@ -1,7 +1,7 @@
+ name: Schemata in JSON Schema
+ type: module
+ description: Provides a data models for entity types and bundles in JSON schema format.
+-core_version_requirement: ^9.5 || ^10 || ^11
++core_version_requirement: ^9.5 || ^10 || ^11 || ^12
+ package: Web services
+ dependencies:
+   - schemata:schemata

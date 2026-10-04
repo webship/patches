@@ -1,0 +1,12 @@
+diff --git a/coffee.info.yml b/coffee.info.yml
+index 863b298..665806a 100644
+--- a/coffee.info.yml
++++ b/coffee.info.yml
+@@ -1,6 +1,6 @@
+ name: Coffee
+ description: Provides an Alfred like search box to navigate within your site.
+-core_version_requirement: ^10.2 || ^11.0
++core_version_requirement: ^10.2 || ^11.0 || ^12
+ type: module
+ configure: coffee.configuration
+ 

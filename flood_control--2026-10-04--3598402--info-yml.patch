@@ -1,0 +1,13 @@
+diff --git a/flood_control.info.yml b/flood_control.info.yml
+index 35c9e3a..8fc1544 100644
+--- a/flood_control.info.yml
++++ b/flood_control.info.yml
+@@ -3,7 +3,7 @@ description: "Allows configuring hidden flood control options and unblocking IP
+ configure: flood_control.settings
+ package: 'Administration'
+ type: module
+-core_version_requirement: ^10.2 || ^11
++core_version_requirement: ^10.2 || ^11 || ^12
+ 
+ # Information added by Drupal.org packaging script on 2026-02-20
+ version: '3.0.1'

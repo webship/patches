@@ -1,0 +1,13 @@
+diff --git a/focal_point.info.yml b/focal_point.info.yml
+index 5e6a72f..d3b8374 100644
+--- a/focal_point.info.yml
++++ b/focal_point.info.yml
+@@ -1,7 +1,7 @@
+ name: Focal Point
+ type: module
+ description: Allows users to specify the focal point of an image for use during cropping.
+-core_version_requirement: ^9.3 || ^10 || ^11
++core_version_requirement: ^9.3 || ^10 || ^11 || ^12
+ package: Media
+ test_dependencies:
+   - crop:crop

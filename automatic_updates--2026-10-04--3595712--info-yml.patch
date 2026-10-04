@@ -1,0 +1,25 @@
+diff --git a/automatic_updates.info.yml b/automatic_updates.info.yml
+index 7266d0e..e815db9 100644
+--- a/automatic_updates.info.yml
++++ b/automatic_updates.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Automatic Updates'
+ type: module
+ description: 'Automatically updates Drupal core.'
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ configure: update.settings
+ dependencies:
+   - drupal:package_manager
+diff --git a/automatic_updates_extensions/automatic_updates_extensions.info.yml b/automatic_updates_extensions/automatic_updates_extensions.info.yml
+index 29f27d7..cbe84b3 100644
+--- a/automatic_updates_extensions/automatic_updates_extensions.info.yml
++++ b/automatic_updates_extensions/automatic_updates_extensions.info.yml
+@@ -1,6 +1,6 @@
+ name: 'Automatic Updates Extensions'
+ type: module
+ description: 'Allows updates to themes and modules. This functionality has been moved into the main Automatic Updates module and is no longer needed.'
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ lifecycle: obsolete
+ lifecycle_link: 'https://www.drupal.org/project/automatic_updates/issues/3567044'

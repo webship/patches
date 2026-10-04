@@ -1,0 +1,25 @@
+diff --git a/easy_encryption.info.yml b/easy_encryption.info.yml
+index 7308ca3..010b822 100644
+--- a/easy_encryption.info.yml
++++ b/easy_encryption.info.yml
+@@ -1,6 +1,6 @@
+ name: Easy Encryption
+ type: module
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ description: Sets up at-rest encryption for sensitive credentials, no configuration needed.
+ dependencies:
+   - key:key
+diff --git a/modules/easy_encryption_admin/easy_encryption_admin.info.yml b/modules/easy_encryption_admin/easy_encryption_admin.info.yml
+index 530cbfe..f7cafdf 100644
+--- a/modules/easy_encryption_admin/easy_encryption_admin.info.yml
++++ b/modules/easy_encryption_admin/easy_encryption_admin.info.yml
+@@ -2,7 +2,7 @@ name: 'Easy Encryption Admin'
+ type: module
+ description: 'Admin UI for managing encryption with Easy Encryption.'
+ package: Security
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ dependencies:
+   - easy_encryption:easy_encryption
+ configure: easy_encryption_admin.keys

@@ -1,0 +1,13 @@
+diff --git a/security_review.info.yml b/security_review.info.yml
+index f3268de..b5602f3 100644
+--- a/security_review.info.yml
++++ b/security_review.info.yml
+@@ -2,7 +2,7 @@ name: 'Security Review'
+ type: module
+ description: 'Site security and configuration review module.'
+ package: Security
+-core_version_requirement: ^10.3 || ^11
++core_version_requirement: ^10.3 || ^11 || ^12
+ configure: security_review.settings
+ 
+ # Information added by Drupal.org packaging script on 2026-01-23
