@@ -1,0 +1,26 @@
+diff --git a/src/Controller/KeyListBuilder.php b/src/Controller/KeyListBuilder.php
+index b96a6043a2c186a646727fbc1c8d35e6eb7cd2ed..b57505e1609c6a48af4d738bdb5fe023c99d2473 100644
+--- a/src/Controller/KeyListBuilder.php
++++ b/src/Controller/KeyListBuilder.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\key\Controller;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+@@ -94,11 +95,11 @@ class KeyListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getOperations(EntityInterface $entity) {
++  public function getOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+     /** @var \Drupal\key\Entity\Key $key */
+     $key = $entity;
+ 
+-    $operations = parent::getOperations($key);
++    $operations = parent::getOperations($key, $cacheability);
+ 
+     $key_collection = Url::fromRoute('entity.key.collection')->toString();
+     $operations['add_override'] = [
