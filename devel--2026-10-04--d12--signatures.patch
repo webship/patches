@@ -1,0 +1,26 @@
+diff --git a/src/Drush/Commands/DevelEventCommand.php b/src/Drush/Commands/DevelEventCommand.php
+index e5966a3..12ea357 100644
+--- a/src/Drush/Commands/DevelEventCommand.php
++++ b/src/Drush/Commands/DevelEventCommand.php
+@@ -44,7 +44,7 @@ class DevelEventCommand extends Command {
+       ->addUsage('devel-event kernel.terminate');
+   }
+ 
+-  protected function interact(InputInterface $input, OutputInterface $output) {
++  protected function interact(InputInterface $input, OutputInterface $output): void {
+     $event = $input->getArgument('event');
+     $io = new DrushStyle($input, $output);
+     if (!$event) {
+diff --git a/src/Drush/Commands/DevelHookCommand.php b/src/Drush/Commands/DevelHookCommand.php
+index 8b9b6bc..dc484a2 100644
+--- a/src/Drush/Commands/DevelHookCommand.php
++++ b/src/Drush/Commands/DevelHookCommand.php
+@@ -46,7 +46,7 @@ class DevelHookCommand extends Command {
+       ->addUsage('devel:hook cron');
+   }
+ 
+-  protected function interact(InputInterface $input, OutputInterface $output) {
++  protected function interact(InputInterface $input, OutputInterface $output): void {
+     if (!$hook = $input->getArgument('hook')) {
+       throw new \InvalidArgumentException(dt('No hook specified.'));
+     }

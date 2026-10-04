@@ -1,0 +1,21 @@
+diff --git a/src/CropTypeListBuilder.php b/src/CropTypeListBuilder.php
+index c860815..d1cb904 100644
+--- a/src/CropTypeListBuilder.php
++++ b/src/CropTypeListBuilder.php
+@@ -137,14 +137,14 @@ class CropTypeListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity): array {
++  public function getDefaultOperations(EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL): array {
+     $flush = [
+       'title' => $this->t('Flush'),
+       'weight' => 200,
+       'url' => $entity->toUrl('flush-form'),
+     ];
+ 
+-    return parent::getDefaultOperations($entity) + [
++    return parent::getDefaultOperations($entity, $cacheability) + [
+       'flush' => $flush,
+     ];
+ 

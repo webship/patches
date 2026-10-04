@@ -1,0 +1,18 @@
+diff --git a/config/schema/better_exposed_filters.filter.schema.yml b/config/schema/better_exposed_filters.filter.schema.yml
+index 70c1935..3a428c1 100644
+--- a/config/schema/better_exposed_filters.filter.schema.yml
++++ b/config/schema/better_exposed_filters.filter.schema.yml
+@@ -164,9 +164,10 @@ better_exposed_filters.filter.bef_sliders:
+       label: 'Placement location of slider'
+       constraints:
+         Choice:
+-          - start
+-          - middle
+-          - end
++          choices:
++            - start
++            - middle
++            - end
+ 
+ better_exposed_filters.filter.bef_datepickers:
+   label: 'jQuery UI Date Picker'

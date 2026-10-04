@@ -1,0 +1,93 @@
+diff --git a/src/Attribute/MetatagGroup.php b/src/Attribute/MetatagGroup.php
+new file mode 100644
+index 0000000..3920a15
+--- /dev/null
++++ b/src/Attribute/MetatagGroup.php
+@@ -0,0 +1,24 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\metatag\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a MetatagGroup attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class MetatagGroup extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = NULL,
++    public readonly mixed $weight = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Attribute/MetatagTag.php b/src/Attribute/MetatagTag.php
+new file mode 100644
+index 0000000..3acdf36
+--- /dev/null
++++ b/src/Attribute/MetatagTag.php
+@@ -0,0 +1,31 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\metatag\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a MetatagTag attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class MetatagTag extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = NULL,
++    public readonly mixed $name = NULL,
++    public readonly mixed $group = NULL,
++    public readonly mixed $weight = NULL,
++    public readonly mixed $type = NULL,
++    public readonly mixed $secure = NULL,
++    public readonly mixed $multiple = NULL,
++    public readonly mixed $long = NULL,
++    public readonly mixed $absoluteUrl = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/MetatagGroupPluginManager.php b/src/MetatagGroupPluginManager.php
+index b019ca9..0d316c5 100644
+--- a/src/MetatagGroupPluginManager.php
++++ b/src/MetatagGroupPluginManager.php
+@@ -20,7 +20,7 @@ class MetatagGroupPluginManager extends DefaultPluginManager {
+     // The name of the annotation class that contains the plugin definition.
+     $plugin_definition_annotation_name = 'Drupal\metatag\Annotation\MetatagGroup';
+ 
+-    parent::__construct($subdir, $namespaces, $module_handler, NULL, $plugin_definition_annotation_name);
++    parent::__construct($subdir, $namespaces, $module_handler, NULL, 'Drupal\metatag\Attribute\MetatagGroup', $plugin_definition_annotation_name);
+ 
+     $this->alterInfo('metatag_groups');
+ 
+diff --git a/src/MetatagTagPluginManager.php b/src/MetatagTagPluginManager.php
+index 06562fe..e93f1ad 100644
+--- a/src/MetatagTagPluginManager.php
++++ b/src/MetatagTagPluginManager.php
+@@ -20,7 +20,7 @@ class MetatagTagPluginManager extends DefaultPluginManager {
+     // The name of the annotation class that contains the plugin definition.
+     $plugin_definition_annotation_name = 'Drupal\metatag\Annotation\MetatagTag';
+ 
+-    parent::__construct($subdir, $namespaces, $module_handler, NULL, $plugin_definition_annotation_name);
++    parent::__construct($subdir, $namespaces, $module_handler, NULL, 'Drupal\metatag\Attribute\MetatagTag', $plugin_definition_annotation_name);
+ 
+     $this->alterInfo('metatag_tags');
+ 

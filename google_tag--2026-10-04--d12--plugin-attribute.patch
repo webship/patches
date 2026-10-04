@@ -1,0 +1,45 @@
+diff --git a/src/Attribute/GoogleTagEvent.php b/src/Attribute/GoogleTagEvent.php
+new file mode 100644
+index 0000000..7c88ca6
+--- /dev/null
++++ b/src/Attribute/GoogleTagEvent.php
+@@ -0,0 +1,26 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\google_tag\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a GoogleTagEvent attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class GoogleTagEvent extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $event_name = NULL,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = NULL,
++    public readonly mixed $dependency = NULL,
++    public readonly mixed $context_definitions = [],
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/GoogleTagEventManager.php b/src/GoogleTagEventManager.php
+index 860e2a9..320c492 100644
+--- a/src/GoogleTagEventManager.php
++++ b/src/GoogleTagEventManager.php
+@@ -44,7 +44,7 @@ final class GoogleTagEventManager extends DefaultPluginManager {
+       $namespaces,
+       $module_handler,
+       GoogleTagEventInterface::class,
+-      GoogleTagEvent::class,
++      'Drupal\google_tag\Attribute\GoogleTagEvent', GoogleTagEvent::class,
+     );
+     $this->alterInfo('google_tag_event_info');
+     $this->setCacheBackend($cache_backend, 'google_tag_event_plugins');

@@ -1,0 +1,14 @@
+diff --git a/config/schema/google_tag.schema.yml b/config/schema/google_tag.schema.yml
+index d7cfccb..157c58a 100644
+--- a/config/schema/google_tag.schema.yml
++++ b/config/schema/google_tag.schema.yml
+@@ -45,7 +45,8 @@ google_tag.container.*:
+             label: 'Type'
+             constraints:
+               NotNull: []
+-              AllowedValues: ['dimension', 'metric']
++              AllowedValues:
++                choices: ['dimension', 'metric']
+           name:
+             type: string
+             label: 'Name'

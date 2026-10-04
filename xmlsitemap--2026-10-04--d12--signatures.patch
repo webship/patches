@@ -1,0 +1,16 @@
+diff --git a/src/XmlSitemapListBuilder.php b/src/XmlSitemapListBuilder.php
+index 0abbc12..f6dc393 100644
+--- a/src/XmlSitemapListBuilder.php
++++ b/src/XmlSitemapListBuilder.php
+@@ -111,9 +111,9 @@ class XmlSitemapListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getOperations(EntityInterface $entity) {
++  public function getOperations(EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL) {
+     /** @var \Drupal\xmlsitemap\XmlSitemapInterface $entity */
+-    $operations = parent::getOperations($entity);
++    $operations = parent::getOperations($entity, $cacheability);
+ 
+     if (isset($operations['translate'])) {
+       unset($operations['translate']);

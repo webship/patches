@@ -1,0 +1,28 @@
+diff --git a/metatag.module b/metatag.module
+index 58776d6..447a1ba 100644
+--- a/metatag.module
++++ b/metatag.module
+@@ -586,7 +586,7 @@ function metatag_entity_base_field_info(EntityTypeInterface $entity_type) {
+   $base_table = $entity_type->getBaseTable();
+   $canonical_template_exists = $entity_type->hasLinkTemplate('canonical');
+   // Certain classes are just not supported.
+-  $original_class = $entity_type->getOriginalClass();
++  $original_class = $entity_type->getClass();
+   $classes_to_skip = [
+     'Drupal\comment\Entity\Comment',
+   ];
+diff --git a/src/MetatagDefaultsListBuilder.php b/src/MetatagDefaultsListBuilder.php
+index 223672c..c22e54c 100644
+--- a/src/MetatagDefaultsListBuilder.php
++++ b/src/MetatagDefaultsListBuilder.php
+@@ -87,8 +87,8 @@ class MetatagDefaultsListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getOperations(EntityInterface $entity) {
+-    $operations = parent::getOperations($entity);
++  public function getOperations(EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL) {
++    $operations = parent::getOperations($entity, $cacheability);
+ 
+     // Global and entity defaults can be reverted but not deleted.
+     if (in_array($entity->id(), MetatagManager::protectedDefaults())) {

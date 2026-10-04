@@ -1,0 +1,42 @@
+diff --git a/src/Attribute/Dashboard.php b/src/Attribute/Dashboard.php
+new file mode 100644
+index 0000000..129aebd
+--- /dev/null
++++ b/src/Attribute/Dashboard.php
+@@ -0,0 +1,23 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\dashboards\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a Dashboard attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class Dashboard extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $category = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/DashboardManager.php b/src/Plugin/DashboardManager.php
+index ead3e3b..aa33f45 100644
+--- a/src/Plugin/DashboardManager.php
++++ b/src/Plugin/DashboardManager.php
+@@ -23,7 +23,7 @@ class DashboardManager extends DefaultPluginManager {
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/Dashboard', $namespaces, $module_handler, 'Drupal\dashboards\Plugin\DashboardInterface', 'Drupal\dashboards\Annotation\Dashboard');
++    parent::__construct('Plugin/Dashboard', $namespaces, $module_handler, 'Drupal\dashboards\Plugin\DashboardInterface', 'Drupal\dashboards\Attribute\Dashboard', 'Drupal\dashboards\Annotation\Dashboard');
+ 
+     $this->alterInfo('dashboards_dashboard_info');
+     $this->setCacheBackend($cache_backend, 'dashboards_dashboard_plugins');

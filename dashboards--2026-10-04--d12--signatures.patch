@@ -1,0 +1,22 @@
+diff --git a/src/Entity/DashboardListBuilder.php b/src/Entity/DashboardListBuilder.php
+index f6ddfa1..daf7fe1 100644
+--- a/src/Entity/DashboardListBuilder.php
++++ b/src/Entity/DashboardListBuilder.php
+@@ -24,7 +24,7 @@ class DashboardListBuilder extends DraggableListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getOperations(EntityInterface $entity) {
++  public function getOperations(EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL) {
+     $operations = [
+       'view' => [
+         'title' => new TranslatableMarkup('View'),
+@@ -44,7 +44,7 @@ class DashboardListBuilder extends DraggableListBuilder {
+           ]
+         ),
+       ],
+-    ] + parent::getOperations($entity);
++    ] + parent::getOperations($entity, $cacheability);
+ 
+     return $operations;
+   }

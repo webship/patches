@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/Validation/Constraint/DuplicateFieldConstraintValidator.php b/src/Plugin/Validation/Constraint/DuplicateFieldConstraintValidator.php
+index 5ed7627..589fedb 100644
+--- a/src/Plugin/Validation/Constraint/DuplicateFieldConstraintValidator.php
++++ b/src/Plugin/Validation/Constraint/DuplicateFieldConstraintValidator.php
+@@ -28,7 +28,7 @@ class DuplicateFieldConstraintValidator extends ConstraintValidator {
+   /**
+    * {@inheritdoc}
+    */
+-  public function validate($entity_data, Constraint $constraint) {
++  public function validate(mixed $entity_data, Constraint $constraint): void {
+     $resourceFields = $entity_data['resourceFields'];
+     $overrides = [];
+ 

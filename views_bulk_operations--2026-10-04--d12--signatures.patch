@@ -1,0 +1,39 @@
+diff --git a/modules/views_bulk_operations_example/src/Plugin/Action/ViewsBulkOperationExampleAction.php b/modules/views_bulk_operations_example/src/Plugin/Action/ViewsBulkOperationExampleAction.php
+index 1fa08e3..e2becc3 100644
+--- a/modules/views_bulk_operations_example/src/Plugin/Action/ViewsBulkOperationExampleAction.php
++++ b/modules/views_bulk_operations_example/src/Plugin/Action/ViewsBulkOperationExampleAction.php
+@@ -34,7 +34,7 @@ final class ViewsBulkOperationExampleAction extends ViewsBulkOperationsActionBas
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute(?EntityInterface $entity = NULL): TranslatableMarkup {
++  public function execute(?object $object = NULL): TranslatableMarkup {
+     /*
+      * All config resides in $this->configuration.
+      * Passed view rows will be available in $this->context.
+diff --git a/src/Plugin/Action/CancelUserAction.php b/src/Plugin/Action/CancelUserAction.php
+index 0d1beb2..c53ea9e 100644
+--- a/src/Plugin/Action/CancelUserAction.php
++++ b/src/Plugin/Action/CancelUserAction.php
+@@ -74,7 +74,7 @@ class CancelUserAction extends ViewsBulkOperationsActionBase implements Containe
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute(?UserInterface $account = NULL): void {
++  public function execute(?object $object = NULL): void {
+     if ($account->id() === $this->currentUser->id() && (\count($this->context['list']) === 0 || \count($this->context['list']) > 1)) {
+       $this->messenger()->addError($this->t('The current user account cannot be canceled in a batch operation. Select your account only or cancel it from your account page.'));
+     }
+diff --git a/src/Plugin/Action/EntityDeleteAction.php b/src/Plugin/Action/EntityDeleteAction.php
+index df04d6c..06f3b5f 100644
+--- a/src/Plugin/Action/EntityDeleteAction.php
++++ b/src/Plugin/Action/EntityDeleteAction.php
+@@ -67,7 +67,7 @@ class EntityDeleteAction extends ViewsBulkOperationsActionBase implements Contai
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute(?EntityInterface $entity = NULL): TranslatableMarkup {
++  public function execute(?object $object = NULL): TranslatableMarkup {
+     if ($entity instanceof TranslatableInterface && !$entity->isDefaultTranslation()) {
+       try {
+         $untranslated_entity = $entity->getUntranslated();

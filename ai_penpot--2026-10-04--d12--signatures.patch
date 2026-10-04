@@ -1,0 +1,26 @@
+diff --git a/src/Plugin/AiFunctionCall/PenpotDesignContext.php b/src/Plugin/AiFunctionCall/PenpotDesignContext.php
+index 0348e89..df860b0 100644
+--- a/src/Plugin/AiFunctionCall/PenpotDesignContext.php
++++ b/src/Plugin/AiFunctionCall/PenpotDesignContext.php
+@@ -87,7 +87,7 @@ class PenpotDesignContext extends FunctionCallBase implements ExecutableFunction
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     if (
+       !$this->currentUser->hasPermission('use ai penpot design context')
+       && !$this->currentUser->hasPermission('administer ai agents')
+diff --git a/src/Plugin/AiFunctionCall/PenpotListDesignPages.php b/src/Plugin/AiFunctionCall/PenpotListDesignPages.php
+index 1785685..2f6596b 100644
+--- a/src/Plugin/AiFunctionCall/PenpotListDesignPages.php
++++ b/src/Plugin/AiFunctionCall/PenpotListDesignPages.php
+@@ -80,7 +80,7 @@ class PenpotListDesignPages extends FunctionCallBase implements ExecutableFuncti
+   /**
+    * {@inheritdoc}
+    */
+-  public function execute() {
++  public function execute(?object $object = NULL) {
+     if (
+       !$this->currentUser->hasPermission('use ai penpot design context')
+       && !$this->currentUser->hasPermission('administer ai agents')
