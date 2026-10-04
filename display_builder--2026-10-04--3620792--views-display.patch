@@ -1,0 +1,14 @@
+diff --git a/modules/display_builder_views/src/Plugin/display_builder/Buildable/ViewDisplay.php b/modules/display_builder_views/src/Plugin/display_builder/Buildable/ViewDisplay.php
+index a9c4c15..e086f8c 100644
+--- a/modules/display_builder_views/src/Plugin/display_builder/Buildable/ViewDisplay.php
++++ b/modules/display_builder_views/src/Plugin/display_builder/Buildable/ViewDisplay.php
+@@ -229,8 +229,7 @@ final class ViewDisplay extends ConfigBuildablePluginBase {
+     $instances = [];
+ 
+     foreach ($storage->loadMultiple() as $view) {
+-      // @phpstan-ignore-next-line
+-      foreach ($view->display as $display_id => $display) {
++      foreach ($view->get('display') as $display_id => $display) {
+         $profile = $display['display_options']['display_extenders']['display_builder'][DisplayBuildableInterface::PROFILE_PROPERTY] ?? NULL;
+ 
+         if (!$profile) {

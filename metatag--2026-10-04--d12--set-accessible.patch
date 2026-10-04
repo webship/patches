@@ -1,0 +1,12 @@
+diff --git a/metatag_views/src/Plugin/views/display_extender/MetatagDisplayExtender.php b/metatag_views/src/Plugin/views/display_extender/MetatagDisplayExtender.php
+index cf5b781..3d248d4 100644
+--- a/metatag_views/src/Plugin/views/display_extender/MetatagDisplayExtender.php
++++ b/metatag_views/src/Plugin/views/display_extender/MetatagDisplayExtender.php
+@@ -312,7 +312,6 @@ class MetatagDisplayExtender extends DisplayExtenderPluginBase {
+   protected static function getFirstRowTokensReflection(StylePluginBase $style): \ReflectionProperty {
+     $r = new \ReflectionObject($style);
+     $p = $r->getProperty('rowTokens');
+-    $p->setAccessible(TRUE);
+     return $p;
+   }
+ 

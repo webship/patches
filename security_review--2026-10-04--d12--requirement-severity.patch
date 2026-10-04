@@ -1,0 +1,38 @@
+diff --git a/security_review.install b/security_review.install
+index a8c9035..1da8edf 100644
+--- a/security_review.install
++++ b/security_review.install
+@@ -5,6 +5,8 @@
+  * Install, update and uninstall functions for the security_review module.
+  */
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
+ use Drupal\Core\Url;
+ use Drupal\security_review\CheckResult;
+ 
+@@ -98,21 +100,21 @@ function security_review_requirements($phase): array {
+ 
+     $module_url = Url::fromRoute('security_review')->toString();
+     if ($no_results) {
+-      $severity = REQUIREMENT_WARNING;
++      $severity = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING);
+       $value = t(
+         'The Security Review checklist has not been run. <a href=":url">Run the checklist</a>',
+         [':url' => $module_url]
+       );
+     }
+     elseif ($failed_checks) {
+-      $severity = REQUIREMENT_WARNING;
++      $severity = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING);
+       $value = t(
+         'There are failed Security Review checks. <a href=":url">Review the checklist</a>',
+         [':url' => $module_url]
+       );
+     }
+     else {
+-      $severity = REQUIREMENT_OK;
++      $severity = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::OK, fn() => REQUIREMENT_OK);
+       $value = t(
+         'Passing all non-ignored Security Review checks. <a href=":url">Review the checklist</a>',
+         [':url' => $module_url]
