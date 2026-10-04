@@ -77,6 +77,9 @@
             "drupal/antibot": {
                 "Issue #3595688: Automated Drupal 12 compatibility fixes for antibot 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/antibot--2026-10-01--3595688--info-yml.patch"
             },
+            "drupal/book": {
+                "Issue #3595865: Automated Drupal 12 compatibility fixes for book 3.0.x-dev (constraints and schema)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/book--2026-10-04--3595865--constraints-schema.patch"
+            },
             "drupal/captcha": {
                 "Issue #3596096: Automated Drupal 12 compatibility fixes for captcha 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/captcha--2026-10-01--3596096--mr-137--info-yml.patch",
                 "Issue #3576948: Fix Drupal 11 and PHPStan compatibility: replace deprecated classes and unsafe new static() usage": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/captcha--2026-10-01--3576948--mr-132.patch",
@@ -131,6 +134,9 @@
                 "Issue #2679875: Inline Entity Form integration": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--2679875-27.patch",
                 "Issue #3531672: Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3531672--mr-62.patch",
                 "Issue #3610147: Automated Drupal 12 compatibility fixes for entity_embed 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-10-01--3610147--info-yml.patch"
+            },
+            "drupal/extlink": {
+                "Issue #3604276: Automated Drupal 12 compatibility fixes for extlink 3.0.x-dev (library discovery service)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/extlink--2026-10-04--3604276--library-discovery.patch"
             },
             "drupal/field_group": {
                 "Issue #3598196: Automated Drupal 12 compatibility fixes for field_group 4.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/field_group--2026-10-01--3598196--info-yml.patch",
@@ -259,7 +265,8 @@
                 "Issue #3593924: Add support for Drupal 12 (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/token_filter--2026-10-01--3593924--info-yml.patch"
             },
             "drupal/ui_patterns": {
-                "Issue #3623504: Recipe apply fails with a TypeError when Canvas is installed": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-09-16--3623504--mr-566.patch"
+                "Issue #3623504: Recipe apply fails with a TypeError when Canvas is installed": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-09-16--3623504--mr-566.patch",
+                "Issue #3588936: Drupal 12 compatibility and Symfony Constraint API": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-10-04--3588936--constraints.patch"
             },
             "drupal/user_redirect": {
                 "Issue #3604521: Automated Drupal 12 compatibility fixes for user_redirect 2.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/user_redirect--2026-10-01--3604521--mr-14.patch"
@@ -284,7 +291,10 @@
                 "Issue #3618362: Align definitions of getSortedDefinitions and getGroupedDefinitions with core": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618362--mr-928.patch",
                 "Issue #3618665: webform_submission.exporter injects plugin.manager.archiver, which Drupal 12 removes": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618665--mr-929.patch",
                 "Issue #3618674: The removed $entity->original magic property is still used in five places, breaking Drupal 12": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618674--mr-930.patch",
-                "Issue #3618889: Drupal 12 removes theme hook includes, so webform's preprocess functions never run and a webform renders empty": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618889--mr-932.patch"
+                "Issue #3618889: Drupal 12 removes theme hook includes, so webform's preprocess functions never run and a webform renders empty": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618889--mr-932.patch",
+                "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--info-yml.patch",
+                "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (massageFormValues return type)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--massage-form-values.patch",
+                "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (RequirementSeverity)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--requirements.patch"
             },
             "drupal/xmlsitemap": {
                 "Issue #3607528: Automated Drupal 12 compatibility fixes for xmlsitemap 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-01--3607528--mr-82.patch",
