@@ -7,6 +7,16 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.7] - 2026-10-04
+
+- Drupal 12 install of all five site templates: Composer resolves and `drupal/website` installs Website Starter, Webship Starter, Webship Portal, Webapi Starter and Webships Starter on Drupal 12.0.0-beta1 with PHP 8.5 ([#32](https://github.com/webship/patches/pull/32), [#33](https://github.com/webship/patches/pull/33), [#35](https://github.com/webship/patches/pull/35), [#39](https://github.com/webship/patches/pull/39), [#41](https://github.com/webship/patches/pull/41), [#43](https://github.com/webship/patches/pull/43))
+  - `^12` in the info files of ai_logging, autocomplete_deluxe, automatic_updates, better_exposed_filters, coffee, config_update, drupical, easy_encryption, focal_point, flood_control, login_emailusername, project_browser, schemata, security_review, tagify, views_bulk_operations and webform ([#3603992](https://www.drupal.org/i/3603992))
+  - Webform: `massageFormValues(): array`, and RequirementSeverity folded into the [#3617732](https://www.drupal.org/i/3617732) patch
+  - An Attribute class next to the Annotation of the plugin managers of crop, config_filter, ctools, dashboards, devel, embed, entity_embed, field_validation, google_tag, metatag, openapi, openapi_ui, schemata, schema_metatag, simple_oauth and ai_content_suggestions (Drupal 12 refuses annotation-only managers)
+  - Method signatures (getOperations and getDefaultOperations with CacheableMetadata, validate(mixed): void, interact(): void, execute(?object), RenderElementBase) in 19 modules; config schema constraints as keyed options in 8 modules; the ai ComplexToolItems constraint; ui_patterns RequiredArrayValues ([#3588936](https://www.drupal.org/i/3588936)); book constraints ([#3595865](https://www.drupal.org/i/3595865)); extlink library discovery ([#3604276](https://www.drupal.org/i/3604276))
+  - jsonapi_extras resource type repository constructor; better_exposed_filters MR !282; config_ignore Drush 14 listener
+  - PHP 8.5: ui_patterns ignored `merge()` results, google_tag `SplObjectStorage::contains()`
+
 ## [12.0.6] - 2026-10-04
 
 - Add the Display Builder `core_version_requirement` and Key list builder patches ([#30](https://github.com/webship/patches/pull/30), patch files in [#29](https://github.com/webship/patches/pull/29))
@@ -48,6 +58,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.7]: https://github.com/webship/patches/compare/12.0.6...12.0.7
 [12.0.6]: https://github.com/webship/patches/compare/12.0.5...12.0.6
 [12.0.5]: https://github.com/webship/patches/compare/12.0.4...12.0.5
 [12.0.4]: https://github.com/webship/patches/compare/12.0.3...12.0.4
