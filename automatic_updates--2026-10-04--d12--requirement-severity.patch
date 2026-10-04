@@ -1,0 +1,31 @@
+diff --git a/src/Validation/StatusCheckRequirements.php b/src/Validation/StatusCheckRequirements.php
+index e1327d2..e2ac5ea 100644
+--- a/src/Validation/StatusCheckRequirements.php
++++ b/src/Validation/StatusCheckRequirements.php
+@@ -74,7 +74,7 @@ final class StatusCheckRequirements implements ContainerInjectionInterface {
+     if (is_null($results) && $this->getMethod() === 'console') {
+       $requirements['automatic_updates_status_check_console_command_not_run'] = [
+         'title' => $this->t('Update readiness checks'),
+-        'severity' => RequirementSeverity::Error->value,
++        'severity' => RequirementSeverity::Error,
+         // @todo Link to the documentation on how to set up unattended updates
+         //   via the terminal in https://drupal.org/i/3362695.
+         'value' => $this->t('Unattended updates are configured to run via the console, but do not appear to have run recently.'),
+@@ -86,7 +86,7 @@ final class StatusCheckRequirements implements ContainerInjectionInterface {
+     if (empty($results)) {
+       $requirements['automatic_updates_status_check'] = [
+         'title' => $this->t('Update readiness checks'),
+-        'severity' => RequirementSeverity::OK->value,
++        'severity' => RequirementSeverity::OK,
+         // @todo Link "automatic updates" to documentation in
+         //   https://www.drupal.org/node/3168405.
+         'value' => $this->t('Your site is ready for automatic updates.'),
+@@ -143,7 +143,7 @@ final class StatusCheckRequirements implements ContainerInjectionInterface {
+     }
+     $requirement = [
+       'title' => $this->t('Update readiness checks'),
+-      'severity' => $severity,
++      'severity' => RequirementSeverity::from($severity),
+       'value' => $this->getFailureMessageForSeverity($severity),
+       'description' => [
+         'messages' => [

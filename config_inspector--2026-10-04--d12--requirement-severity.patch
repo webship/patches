@@ -1,0 +1,30 @@
+diff --git a/config_inspector.install b/config_inspector.install
+index 2a86f5e..1f8bb79 100644
+--- a/config_inspector.install
++++ b/config_inspector.install
+@@ -5,6 +5,8 @@
+  * Install, update and uninstall hooks for this module.
+  */
+ 
++use Drupal\Component\Utility\DeprecationHelper;
++use Drupal\Core\Extension\Requirement\RequirementSeverity;
+ use Drupal\Core\Link;
+ use Drupal\Core\Url;
+ 
+@@ -38,14 +40,14 @@ function config_inspector_requirements($phase) {
+         '#theme' => 'item_list',
+         '#items' => $errors,
+       ],
+-      'severity' => REQUIREMENT_ERROR,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Error, fn() => REQUIREMENT_ERROR),
+     ];
+   }
+   else {
+     $requirements['config_inspector_report'] = [
+       'title' => t('Configuration inspector'),
+       'value' => t("The site's configuration matches the associated schema."),
+-      'severity' => REQUIREMENT_OK,
++      'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::OK, fn() => REQUIREMENT_OK),
+     ];
+   }
+ 
