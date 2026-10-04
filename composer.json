@@ -97,7 +97,8 @@
             },
             "drupal/better_exposed_filters": {
                 "Issue #3595808: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/better_exposed_filters--2026-10-04--3595808--info-yml.patch",
-                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/better_exposed_filters--2026-10-04--d12--config-schema.patch"
+                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/better_exposed_filters--2026-10-04--d12--config-schema.patch",
+                "Drupal 12: pass FilterFormatRepositoryInterface through to InputRequired parent (MR !282)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/better_exposed_filters--2026-10-04--d12--mr-282-format-repository.patch"
             },
             "drupal/book": {
                 "Issue #3595865: Automated Drupal 12 compatibility fixes for book 3.0.x-dev (constraints and schema)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/book--2026-10-04--3595865--constraints-schema.patch"
@@ -153,7 +154,8 @@
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-04--d12--signatures.patch"
             },
             "drupal/devel": {
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--signatures.patch"
+                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--signatures.patch",
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--plugin-attribute.patch"
             },
             "drupal/display_builder": {
                 "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch"
@@ -179,7 +181,8 @@
             "drupal/embed": {
                 "Issue #3517882: The namespace of EmbedCKEditor5PluginBase does not respect PSR4": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-07-26--3517882--mr-26.patch",
                 "Issue #3597602: Automated Drupal 12 compatibility fixes for embed 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-10-01--3597602--mr-27.patch",
-                "Issue #3597602: Automated Drupal 12 compatibility fixes for embed 1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-10-01--3597602--info-yml.patch"
+                "Issue #3597602: Automated Drupal 12 compatibility fixes for embed 1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-10-01--3597602--info-yml.patch",
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-10-04--d12--plugin-attribute.patch"
             },
             "drupal/entity_embed": {
                 "Issue #3070343: Allow to add a Drupal core link with Link Widget for Image entities using Entity Embed Dialog in CKEditor": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3070343-37.patch",
@@ -247,7 +250,8 @@
             },
             "drupal/jsonapi_extras": {
                 "Issue #3591308: Automated Drupal 12 compatibility fixes for jsonapi_extras 3.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/jsonapi_extras--2026-10-01--3591308--info-yml.patch",
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/jsonapi_extras--2026-10-04--d12--signatures.patch"
+                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/jsonapi_extras--2026-10-04--d12--signatures.patch",
+                "Drupal 12: resource type repository constructor with explicit services": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/jsonapi_extras--2026-10-04--d12--resource-type-repository.patch"
             },
             "drupal/key": {
                 "Issue #3599449: Automated Drupal 12 compatibility fixes for key 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/key--2026-10-01--3599449--info-yml.patch",
@@ -282,7 +286,8 @@
             },
             "drupal/openapi": {
                 "Issue #3601701: Automated Drupal 12 compatibility fixes for openapi 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi--2026-10-01--3601701--mr-25.patch",
-                "Issue #3601701: Automated Drupal 12 compatibility fixes for openapi 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi--2026-10-01--3601701--info-yml.patch"
+                "Issue #3601701: Automated Drupal 12 compatibility fixes for openapi 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi--2026-10-01--3601701--info-yml.patch",
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi--2026-10-04--d12--plugin-attribute.patch"
             },
             "drupal/openapi_jsonapi": {
                 "Issue #3601702: Automated Drupal 12 compatibility fixes for openapi_jsonapi 3.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_jsonapi--2026-10-01--3601702--mr-23.patch"
@@ -291,7 +296,8 @@
                 "Issue #3601703: Automated Drupal 12 compatibility fixes for openapi_rest 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_rest--2026-10-01--3601703--mr-13.patch"
             },
             "drupal/openapi_ui": {
-                "Issue #3601704: Automated Drupal 12 compatibility fixes for openapi_ui 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_ui--2026-10-01--3601704--mr-7.patch"
+                "Issue #3601704: Automated Drupal 12 compatibility fixes for openapi_ui 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_ui--2026-10-01--3601704--mr-7.patch",
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_ui--2026-10-04--d12--plugin-attribute.patch"
             },
             "drupal/openapi_ui_swagger": {
                 "Issue #3601706: Automated Drupal 12 compatibility fixes for openapi_ui_swagger 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_ui_swagger--2026-10-01--3601706--mr-9.patch"
@@ -325,7 +331,8 @@
                 "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schema_metatag--2026-10-04--d12--plugin-attribute.patch"
             },
             "drupal/schemata": {
-                "Issue #3602703: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schemata--2026-10-04--3602703--info-yml.patch"
+                "Issue #3602703: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schemata--2026-10-04--3602703--info-yml.patch",
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/schemata--2026-10-04--d12--plugin-attribute.patch"
             },
             "drupal/seckit": {
                 "Issue #3602835: Automated Drupal 12 compatibility fixes for seckit 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/seckit--2026-10-01--3602835--mr-62.patch"
@@ -339,7 +346,8 @@
             },
             "drupal/simple_oauth": {
                 "Issue #3603030: Automated Drupal 12 compatibility fixes for simple_oauth 6.1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/simple_oauth--2026-10-01--3603030--info-yml.patch",
-                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/simple_oauth--2026-10-04--d12--plugin-attribute.patch"
+                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/simple_oauth--2026-10-04--d12--plugin-attribute.patch",
+                "Drupal 12: Attribute class next to the Annotation for the scope provider manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/simple_oauth--2026-10-04--d12--plugin-attribute-scope-provider.patch"
             },
             "drupal/smart_trim": {
                 "Issue #3594018: Token filter causing next-major to fail (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/smart_trim--2026-10-01--3594018--info-yml.patch"
