@@ -1,0 +1,65 @@
+diff --git a/display_builder.info.yml b/display_builder.info.yml
+index cc5f1f4..852c4ac 100644
+--- a/display_builder.info.yml
++++ b/display_builder.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Display Builder'
+ type: module
+ description: 'An advanced Display Builder for Drupal, require to have a sub module enable to build Entity view, Page or Views.'
+-core_version_requirement: ^11.4
++core_version_requirement: ^11.4 || ^12
+ package: 'User interface'
+ dependencies:
+   - ui_patterns:ui_patterns_field
+diff --git a/modules/display_builder_entity_view/display_builder_entity_view.info.yml b/modules/display_builder_entity_view/display_builder_entity_view.info.yml
+index 1c01589..2f9371f 100644
+--- a/modules/display_builder_entity_view/display_builder_entity_view.info.yml
++++ b/modules/display_builder_entity_view/display_builder_entity_view.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Display Builder for entity view'
+ description: 'Provide integration of Display Builder to entity view.'
+ type: module
+-core_version_requirement: ^11.3
++core_version_requirement: ^11.3 || ^12
+ package: 'User interface'
+ dependencies:
+   - drupal:field_ui
+diff --git a/modules/display_builder_page_layout/display_builder_page_layout.info.yml b/modules/display_builder_page_layout/display_builder_page_layout.info.yml
+index 675754d..56705b4 100644
+--- a/modules/display_builder_page_layout/display_builder_page_layout.info.yml
++++ b/modules/display_builder_page_layout/display_builder_page_layout.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Display Builder for page layout'
+ description: 'Provide integration of Display Builder to the page layout system.'
+ type: module
+-core_version_requirement: ^11.3
++core_version_requirement: ^11.3 || ^12
+ package: 'User interface'
+ dependencies:
+   - display_builder:display_builder
+diff --git a/modules/display_builder_ui/display_builder_ui.info.yml b/modules/display_builder_ui/display_builder_ui.info.yml
+index 7420632..6a32cfa 100644
+--- a/modules/display_builder_ui/display_builder_ui.info.yml
++++ b/modules/display_builder_ui/display_builder_ui.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Display Builder UI'
+ description: 'Create and manage Display Builder profile, pattern preset and view instances from the UI.'
+ type: module
+-core_version_requirement: ^11.3
++core_version_requirement: ^11.3 || ^12
+ package: 'User interface'
+ dependencies:
+   - display_builder:display_builder
+diff --git a/modules/display_builder_views/display_builder_views.info.yml b/modules/display_builder_views/display_builder_views.info.yml
+index 0d6e3a3..1f44165 100644
+--- a/modules/display_builder_views/display_builder_views.info.yml
++++ b/modules/display_builder_views/display_builder_views.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Display Builder for Views'
+ type: module
+ description: 'Associate Display Builder with Views.'
+-core_version_requirement: ^11.3
++core_version_requirement: ^11.3 || ^12
+ package: 'User interface'
+ dependencies:
+   - drupal:views
