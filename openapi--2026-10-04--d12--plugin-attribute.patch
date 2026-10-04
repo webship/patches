@@ -1,0 +1,41 @@
+diff --git a/src/Attribute/OpenApiGenerator.php b/src/Attribute/OpenApiGenerator.php
+new file mode 100644
+index 0000000..cb43c95
+--- /dev/null
++++ b/src/Attribute/OpenApiGenerator.php
+@@ -0,0 +1,22 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\openapi\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a OpenApiGenerator attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class OpenApiGenerator extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/openapi/OpenApiGeneratorManager.php b/src/Plugin/openapi/OpenApiGeneratorManager.php
+index 77b5a51..79f236c 100644
+--- a/src/Plugin/openapi/OpenApiGeneratorManager.php
++++ b/src/Plugin/openapi/OpenApiGeneratorManager.php
+@@ -30,7 +30,7 @@ class OpenApiGeneratorManager extends DefaultPluginManager {
+       $namespaces,
+       $module_handler,
+       'Drupal\openapi\Plugin\openapi\OpenApiGeneratorInterface',
+-      'Drupal\openapi\Annotation\OpenApiGenerator'
++      'Drupal\openapi\Attribute\OpenApiGenerator', 'Drupal\openapi\Annotation\OpenApiGenerator'
+     );
+     $this->alterInfo('openapi_generator');
+     $this->setCacheBackend($cache_backend, 'openapi_generator_plugins');

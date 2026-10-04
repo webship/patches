@@ -1,0 +1,41 @@
+diff --git a/src/Attribute/OpenApiUi.php b/src/Attribute/OpenApiUi.php
+new file mode 100644
+index 0000000..3651166
+--- /dev/null
++++ b/src/Attribute/OpenApiUi.php
+@@ -0,0 +1,22 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\openapi_ui\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a OpenApiUi attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class OpenApiUi extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/openapi_ui/OpenApiUiManager.php b/src/Plugin/openapi_ui/OpenApiUiManager.php
+index bfb2b27..cec87db 100644
+--- a/src/Plugin/openapi_ui/OpenApiUiManager.php
++++ b/src/Plugin/openapi_ui/OpenApiUiManager.php
+@@ -30,7 +30,7 @@ class OpenApiUiManager extends DefaultPluginManager {
+       $namespaces,
+       $module_handler,
+       'Drupal\openapi_ui\Plugin\openapi_ui\OpenApiUiInterface',
+-      'Drupal\openapi_ui\Annotation\OpenApiUi'
++      'Drupal\openapi_ui\Attribute\OpenApiUi', 'Drupal\openapi_ui\Annotation\OpenApiUi'
+     );
+     $this->alterInfo('openapi_ui');
+     $this->setCacheBackend($cache_backend, 'openapi_ui_plugins');

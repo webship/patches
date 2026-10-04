@@ -1,0 +1,42 @@
+diff --git a/src/Attribute/EmbedType.php b/src/Attribute/EmbedType.php
+new file mode 100644
+index 0000000..73a0ea5
+--- /dev/null
++++ b/src/Attribute/EmbedType.php
+@@ -0,0 +1,23 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\embed\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a EmbedType attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class EmbedType extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $embed_form_class = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/EmbedType/EmbedTypeManager.php b/src/EmbedType/EmbedTypeManager.php
+index aaf4102..562f519 100644
+--- a/src/EmbedType/EmbedTypeManager.php
++++ b/src/EmbedType/EmbedTypeManager.php
+@@ -28,7 +28,7 @@ class EmbedTypeManager extends DefaultPluginManager {
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/EmbedType', $namespaces, $module_handler, EmbedTypeInterface::class, EmbedType::class);
++    parent::__construct('Plugin/EmbedType', $namespaces, $module_handler, EmbedTypeInterface::class, 'Drupal\embed\Attribute\EmbedType', EmbedType::class);
+     $this->alterInfo('embed_type_plugins');
+     $this->setCacheBackend($cache_backend, 'embed_type_plugins');
+   }
