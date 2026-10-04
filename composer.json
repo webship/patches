@@ -381,20 +381,18 @@
                 "Issue #3585813: Replace calls to deprecated method get() of class Symfony\\Component\\HttpFoundation\\Request": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3585813--mr-862.patch",
                 "Issue #3590360: Make tests pass on PHP 8.5": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3590360--mr-946.patch",
                 "Issue #3614713: Support CacheableMetadata parameter for entity operations": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3614713--mr-909.patch",
-                "Issue #3617732: Requirements hook needs #[LegacyRequirementsHook] attribute": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3617732--mr-927.patch",
+                "Issue #3617732: Requirements hook needs #[LegacyRequirementsHook] attribute (with RequirementSeverity)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3617732--mr-927-requirements.patch",
                 "Issue #3618362: Align definitions of getSortedDefinitions and getGroupedDefinitions with core": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618362--mr-928.patch",
                 "Issue #3618665: webform_submission.exporter injects plugin.manager.archiver, which Drupal 12 removes": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618665--mr-929.patch",
                 "Issue #3618674: The removed $entity->original magic property is still used in five places, breaking Drupal 12": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618674--mr-930.patch",
                 "Issue #3618889: Drupal 12 removes theme hook includes, so webform's preprocess functions never run and a webform renders empty": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-01--3618889--mr-932.patch",
                 "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--info-yml.patch",
-                "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (massageFormValues return type)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--massage-form-values.patch",
-                "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (RequirementSeverity)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--requirements.patch"
+                "Issue #3603992: Automated Drupal 12 compatibility fixes for webform 6.x-dev (massageFormValues return type)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/webform--2026-10-04--3603992--massage-form-values.patch"
             },
             "drupal/xmlsitemap": {
                 "Issue #3607528: Automated Drupal 12 compatibility fixes for xmlsitemap 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-01--3607528--mr-82.patch",
                 "Issue #3607528: Automated Drupal 12 compatibility fixes for xmlsitemap 2.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-01--3607528--info-yml.patch",
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-04--d12--signatures.patch",
-                "PHP 8.5: deprecations": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-04--d12--php85.patch"
+                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/xmlsitemap--2026-10-04--d12--signatures.patch"
             },
             "drupal/yoast_seo": {
                 "Issue #3607572: Automated Drupal 12 compatibility fixes for yoast_seo 2.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/yoast_seo--2026-10-01--3607572--mr-50.patch",
