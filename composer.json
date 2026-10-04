@@ -309,9 +309,6 @@
             "drupal/token_filter": {
                 "Issue #3593924: Add support for Drupal 12 (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/token_filter--2026-10-01--3593924--info-yml.patch"
             },
-            "drupal/tracker": {
-                "Issue #3603829: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/tracker--2026-10-04--3603829--info-yml.patch"
-            },
             "drupal/ui_patterns": {
                 "Issue #3623504: Recipe apply fails with a TypeError when Canvas is installed": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-09-16--3623504--mr-566.patch",
                 "Issue #3588936: Drupal 12 compatibility and Symfony Constraint API": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ui_patterns--2026-10-04--3588936--constraints.patch"
