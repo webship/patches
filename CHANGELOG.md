@@ -7,6 +7,11 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.9] - 2026-10-04
+
+- Remove the Dashboards patches: Cucumber moved to Web Dashboard ([#48](https://github.com/webship/patches/pull/48))
+- Remove our ai_penpot signatures patch, which ai_penpot 1.0.0-beta1 carries and which stopped applying to it; builds that resolve ai_penpot 1.0.0-beta1 failed on it
+
 ## [12.0.8] - 2026-10-04
 
 - Fixes from the by-role round on Drupal 12 ([#45](https://github.com/webship/patches/pull/45), [#46](https://github.com/webship/patches/pull/46))
@@ -66,6 +71,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.9]: https://github.com/webship/patches/compare/12.0.8...12.0.9
 [12.0.8]: https://github.com/webship/patches/compare/12.0.7...12.0.8
 [12.0.7]: https://github.com/webship/patches/compare/12.0.6...12.0.7
 [12.0.6]: https://github.com/webship/patches/compare/12.0.5...12.0.6
