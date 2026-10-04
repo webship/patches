@@ -7,6 +7,12 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.6] - 2026-10-04
+
+- Add the Display Builder `core_version_requirement` and Key list builder patches ([#30](https://github.com/webship/patches/pull/30), patch files in [#29](https://github.com/webship/patches/pull/29))
+  - `drupal/display_builder`: [#3620792](https://www.drupal.org/i/3620792) `^12` in the info files (Drupal 12 installs it; the builder UI still needs upstream htmx 4 work)
+  - `drupal/key`: [#3627461](https://www.drupal.org/i/3627461) Add the `CacheableMetadata` parameter to `KeyListBuilder::getOperations()`
+
 ## [12.0.5] - 2026-10-01
 
 - Add the Drupal 12 requirements, signature and Webform patches ([#27](https://github.com/webship/patches/pull/27), patch files in [#26](https://github.com/webship/patches/pull/26))
@@ -42,6 +48,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.6]: https://github.com/webship/patches/compare/12.0.5...12.0.6
 [12.0.5]: https://github.com/webship/patches/compare/12.0.4...12.0.5
 [12.0.4]: https://github.com/webship/patches/compare/12.0.3...12.0.4
 [12.0.3]: https://github.com/webship/patches/compare/12.0.2...12.0.3
