@@ -7,6 +7,14 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.8] - 2026-10-04
+
+- Fixes from the by-role round on Drupal 12 ([#45](https://github.com/webship/patches/pull/45), [#46](https://github.com/webship/patches/pull/46))
+  - RequirementSeverity for ai_validations, config_inspector, devel, security_review and automatic_updates: the status report and `/admin/config` returned 500
+  - `display_builder_views` no longer reads the protected `View::$display` ([#3620792](https://www.drupal.org/i/3620792))
+  - The XML sitemap PHP 8.5 fix is part of the [#3607528](https://www.drupal.org/i/3607528) patch, so it no longer depends on patch order
+  - metatag_views drops a no-op `setAccessible()` call
+
 ## [12.0.7] - 2026-10-04
 
 - Drupal 12 install of all five site templates: Composer resolves and `drupal/website` installs Website Starter, Webship Starter, Webship Portal, Webapi Starter and Webships Starter on Drupal 12.0.0-beta1 with PHP 8.5 ([#32](https://github.com/webship/patches/pull/32), [#33](https://github.com/webship/patches/pull/33), [#35](https://github.com/webship/patches/pull/35), [#39](https://github.com/webship/patches/pull/39), [#41](https://github.com/webship/patches/pull/41), [#43](https://github.com/webship/patches/pull/43))
@@ -58,6 +66,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.8]: https://github.com/webship/patches/compare/12.0.7...12.0.8
 [12.0.7]: https://github.com/webship/patches/compare/12.0.6...12.0.7
 [12.0.6]: https://github.com/webship/patches/compare/12.0.5...12.0.6
 [12.0.5]: https://github.com/webship/patches/compare/12.0.4...12.0.5
