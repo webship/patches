@@ -1,0 +1,26 @@
+diff --git a/config_update.info.yml b/config_update.info.yml
+index 2212c3f..96079dd 100644
+--- a/config_update.info.yml
++++ b/config_update.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Configuration Update Base'
+ type: module
+ description: 'Provides basic revert and update functionality for other modules.'
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ php: 8.1
+ dependencies:
+   - drupal:config
+diff --git a/config_update_ui/config_update_ui.info.yml b/config_update_ui/config_update_ui.info.yml
+index a3434bb..23231e2 100644
+--- a/config_update_ui/config_update_ui.info.yml
++++ b/config_update_ui/config_update_ui.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Configuration Update Reports'
+ type: module
+ description: 'Adds an updates report and revert functionality to configuration management.'
+-core_version_requirement: ^9.4 || ^10 || ^11
++core_version_requirement: ^9.4 || ^10 || ^11 || ^12
+ php: 8.1
+ configure: config_update_ui.report
+ dependencies:

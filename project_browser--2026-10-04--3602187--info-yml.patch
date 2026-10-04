@@ -1,0 +1,13 @@
+diff --git a/modules/project_browser_source_example/project_browser_source_example.info.yml b/modules/project_browser_source_example/project_browser_source_example.info.yml
+index cb765ce..7599f34 100644
+--- a/modules/project_browser_source_example/project_browser_source_example.info.yml
++++ b/modules/project_browser_source_example/project_browser_source_example.info.yml
+@@ -1,7 +1,7 @@
+ name: Project Browser Source Example
+ type: module
+ description: Provides an example Project Browser source plugin.
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ dependencies:
+   - project_browser:project_browser
+ 

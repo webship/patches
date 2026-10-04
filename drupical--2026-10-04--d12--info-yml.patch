@@ -1,0 +1,13 @@
+diff --git a/drupical.info.yml b/drupical.info.yml
+index db9a0d5..c8d680a 100644
+--- a/drupical.info.yml
++++ b/drupical.info.yml
+@@ -2,7 +2,7 @@ name: Drupical
+ type: module
+ description: Displays Drupal community events from drupal.org.
+ package: Custom
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ 
+ # Information added by Drupal.org packaging script on 2026-02-09
+ version: '1.0.2'

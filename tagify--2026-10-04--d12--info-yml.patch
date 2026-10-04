@@ -1,0 +1,78 @@
+diff --git a/modules/tagify_facets/tagify_facets.info.yml b/modules/tagify_facets/tagify_facets.info.yml
+index 926c4f0..076fbcf 100644
+--- a/modules/tagify_facets/tagify_facets.info.yml
++++ b/modules/tagify_facets/tagify_facets.info.yml
+@@ -2,7 +2,7 @@ name: Tagify Facets
+ type: module
+ description: Provides a Tagify Facet widget
+ package: Search
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^8.8 || ^9 || ^10 || ^11 || ^12
+ dependencies:
+   - tagify:tagify
+   - facets:facets
+diff --git a/modules/tagify_iconify_icons/tagify_iconify_icons.info.yml b/modules/tagify_iconify_icons/tagify_iconify_icons.info.yml
+index f57e7d1..12e50cb 100644
+--- a/modules/tagify_iconify_icons/tagify_iconify_icons.info.yml
++++ b/modules/tagify_iconify_icons/tagify_iconify_icons.info.yml
+@@ -2,7 +2,7 @@ name: Tagify Iconify Icons
+ type: module
+ description: Provides an alteration to get iconify icons into Tagify widget.
+ package: User interface
+-core_version_requirement: ^10 || ^11
++core_version_requirement: ^10 || ^11 || ^12
+ dependencies:
+   - iconify_icons:iconify_icons
+ 
+diff --git a/modules/tagify_icons/tagify_icons.info.yml b/modules/tagify_icons/tagify_icons.info.yml
+index e2570c7..aaf0025 100644
+--- a/modules/tagify_icons/tagify_icons.info.yml
++++ b/modules/tagify_icons/tagify_icons.info.yml
+@@ -2,7 +2,7 @@ name: Tagify Icons
+ type: module
+ description: Provides an alteration to get icons into Tagify widget.
+ package: User interface
+-core_version_requirement: ^11.0
++core_version_requirement: ^11.0 || ^12
+ dependencies:
+   - ui_icons:ui_icons
+   - ui_icons:ui_icons_field
+diff --git a/modules/tagify_link/tagify_link.info.yml b/modules/tagify_link/tagify_link.info.yml
+index 4a52b06..cdd1c27 100644
+--- a/modules/tagify_link/tagify_link.info.yml
++++ b/modules/tagify_link/tagify_link.info.yml
+@@ -1,7 +1,7 @@
+ name: 'Tagify Link'
+ description: 'Tagify widget for link fields.'
+ type: module
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^8.8 || ^9 || ^10 || ^11 || ^12
+ package: User interface
+ dependencies:
+   - drupal:link
+diff --git a/modules/tagify_user_list/tagify_user_list.info.yml b/modules/tagify_user_list/tagify_user_list.info.yml
+index b7c65f3..ee4c2a5 100644
+--- a/modules/tagify_user_list/tagify_user_list.info.yml
++++ b/modules/tagify_user_list/tagify_user_list.info.yml
+@@ -2,7 +2,7 @@ name: Tagify User List
+ type: module
+ description: Provides a user list component from <a href="https://yaireo.github.io/tagify/#users-list">Tagify user lists</a>
+ package: User interface
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^8.8 || ^9 || ^10 || ^11 || ^12
+ dependencies:
+   - drupal:image
+   - tagify:tagify
+diff --git a/tagify.info.yml b/tagify.info.yml
+index 53f015f..efc4f74 100644
+--- a/tagify.info.yml
++++ b/tagify.info.yml
+@@ -2,7 +2,7 @@ name: Tagify
+ type: module
+ description: Makes entity reference fields more user-friendly using <a href="https://github.com/yairEO/tagify">Tagify</a>.
+ package: User interface
+-core_version_requirement: ^8.8 || ^9 || ^10 || ^11
++core_version_requirement: ^8.8 || ^9 || ^10 || ^11 || ^12
+ configure: tagify.settings
+ dependencies:
+   - drupal:taxonomy
