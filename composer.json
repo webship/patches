@@ -60,8 +60,7 @@
                 "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_logging--2026-10-04--d12--info-yml.patch"
             },
             "drupal/ai_penpot": {
-                "Issue #3617097: Automated Drupal 12 compatibility fixes for ai_penpot 1.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_penpot--2026-10-01--3617097--mr-5.patch",
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_penpot--2026-10-04--d12--signatures.patch"
+                "Issue #3617097: Automated Drupal 12 compatibility fixes for ai_penpot 1.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_penpot--2026-10-01--3617097--mr-5.patch"
             },
             "drupal/ai_playwright": {
                 "Issue #3609765: Automated Drupal 12 compatibility fixes for ai_playwright 1.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_playwright--2026-10-01--3609765--mr-10.patch",
@@ -153,12 +152,6 @@
             "drupal/ctools": {
                 "Issue #3596885: Automated Drupal 12 compatibility fixes for ctools 4.1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ctools--2026-10-01--3596885--mr-89--info-yml.patch",
                 "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ctools--2026-10-04--d12--plugin-attribute.patch"
-            },
-            "drupal/dashboards": {
-                "Issue #3596967: Automated Drupal 12 compatibility fixes for dashboards 2.1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-01--3596967--mr-41.patch",
-                "Issue #3596967: Automated Drupal 12 compatibility fixes for dashboards 2.1.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-01--3596967--info-yml.patch",
-                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-04--d12--plugin-attribute.patch",
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/dashboards--2026-10-04--d12--signatures.patch"
             },
             "drupal/devel": {
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--signatures.patch",
