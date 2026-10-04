@@ -1,0 +1,35 @@
+diff --git a/src/ResourceType/ConfigurableResourceTypeRepository.php b/src/ResourceType/ConfigurableResourceTypeRepository.php
+index 5a21a57..39ca3d9 100644
+--- a/src/ResourceType/ConfigurableResourceTypeRepository.php
++++ b/src/ResourceType/ConfigurableResourceTypeRepository.php
+@@ -2,6 +2,12 @@
+ 
+ namespace Drupal\jsonapi_extras\ResourceType;
+ 
++use Symfony\Component\EventDispatcher\EventDispatcherInterface;
++use Symfony\Component\DependencyInjection\Attribute\Autowire;
++use Drupal\Core\Entity\EntityTypeManagerInterface;
++use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
++use Drupal\Core\Entity\EntityFieldManagerInterface;
++use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Component\Plugin\Exception\PluginException;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityRepositoryInterface;
+@@ -78,8 +84,15 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
+   /**
+    * {@inheritdoc}
+    */
+-  public function __construct(...$arguments) {
+-    parent::__construct(...$arguments);
++  public function __construct(
++    EntityTypeManagerInterface $entity_type_manager,
++    EntityTypeBundleInfoInterface $entity_bundle_info,
++    EntityFieldManagerInterface $entity_field_manager,
++    #[Autowire(service: 'cache.jsonapi_resource_types')]
++    CacheBackendInterface $cache,
++    EventDispatcherInterface $dispatcher,
++  ) {
++    parent::__construct($entity_type_manager, $entity_bundle_info, $entity_field_manager, $cache, $dispatcher);
+ 
+     $this->cacheTags = array_merge($this->cacheTags, [
+       'config:jsonapi_extras.settings',

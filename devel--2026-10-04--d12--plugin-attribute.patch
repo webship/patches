@@ -1,0 +1,89 @@
+diff --git a/devel_generate/src/Attribute/DevelGenerate.php b/devel_generate/src/Attribute/DevelGenerate.php
+new file mode 100644
+index 0000000..4de078d
+--- /dev/null
++++ b/devel_generate/src/Attribute/DevelGenerate.php
+@@ -0,0 +1,28 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\devel_generate\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a DevelGenerate attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class DevelGenerate extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = NULL,
++    public readonly mixed $url = NULL,
++    public readonly mixed $permission = NULL,
++    public readonly mixed $class = NULL,
++    public readonly mixed $settings = [],
++    public readonly mixed $dependencies = [],
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/devel_generate/src/DevelGeneratePluginManager.php b/devel_generate/src/DevelGeneratePluginManager.php
+index ba6c4e8..b819e18 100644
+--- a/devel_generate/src/DevelGeneratePluginManager.php
++++ b/devel_generate/src/DevelGeneratePluginManager.php
+@@ -48,7 +48,7 @@ class DevelGeneratePluginManager extends DefaultPluginManager {
+     protected TranslationInterface $stringTranslation,
+     protected EntityFieldManagerInterface $entityFieldManager,
+   ) {
+-    parent::__construct('Plugin/DevelGenerate', $namespaces, $module_handler, NULL, DevelGenerate::class);
++    parent::__construct('Plugin/DevelGenerate', $namespaces, $module_handler, NULL, 'Drupal\devel_generate\Attribute\DevelGenerate', DevelGenerate::class);
+     $this->moduleHandler = $module_handler;
+     $this->alterInfo('devel_generate_info');
+     $this->setCacheBackend($cache_backend, 'devel_generate_plugins');
+diff --git a/src/Attribute/DevelDumper.php b/src/Attribute/DevelDumper.php
+new file mode 100644
+index 0000000..6950478
+--- /dev/null
++++ b/src/Attribute/DevelDumper.php
+@@ -0,0 +1,23 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\devel\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a DevelDumper attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class DevelDumper extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/DevelDumperPluginManager.php b/src/DevelDumperPluginManager.php
+index ccdf55f..996d133 100644
+--- a/src/DevelDumperPluginManager.php
++++ b/src/DevelDumperPluginManager.php
+@@ -29,7 +29,7 @@ class DevelDumperPluginManager extends DefaultPluginManager implements DevelDump
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/Devel/Dumper', $namespaces, $module_handler, DevelDumperInterface::class, DevelDumper::class);
++    parent::__construct('Plugin/Devel/Dumper', $namespaces, $module_handler, DevelDumperInterface::class, 'Drupal\devel\Attribute\DevelDumper', DevelDumper::class);
+     $this->setCacheBackend($cache_backend, 'devel_dumper_plugins');
+     $this->alterInfo('devel_dumper_info');
+   }

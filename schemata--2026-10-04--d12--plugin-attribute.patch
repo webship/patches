@@ -1,0 +1,41 @@
+diff --git a/schemata_json_schema/src/Attribute/TypeMapper.php b/schemata_json_schema/src/Attribute/TypeMapper.php
+new file mode 100644
+index 0000000..d796909
+--- /dev/null
++++ b/schemata_json_schema/src/Attribute/TypeMapper.php
+@@ -0,0 +1,22 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\schemata_json_schema\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a TypeMapper attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class TypeMapper extends Plugin {
++
++  public function __construct(
++    string $id,
++
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/schemata_json_schema/src/Plugin/Type/TypeMapperPluginManager.php b/schemata_json_schema/src/Plugin/Type/TypeMapperPluginManager.php
+index 8de3c55..e778bbd 100644
+--- a/schemata_json_schema/src/Plugin/Type/TypeMapperPluginManager.php
++++ b/schemata_json_schema/src/Plugin/Type/TypeMapperPluginManager.php
+@@ -38,7 +38,7 @@ class TypeMapperPluginManager extends DefaultPluginManager implements FallbackPl
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/schemata_json_schema/type_mapper', $namespaces, $module_handler, TypeMapperInterface::class, TypeMapper::class);
++    parent::__construct('Plugin/schemata_json_schema/type_mapper', $namespaces, $module_handler, TypeMapperInterface::class, 'Drupal\schemata_json_schema\Attribute\TypeMapper', TypeMapper::class);
+     $this->alterInfo('json_schema_type_mapper');
+     $this->setCacheBackend($cache_backend, 'json_schema_type_mapper_plugins');
+   }

@@ -1,0 +1,42 @@
+diff --git a/src/Attribute/ScopeProvider.php b/src/Attribute/ScopeProvider.php
+new file mode 100644
+index 0000000..fce9f55
+--- /dev/null
++++ b/src/Attribute/ScopeProvider.php
+@@ -0,0 +1,23 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\simple_oauth\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a ScopeProvider attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class ScopeProvider extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $adapter_class = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/ScopeProviderManager.php b/src/Plugin/ScopeProviderManager.php
+index d8ad9fe..4e3dfa5 100644
+--- a/src/Plugin/ScopeProviderManager.php
++++ b/src/Plugin/ScopeProviderManager.php
+@@ -36,7 +36,7 @@ class ScopeProviderManager extends DefaultPluginManager implements ScopeProvider
+       'Plugin/ScopeProvider',
+       $namespaces, $module_handler,
+       'Drupal\simple_oauth\Plugin\ScopeProviderInterface',
+-      'Drupal\simple_oauth\Annotation\ScopeProvider'
++      'Drupal\simple_oauth\Attribute\ScopeProvider', 'Drupal\simple_oauth\Annotation\ScopeProvider'
+     );
+ 
+     $this->alterInfo('simple_oauth_scope_provider_info');

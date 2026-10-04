@@ -1,0 +1,41 @@
+diff --git a/src/Plugin/views/exposed_form/BetterExposedFilters.php b/src/Plugin/views/exposed_form/BetterExposedFilters.php
+index 0d4626b..e607287 100644
+--- a/src/Plugin/views/exposed_form/BetterExposedFilters.php
++++ b/src/Plugin/views/exposed_form/BetterExposedFilters.php
+@@ -13,6 +13,7 @@ use Drupal\Core\Render\ElementInfoManagerInterface;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Theme\ThemeManagerInterface;
+ use Drupal\Core\Url;
++use Drupal\filter\FilterFormatRepositoryInterface;
+ use Drupal\better_exposed_filters\Plugin\BetterExposedFiltersWidgetManager;
+ use Drupal\views\Attribute\ViewsExposedForm;
+ use Drupal\views\Plugin\views\exposed_form\InputRequired;
+@@ -56,6 +57,9 @@ class BetterExposedFilters extends InputRequired {
+    *   The Request object.
+    * @param \Drupal\breakpoint\BreakpointManagerInterface|null $breakpointManager
+    *   The breakpoint manager.
++   * @param \Drupal\filter\FilterFormatRepositoryInterface $formatRepository
++   *   The filter format repository, required by the parent InputRequired
++   *   plugin as of Drupal 12.
+    */
+   public function __construct(
+     array $configuration,
+@@ -69,8 +73,9 @@ class BetterExposedFilters extends InputRequired {
+     protected ElementInfoManagerInterface $elementInfo,
+     protected Request $request,
+     protected ?BreakpointManagerInterface $breakpointManager,
++    FilterFormatRepositoryInterface $formatRepository,
+   ) {
+-    parent::__construct($configuration, $plugin_id, $plugin_definition);
++    parent::__construct($configuration, $plugin_id, $plugin_definition, $formatRepository);
+   }
+ 
+   /**
+@@ -89,6 +94,7 @@ class BetterExposedFilters extends InputRequired {
+       $container->get('element_info'),
+       $container->get('request_stack')->getCurrentRequest(),
+       $container->has('breakpoint.manager') ? $container->get('breakpoint.manager') : NULL,
++      $container->get(FilterFormatRepositoryInterface::class),
+     );
+   }
+ 
