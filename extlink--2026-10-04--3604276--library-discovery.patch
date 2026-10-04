@@ -1,0 +1,32 @@
+diff --git a/src/EventSubscriber/ExtlinkSettingsSaveEventSubscriber.php b/src/EventSubscriber/ExtlinkSettingsSaveEventSubscriber.php
+index d9ac343..3fe4da8 100644
+--- a/src/EventSubscriber/ExtlinkSettingsSaveEventSubscriber.php
++++ b/src/EventSubscriber/ExtlinkSettingsSaveEventSubscriber.php
+@@ -4,7 +4,7 @@ namespace Drupal\extlink\EventSubscriber;
+ 
+ use Drupal\Core\Asset\AssetCollectionOptimizerInterface;
+ use Drupal\Core\Asset\AssetQueryStringInterface;
+-use Drupal\Core\Asset\LibraryDiscoveryCollector;
++use Drupal\Core\Asset\LibraryDiscoveryInterface;
+ use Drupal\Core\Config\ConfigCrudEvent;
+ use Drupal\Core\Config\ConfigEvents;
+ use Symfony\Component\DependencyInjection\Attribute\Autowire;
+@@ -16,8 +16,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ class ExtlinkSettingsSaveEventSubscriber implements EventSubscriberInterface {
+ 
+   public function __construct(
+-    #[Autowire(service: 'library.discovery.collector')]
+-    protected LibraryDiscoveryCollector $libraryDiscovery,
++    protected LibraryDiscoveryInterface $libraryDiscovery,
+     #[Autowire(service: 'asset.js.collection_optimizer')]
+     protected AssetCollectionOptimizerInterface $jsOptimizer,
+     protected AssetQueryStringInterface $assetQueryString,
+@@ -39,7 +38,7 @@ class ExtlinkSettingsSaveEventSubscriber implements EventSubscriberInterface {
+         // When using external JS file is enabled or disabled, need to flush the
+         // library discovery cache to update the dependencies of drupal.extlink
+         // library.
+-        $this->libraryDiscovery->clear();
++        method_exists($this->libraryDiscovery, 'clearCachedDefinitions') ? $this->libraryDiscovery->clearCachedDefinitions() : $this->libraryDiscovery->clear();
+         $flush_js_files = TRUE;
+       }
+ 

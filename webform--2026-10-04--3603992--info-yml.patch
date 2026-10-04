@@ -1,0 +1,441 @@
+diff --git a/modules/webform_access/webform_access.info.yml b/modules/webform_access/webform_access.info.yml
+index 66bfcd3..0b13a01 100644
+--- a/modules/webform_access/webform_access.info.yml
++++ b/modules/webform_access/webform_access.info.yml
+@@ -1,6 +1,6 @@
+ name: 'Webform Access'
+ description: 'Provides webform access controls for webform nodes.'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ package: Webform
+ type: module
+ dependencies:
+diff --git a/modules/webform_attachment/webform_attachment.info.yml b/modules/webform_attachment/webform_attachment.info.yml
+index cc8f2a9..fd955df 100644
+--- a/modules/webform_attachment/webform_attachment.info.yml
++++ b/modules/webform_attachment/webform_attachment.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Attachment'
+ type: module
+ description: 'Provides an element that generates or loads a file that can be attached to a submission or email.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_bootstrap/webform_bootstrap.info.yml b/modules/webform_bootstrap/webform_bootstrap.info.yml
+index 9d425f1..2cd7bc3 100644
+--- a/modules/webform_bootstrap/webform_bootstrap.info.yml
++++ b/modules/webform_bootstrap/webform_bootstrap.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Bootstrap (3.x)'
+ type: module
+ description: 'Note: This is only to be used with the Drupal Bootstrap Theme, NOT with other Bootstrap Framework related Themes (like Radix).'
+ package: 'Webform [DEPRECATED]'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ lifecycle: deprecated
+diff --git a/modules/webform_cards/webform_cards.info.yml b/modules/webform_cards/webform_cards.info.yml
+index c795529..7d7f694 100644
+--- a/modules/webform_cards/webform_cards.info.yml
++++ b/modules/webform_cards/webform_cards.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Cards'
+ type: module
+ description: 'Provides a ''Card'' container element for fast clientside multistep form pagination.'
+ package: 'Webform'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+   - 'webform:webform_clientside_validation'
+diff --git a/modules/webform_clientside_validation/webform_clientside_validation.info.yml b/modules/webform_clientside_validation/webform_clientside_validation.info.yml
+index 585822e..056df1d 100644
+--- a/modules/webform_clientside_validation/webform_clientside_validation.info.yml
++++ b/modules/webform_clientside_validation/webform_clientside_validation.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Clientside Validation'
+ type: module
+ description: 'Helps support Webform Clientside Validation integration.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+   - 'clientside_validation:clientside_validation'
+diff --git a/modules/webform_demo/webform_demo_application_evaluation/webform_demo_application_evaluation.info.yml b/modules/webform_demo/webform_demo_application_evaluation/webform_demo_application_evaluation.info.yml
+index 824a8da..d8bfd2d 100644
+--- a/modules/webform_demo/webform_demo_application_evaluation/webform_demo_application_evaluation.info.yml
++++ b/modules/webform_demo/webform_demo_application_evaluation/webform_demo_application_evaluation.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Demo: Application/Evaluation System'
+ type: module
+ description: 'Demonstrates how to use the Webform module to build an application/evaluation system.'
+ package: 'Webform Demo'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'drupal:block'
+   - 'drupal:views'
+diff --git a/modules/webform_demo/webform_demo_event_registration/webform_demo_event_registration.info.yml b/modules/webform_demo/webform_demo_event_registration/webform_demo_event_registration.info.yml
+index b21293b..2764543 100644
+--- a/modules/webform_demo/webform_demo_event_registration/webform_demo_event_registration.info.yml
++++ b/modules/webform_demo/webform_demo_event_registration/webform_demo_event_registration.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Demo: Event Registration System'
+ type: module
+ description: 'Demonstrates how to use the Webform module to build an event registration system with email reminders.'
+ package: 'Webform Demo'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'drupal:datetime'
+   - 'drupal:views'
+diff --git a/modules/webform_demo/webform_demo_region_contact/webform_demo_region_contact.info.yml b/modules/webform_demo/webform_demo_region_contact/webform_demo_region_contact.info.yml
+index ccc910f..249aa91 100644
+--- a/modules/webform_demo/webform_demo_region_contact/webform_demo_region_contact.info.yml
++++ b/modules/webform_demo/webform_demo_region_contact/webform_demo_region_contact.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Demo: Region Contact System'
+ type: module
+ description: 'Demonstrates how to use the Webform module to build a region based contact system.'
+ package: 'Webform Demo'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'drupal:datetime'
+   - 'token:token'
+diff --git a/modules/webform_devel/webform_devel.info.yml b/modules/webform_devel/webform_devel.info.yml
+index e81a154..1803243 100644
+--- a/modules/webform_devel/webform_devel.info.yml
++++ b/modules/webform_devel/webform_devel.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Devel'
+ type: module
+ description: 'Provides development tools for the Webform module.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'devel:devel'
+   - 'webform:webform'
+diff --git a/modules/webform_entity_print/webform_entity_print.info.yml b/modules/webform_entity_print/webform_entity_print.info.yml
+index 3acc687..4eb737b 100644
+--- a/modules/webform_entity_print/webform_entity_print.info.yml
++++ b/modules/webform_entity_print/webform_entity_print.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Entity Print (PDF)'
+ type: module
+ description: 'Provides Entity Print (PDF) integration and allows site builders to download, export, and email PDF copies of webform submissions.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+   - 'entity_print:entity_print'
+diff --git a/modules/webform_entity_print_attachment/webform_entity_print_attachment.info.yml b/modules/webform_entity_print_attachment/webform_entity_print_attachment.info.yml
+index 3c047fa..e6680d9 100644
+--- a/modules/webform_entity_print_attachment/webform_entity_print_attachment.info.yml
++++ b/modules/webform_entity_print_attachment/webform_entity_print_attachment.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Entity Print (PDF) Attachment'
+ type: module
+ description: 'Provides Webform Entity Print (PDF) Attachment integration.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform_attachment'
+   - 'webform:webform_entity_print'
+diff --git a/modules/webform_example_composite/webform_example_composite.info.yml b/modules/webform_example_composite/webform_example_composite.info.yml
+index 0fec44f..35cb0bf 100644
+--- a/modules/webform_example_composite/webform_example_composite.info.yml
++++ b/modules/webform_example_composite/webform_example_composite.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Example Composite'
+ type: module
+ description: 'Provides an example that shows how to create a Webform composite.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_example_custom_form/webform_example_custom_form.info.yml b/modules/webform_example_custom_form/webform_example_custom_form.info.yml
+index 8c84511..c23ee24 100644
+--- a/modules/webform_example_custom_form/webform_example_custom_form.info.yml
++++ b/modules/webform_example_custom_form/webform_example_custom_form.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Custom Form Example'
+ type: module
+ description: 'Provides an example of custom configuration form built using the Webform module.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ configure: webform_example_custom_form.settings
+ dependencies:
+   - 'webform:webform'
+diff --git a/modules/webform_example_element/webform_example_element.info.yml b/modules/webform_example_element/webform_example_element.info.yml
+index 42d7eec..4e7b852 100644
+--- a/modules/webform_example_element/webform_example_element.info.yml
++++ b/modules/webform_example_element/webform_example_element.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Element Example'
+ type: module
+ description: 'Provides an example that shows how to create a Webform element.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_example_element_properties/webform_example_element_properties.info.yml b/modules/webform_example_element_properties/webform_example_element_properties.info.yml
+index 6e7a0eb..d577220 100644
+--- a/modules/webform_example_element_properties/webform_example_element_properties.info.yml
++++ b/modules/webform_example_element_properties/webform_example_element_properties.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Element Properties Example'
+ type: module
+ description: 'Provides an example that shows how to add custom properties to Webform elements.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+   - 'webform:webform_ui'
+diff --git a/modules/webform_example_handler/webform_example_handler.info.yml b/modules/webform_example_handler/webform_example_handler.info.yml
+index c97f38f..f38f17a 100644
+--- a/modules/webform_example_handler/webform_example_handler.info.yml
++++ b/modules/webform_example_handler/webform_example_handler.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Handler Example'
+ type: module
+ description: 'Provides an example of a webform handler.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_example_remote_post/webform_example_remote_post.info.yml b/modules/webform_example_remote_post/webform_example_remote_post.info.yml
+index f04896d..01c3fe6 100644
+--- a/modules/webform_example_remote_post/webform_example_remote_post.info.yml
++++ b/modules/webform_example_remote_post/webform_example_remote_post.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Remote Post Example'
+ type: module
+ description: 'Provides an example of a webform submission posted to a remote server.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'token:token'
+   - 'webform:webform'
+diff --git a/modules/webform_example_variant/webform_example_variant.info.yml b/modules/webform_example_variant/webform_example_variant.info.yml
+index c482f85..47a913a 100644
+--- a/modules/webform_example_variant/webform_example_variant.info.yml
++++ b/modules/webform_example_variant/webform_example_variant.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Variant Example'
+ type: module
+ description: 'Provides an example of webform variants.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_examples/webform_examples.info.yml b/modules/webform_examples/webform_examples.info.yml
+index c23fc87..de9e5e5 100644
+--- a/modules/webform_examples/webform_examples.info.yml
++++ b/modules/webform_examples/webform_examples.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Examples'
+ type: module
+ description: 'Provides examples of all webform elements and functionality which can used for demonstrating and testing advanced functionality or used as cut-n-paste code snippets for creating new webforms.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_examples_accessibility/webform_examples_accessibility.info.yml b/modules/webform_examples_accessibility/webform_examples_accessibility.info.yml
+index d2983ca..eaba8c9 100644
+--- a/modules/webform_examples_accessibility/webform_examples_accessibility.info.yml
++++ b/modules/webform_examples_accessibility/webform_examples_accessibility.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Examples Accessibility'
+ type: module
+ description: 'Provides example webforms for reviewing and testing accessibility.'
+ package: 'Webform example'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'drupal:webform'
+ 
+diff --git a/modules/webform_image_select/webform_image_select.info.yml b/modules/webform_image_select/webform_image_select.info.yml
+index b4e868f..ad3eb25 100644
+--- a/modules/webform_image_select/webform_image_select.info.yml
++++ b/modules/webform_image_select/webform_image_select.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Image Select'
+ type: module
+ description: 'Provides a webform element for a selecting an image.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_jqueryui_buttons/webform_jqueryui_buttons.info.yml b/modules/webform_jqueryui_buttons/webform_jqueryui_buttons.info.yml
+index 59b1262..d66ae3e 100644
+--- a/modules/webform_jqueryui_buttons/webform_jqueryui_buttons.info.yml
++++ b/modules/webform_jqueryui_buttons/webform_jqueryui_buttons.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform jQueryUI Buttons'
+ type: module
+ description: 'Provides a group of multiple buttons used for selecting a value. jQueryUI is no longer maintained.'
+ package: 'Webform [DEPRECATED]'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ lifecycle: deprecated
+ lifecycle_link: 'https://www.drupal.org/docs/8/modules/webform/webform-frequently-asked-questions/what-to-do-about-deprecated-external-libraries-in-webform-6x#s-webform-jqueryui-buttons'
+ dependencies:
+diff --git a/modules/webform_jqueryui_datepicker/webform_jqueryui_datepicker.info.yml b/modules/webform_jqueryui_datepicker/webform_jqueryui_datepicker.info.yml
+index a9dfb44..6cfdcdd 100644
+--- a/modules/webform_jqueryui_datepicker/webform_jqueryui_datepicker.info.yml
++++ b/modules/webform_jqueryui_datepicker/webform_jqueryui_datepicker.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform jQueryUI Datepicker'
+ type: module
+ description: 'Provides jQueryUI datepicker support for date and datetime elements. jQueryUI is no longer maintained.'
+ package: 'Webform [DEPRECATED]'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ lifecycle: deprecated
+ lifecycle_link: 'https://www.drupal.org/docs/8/modules/webform/webform-frequently-asked-questions/what-to-do-about-deprecated-external-libraries-in-webform-6x#s-webform-datepicker'
+ dependencies:
+diff --git a/modules/webform_node/webform_node.info.yml b/modules/webform_node/webform_node.info.yml
+index 7bde40a..4db589f 100644
+--- a/modules/webform_node/webform_node.info.yml
++++ b/modules/webform_node/webform_node.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Node'
+ type: module
+ description: 'Provides a Webform content type which allows webforms to be integrated into a website as nodes.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'drupal:field'
+   - 'drupal:node'
+diff --git a/modules/webform_options_custom/webform_options_custom.info.yml b/modules/webform_options_custom/webform_options_custom.info.yml
+index ac63477..0c07936 100644
+--- a/modules/webform_options_custom/webform_options_custom.info.yml
++++ b/modules/webform_options_custom/webform_options_custom.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Custom Options'
+ type: module
+ description: 'Provides a webform element for converting HTML or SVG markup into a selectable single or multiple options input.'
+ package: 'Webform'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_options_limit/webform_options_limit.info.yml b/modules/webform_options_limit/webform_options_limit.info.yml
+index e94e7f9..ddbaecb 100644
+--- a/modules/webform_options_limit/webform_options_limit.info.yml
++++ b/modules/webform_options_limit/webform_options_limit.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Options Limit'
+ type: module
+ description: 'Allows elements with options (i.e. select, checkboxes, and radios) to have option specific submission limits.'
+ package: 'Webform'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_scheduled_email/webform_scheduled_email.info.yml b/modules/webform_scheduled_email/webform_scheduled_email.info.yml
+index 49da80d..a2a0789 100644
+--- a/modules/webform_scheduled_email/webform_scheduled_email.info.yml
++++ b/modules/webform_scheduled_email/webform_scheduled_email.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Scheduled Email Handler'
+ type: module
+ description: 'Provides the "Scheduled email" handler, which sends Webform submissions via scheduled email using cron.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_schema/webform_schema.info.yml b/modules/webform_schema/webform_schema.info.yml
+index 2574e41..14b27b5 100644
+--- a/modules/webform_schema/webform_schema.info.yml
++++ b/modules/webform_schema/webform_schema.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Schema'
+ type: module
+ description: 'Adds a ''Schema'' tab to the webform builder UI.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_share/webform_share.info.yml b/modules/webform_share/webform_share.info.yml
+index 2754396..56f3790 100644
+--- a/modules/webform_share/webform_share.info.yml
++++ b/modules/webform_share/webform_share.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Share'
+ type: module
+ description: 'Allows webforms to be shared on other websites using an iframe.'
+ package: 'Webform'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_submission_export_import/webform_submission_export_import.info.yml b/modules/webform_submission_export_import/webform_submission_export_import.info.yml
+index 8329bd3..aee1e4a 100644
+--- a/modules/webform_submission_export_import/webform_submission_export_import.info.yml
++++ b/modules/webform_submission_export_import/webform_submission_export_import.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Submission Export/Import'
+ type: module
+ description: 'Provides the ability to export and import submissions.'
+ package: 'Webform'
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_submission_log/webform_submission_log.info.yml b/modules/webform_submission_log/webform_submission_log.info.yml
+index ce22913..1283c18 100644
+--- a/modules/webform_submission_log/webform_submission_log.info.yml
++++ b/modules/webform_submission_log/webform_submission_log.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Submission Log'
+ type: module
+ description: 'Dedicated logging and reporting for webform submissions.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_templates/webform_templates.info.yml b/modules/webform_templates/webform_templates.info.yml
+index 608f0db..281780e 100644
+--- a/modules/webform_templates/webform_templates.info.yml
++++ b/modules/webform_templates/webform_templates.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform Templates'
+ type: module
+ description: 'Provides starter templates that can be used to create new webforms.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/modules/webform_ui/webform_ui.info.yml b/modules/webform_ui/webform_ui.info.yml
+index 6c09843..2f8e650 100644
+--- a/modules/webform_ui/webform_ui.info.yml
++++ b/modules/webform_ui/webform_ui.info.yml
+@@ -2,7 +2,7 @@ name: 'Webform UI'
+ type: module
+ description: 'Provides a user interface for building and maintaining webforms.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ dependencies:
+   - 'webform:webform'
+ 
+diff --git a/webform.info.yml b/webform.info.yml
+index e7b7a46..9e04cbe 100644
+--- a/webform.info.yml
++++ b/webform.info.yml
+@@ -2,7 +2,7 @@ name: Webform
+ type: module
+ description: 'Enables the creation of webforms and questionnaires.'
+ package: Webform
+-core_version_requirement: ^10.3 || ^11.0
++core_version_requirement: ^10.3 || ^11.0 || ^12
+ configure: entity.webform.collection
+ dependencies:
+   - 'drupal:field'
