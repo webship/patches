@@ -1,0 +1,76 @@
+diff --git a/config/schema/book.schema.yml b/config/schema/book.schema.yml
+index 57d3235..cc935ff 100644
+--- a/config/schema/book.schema.yml
++++ b/config/schema/book.schema.yml
+@@ -16,12 +16,14 @@ book.settings:
+             type: string
+             label: 'Content type machine name'
+             constraints:
+-              EntityBundleExists: node
++              EntityBundleExists:
++                entityTypeId: node
+           child_type:
+             type: string
+             label: 'Allowed child type'
+             constraints:
+-              EntityBundleExists: node
++              EntityBundleExists:
++                entityTypeId: node
+               ExistsIn:
+                 selector: '%root.allowed_types'
+                 which: values
+@@ -31,8 +33,9 @@ book.settings:
+       label: 'Sort order'
+       constraints:
+         Choice:
+-          - weight
+-          - title
++          choices:
++            - weight
++            - title
+     truncate_label:
+       type: boolean
+       label: 'Truncate book label'
+@@ -52,10 +55,11 @@ block.settings.book_navigation:
+       label: 'Block display mode'
+       constraints:
+         Choice:
+-          - 'all pages'
+-          - 'book pages'
+-          - 'primary book page'
+-          - 'child book pages'
++          choices:
++            - 'all pages'
++            - 'book pages'
++            - 'primary book page'
++            - 'child book pages'
+     show_top_item:
+       type: boolean
+       label: 'Show top level item'
+diff --git a/src/Plugin/Validation/Constraint/ExistsInConstraint.php b/src/Plugin/Validation/Constraint/ExistsInConstraint.php
+index ee57af2..aa76607 100644
+--- a/src/Plugin/Validation/Constraint/ExistsInConstraint.php
++++ b/src/Plugin/Validation/Constraint/ExistsInConstraint.php
+@@ -5,6 +5,7 @@ declare(strict_types=1);
+ namespace Drupal\book\Plugin\Validation\Constraint;
+ 
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Symfony\Component\Validator\Attribute\HasNamedArguments;
+ use Symfony\Component\Validator\Constraint;
+ 
+ /**
+@@ -37,6 +38,14 @@ class ExistsInConstraint extends Constraint {
+    */
+   public string $which;
+ 
++  #[HasNamedArguments]
++  public function __construct(string $selector, string $which, ?string $message = NULL, ?array $groups = NULL, mixed $payload = NULL) {
++    parent::__construct(NULL, $groups, $payload);
++    $this->selector = $selector;
++    $this->which = $which;
++    $this->message = $message ?? $this->message;
++  }
++
+   /**
+    * {@inheritdoc}
+    */

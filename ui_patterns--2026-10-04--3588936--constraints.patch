@@ -1,0 +1,40 @@
+diff --git a/src/Element/ComponentElementAlter.php b/src/Element/ComponentElementAlter.php
+index 473defb..7f84ced 100644
+--- a/src/Element/ComponentElementAlter.php
++++ b/src/Element/ComponentElementAlter.php
+@@ -101,7 +101,7 @@ class ComponentElementAlter implements TrustedCallbackInterface {
+       }
+     }
+     $elementMetadata = BubbleableMetadata::createFromRenderArray($element);
+-    $elementMetadata->merge(BubbleableMetadata::createFromRenderArray($slot));
++    $elementMetadata = $elementMetadata->merge(BubbleableMetadata::createFromRenderArray($slot));
+     $elementMetadata->applyTo($element);
+   }
+ 
+diff --git a/src/Plugin/Validation/Constraint/RequiredArrayValuesConstraint.php b/src/Plugin/Validation/Constraint/RequiredArrayValuesConstraint.php
+index d154a00..7ebf2ce 100644
+--- a/src/Plugin/Validation/Constraint/RequiredArrayValuesConstraint.php
++++ b/src/Plugin/Validation/Constraint/RequiredArrayValuesConstraint.php
+@@ -6,6 +6,7 @@ namespace Drupal\ui_patterns\Plugin\Validation\Constraint;
+ 
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Validation\Attribute\Constraint;
++use Symfony\Component\Validator\Attribute\HasNamedArguments;
+ use Symfony\Component\Validator\Constraint as SymfonyConstraint;
+ 
+ /**
+@@ -35,6 +36,14 @@ class RequiredArrayValuesConstraint extends SymfonyConstraint {
+    */
+   public ?array $requiredValues;
+ 
++  #[HasNamedArguments]
++  public function __construct(?array $requiredValues = NULL, ?string $requiredValueMessage = NULL, ?string $notArrayMessage = NULL, ?array $groups = NULL, mixed $payload = NULL) {
++    parent::__construct(NULL, $groups, $payload);
++    $this->requiredValues = $requiredValues;
++    $this->requiredValueMessage = $requiredValueMessage ?? $this->requiredValueMessage;
++    $this->notArrayMessage = $notArrayMessage ?? $this->notArrayMessage;
++  }
++
+   /**
+    * {@inheritdoc}
+    */
