@@ -1,0 +1,44 @@
+diff --git a/src/Attribute/Relationship.php b/src/Attribute/Relationship.php
+new file mode 100644
+index 0000000..2f75000
+--- /dev/null
++++ b/src/Attribute/Relationship.php
+@@ -0,0 +1,25 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\ctools\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a Relationship attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class Relationship extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $data_type = NULL,
++    public readonly mixed $property_name = NULL,
++    public readonly mixed $context = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/RelationshipManager.php b/src/Plugin/RelationshipManager.php
+index b60462f..f017b06 100644
+--- a/src/Plugin/RelationshipManager.php
++++ b/src/Plugin/RelationshipManager.php
+@@ -26,7 +26,7 @@ class RelationshipManager extends DefaultPluginManager implements RelationshipMa
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/Relationship', $namespaces, $module_handler, 'Drupal\ctools\Plugin\RelationshipInterface', 'Drupal\ctools\Annotation\Relationship');
++    parent::__construct('Plugin/Relationship', $namespaces, $module_handler, 'Drupal\ctools\Plugin\RelationshipInterface', 'Drupal\ctools\Attribute\Relationship', 'Drupal\ctools\Annotation\Relationship');
+ 
+     $this->alterInfo('ctools_relationship_info');
+     $this->setCacheBackend($cache_backend, 'ctools_relationship_plugins');

@@ -1,0 +1,15 @@
+diff --git a/src/FieldValidationRuleSetListBuilder.php b/src/FieldValidationRuleSetListBuilder.php
+index fb15555..05d3140 100644
+--- a/src/FieldValidationRuleSetListBuilder.php
++++ b/src/FieldValidationRuleSetListBuilder.php
+@@ -69,8 +69,8 @@ class FieldValidationRuleSetListBuilder extends ConfigEntityListBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity) {
+-    return parent::getDefaultOperations($entity);
++  public function getDefaultOperations(EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL) {
++    return parent::getDefaultOperations($entity, $cacheability);
+   }
+ 
+   /**

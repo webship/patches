@@ -1,0 +1,44 @@
+diff --git a/src/Attribute/EntityEmbedDisplay.php b/src/Attribute/EntityEmbedDisplay.php
+new file mode 100644
+index 0000000..7ffd058
+--- /dev/null
++++ b/src/Attribute/EntityEmbedDisplay.php
+@@ -0,0 +1,25 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\entity_embed\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a EntityEmbedDisplay attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class EntityEmbedDisplay extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = '',
++    public readonly mixed $entity_types = FALSE,
++    public readonly mixed $no_ui = FALSE,
++    public readonly mixed $supports_image_alt_and_title = FALSE,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/EntityEmbedDisplay/EntityEmbedDisplayManager.php b/src/EntityEmbedDisplay/EntityEmbedDisplayManager.php
+index 67531e2..91fec2f 100644
+--- a/src/EntityEmbedDisplay/EntityEmbedDisplayManager.php
++++ b/src/EntityEmbedDisplay/EntityEmbedDisplayManager.php
+@@ -31,7 +31,7 @@ class EntityEmbedDisplayManager extends DefaultPluginManager {
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/entity_embed/EntityEmbedDisplay', $namespaces, $module_handler, 'Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface', 'Drupal\entity_embed\Annotation\EntityEmbedDisplay');
++    parent::__construct('Plugin/entity_embed/EntityEmbedDisplay', $namespaces, $module_handler, 'Drupal\entity_embed\EntityEmbedDisplay\EntityEmbedDisplayInterface', 'Drupal\entity_embed\Attribute\EntityEmbedDisplay', 'Drupal\entity_embed\Annotation\EntityEmbedDisplay');
+     $this->alterInfo('entity_embed_display_plugins');
+     // @todo Move the cache tag to the derivers once https://www.drupal.org/node/3001284 lands.
+     $this->setCacheBackend($cache_backend, 'entity_embed_display_plugins', ['config:entity_view_mode_list']);

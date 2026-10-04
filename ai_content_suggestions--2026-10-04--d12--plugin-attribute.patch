@@ -1,0 +1,43 @@
+diff --git a/src/AiContentSuggestionsPluginManager.php b/src/AiContentSuggestionsPluginManager.php
+index b7d5062..bdf92ee 100644
+--- a/src/AiContentSuggestionsPluginManager.php
++++ b/src/AiContentSuggestionsPluginManager.php
+@@ -18,7 +18,7 @@ final class AiContentSuggestionsPluginManager extends DefaultPluginManager {
+    * Constructs the object.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/AiContentSuggestions', $namespaces, $module_handler, AiContentSuggestionsInterface::class, AiContentSuggestions::class);
++    parent::__construct('Plugin/AiContentSuggestions', $namespaces, $module_handler, AiContentSuggestionsInterface::class, 'Drupal\ai_content_suggestions\Attribute\AiContentSuggestions', AiContentSuggestions::class);
+     $this->alterInfo('ai_content_suggestions_info');
+     $this->setCacheBackend($cache_backend, 'ai_content_suggestions_plugins');
+   }
+diff --git a/src/Attribute/AiContentSuggestions.php b/src/Attribute/AiContentSuggestions.php
+new file mode 100644
+index 0000000..74822c5
+--- /dev/null
++++ b/src/Attribute/AiContentSuggestions.php
+@@ -0,0 +1,24 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\ai_content_suggestions\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a AiContentSuggestions attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class AiContentSuggestions extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $title = NULL,
++    public readonly mixed $description = NULL,
++    public readonly mixed $operation_type = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}

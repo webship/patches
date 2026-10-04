@@ -1,0 +1,41 @@
+diff --git a/src/Attribute/Oauth2Grant.php b/src/Attribute/Oauth2Grant.php
+new file mode 100644
+index 0000000..a42c881
+--- /dev/null
++++ b/src/Attribute/Oauth2Grant.php
+@@ -0,0 +1,22 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\simple_oauth\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a Oauth2Grant attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class Oauth2Grant extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/Oauth2GrantManager.php b/src/Plugin/Oauth2GrantManager.php
+index fd59fed..21b3aac 100644
+--- a/src/Plugin/Oauth2GrantManager.php
++++ b/src/Plugin/Oauth2GrantManager.php
+@@ -32,7 +32,7 @@ class Oauth2GrantManager extends DefaultPluginManager implements Oauth2GrantMana
+    * @throws \Exception
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/Oauth2Grant', $namespaces, $module_handler, 'Drupal\simple_oauth\Plugin\Oauth2GrantInterface', 'Drupal\simple_oauth\Annotation\Oauth2Grant');
++    parent::__construct('Plugin/Oauth2Grant', $namespaces, $module_handler, 'Drupal\simple_oauth\Plugin\Oauth2GrantInterface', 'Drupal\simple_oauth\Attribute\Oauth2Grant', 'Drupal\simple_oauth\Annotation\Oauth2Grant');
+ 
+     $this->alterInfo('simple_oauth_oauth2_grant_info');
+     $this->setCacheBackend($cache_backend, 'simple_oauth_oauth2_grant_plugins');

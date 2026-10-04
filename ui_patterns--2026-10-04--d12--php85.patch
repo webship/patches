@@ -1,0 +1,26 @@
+diff --git a/src/Plugin/UiPatterns/Source/BreadcrumbSource.php b/src/Plugin/UiPatterns/Source/BreadcrumbSource.php
+index 39638dc..d35a34b 100644
+--- a/src/Plugin/UiPatterns/Source/BreadcrumbSource.php
++++ b/src/Plugin/UiPatterns/Source/BreadcrumbSource.php
+@@ -65,7 +65,7 @@ class BreadcrumbSource extends SourcePluginBase {
+ 
+     $breadcrumbCache = CacheableMetadata::createFromRenderArray($renderable);
+     $cache = CacheableMetadata::createFromRenderArray($element);
+-    $cache->merge($breadcrumbCache);
++    $cache = $cache->merge($breadcrumbCache);
+     $cache->applyTo($element);
+     return $element;
+   }
+diff --git a/src/Plugin/UiPatterns/Source/EntityLinksSource.php b/src/Plugin/UiPatterns/Source/EntityLinksSource.php
+index 81082b5..772d670 100644
+--- a/src/Plugin/UiPatterns/Source/EntityLinksSource.php
++++ b/src/Plugin/UiPatterns/Source/EntityLinksSource.php
+@@ -173,7 +173,7 @@ class EntityLinksSource extends SourcePluginBase {
+ 
+     $entityCache = CacheableMetadata::createFromObject($entity);
+     $cache = CacheableMetadata::createFromRenderArray($element);
+-    $cache->merge($entityCache);
++    $cache = $cache->merge($entityCache);
+     $cache->applyTo($element);
+     return $element;
+   }

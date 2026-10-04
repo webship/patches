@@ -1,0 +1,42 @@
+diff --git a/src/Attribute/CropEntityProvider.php b/src/Attribute/CropEntityProvider.php
+new file mode 100644
+index 0000000..ed2be57
+--- /dev/null
++++ b/src/Attribute/CropEntityProvider.php
+@@ -0,0 +1,23 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\crop\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a CropEntityProvider attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class CropEntityProvider extends Plugin {
++
++  public function __construct(
++    public readonly string $entity_type,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = '',
++  ) {
++    parent::__construct($entity_type);
++  }
++
++}
+diff --git a/src/EntityProviderManager.php b/src/EntityProviderManager.php
+index 78cdf80..087879e 100644
+--- a/src/EntityProviderManager.php
++++ b/src/EntityProviderManager.php
+@@ -23,7 +23,7 @@ class EntityProviderManager extends DefaultPluginManager {
+    *   The module handler.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/Crop/EntityProvider', $namespaces, $module_handler, 'Drupal\crop\EntityProviderInterface', 'Drupal\crop\Annotation\CropEntityProvider');
++    parent::__construct('Plugin/Crop/EntityProvider', $namespaces, $module_handler, 'Drupal\crop\EntityProviderInterface', 'Drupal\crop\Attribute\CropEntityProvider', 'Drupal\crop\Annotation\CropEntityProvider');
+ 
+     $this->alterInfo('crop_entity_provider_info');
+     $this->setCacheBackend($cache_backend, 'crop_entity_provider_plugins');

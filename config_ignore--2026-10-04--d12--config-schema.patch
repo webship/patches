@@ -1,0 +1,18 @@
+diff --git a/config/schema/config_ignore.schema.yml b/config/schema/config_ignore.schema.yml
+index 4de4b52..1fae8c2 100644
+--- a/config/schema/config_ignore.schema.yml
++++ b/config/schema/config_ignore.schema.yml
+@@ -7,9 +7,10 @@ config_ignore.settings:
+       label: 'Operational mode'
+       constraints:
+         AllowedValues:
+-          - simple
+-          - intermediate
+-          - advanced
++          choices:
++            - simple
++            - intermediate
++            - advanced
+     ignored_config_entities:
+       type: config_ignore.type.[%parent.mode]
+ 

@@ -1,0 +1,22 @@
+diff --git a/config/schema/automatic_updates.schema.yml b/config/schema/automatic_updates.schema.yml
+index ff20d21..7d9c6cd 100644
+--- a/config/schema/automatic_updates.schema.yml
++++ b/config/schema/automatic_updates.schema.yml
+@@ -11,13 +11,15 @@ automatic_updates.settings:
+           label: 'Method of running unattended updates'
+           constraints:
+             NotNull: []
+-            Choice: [console, web]
++            Choice:
++              choices: [console, web]
+         level:
+           type: string
+           label: 'Which level of unattended updates to perform'
+           constraints:
+             NotNull: []
+-            Choice: [disable, security, patch]
++            Choice:
++              choices: [disable, security, patch]
+     cron_port:
+       type: integer
+       label: 'Port to use for finalization sub-request'

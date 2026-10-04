@@ -1,0 +1,17 @@
+diff --git a/src/Drush/Listeners/ConfigIgnoreListener.php b/src/Drush/Listeners/ConfigIgnoreListener.php
+index 0aaf9d9..9a6c078 100644
+--- a/src/Drush/Listeners/ConfigIgnoreListener.php
++++ b/src/Drush/Listeners/ConfigIgnoreListener.php
+@@ -29,11 +29,10 @@ class ConfigIgnoreListener extends DrushCommands {
+     $command = $event->getApplication()->get(ConfigExportCommands::EXPORT);
+     $command->addOption(name: 'deactivate-config-ignore', description: 'Deactivate config ignore.');
+     $command->addUsage('drush config:export --deactivate-config-ignore');
+-    $command->addUsageOrExample('drush config:export --deactivate-config-ignore', 'Temporarily deactivate config ignore and export full configuration. Use with care.');
+     /** @var \Consolidation\AnnotatedCommand\AnnotatedCommand $command */
+     $command = $event->getApplication()->get(ConfigImportCommands::IMPORT);
+     $command->addOption(name: 'deactivate-config-ignore', description: 'Deactivate config ignore.');
+-    $command->addUsageOrExample('drush config:import --deactivate-config-ignore', 'Temporarily deactivate config ignore and import full configuration. Use with care.');
++    $command->addUsage('drush config:import --deactivate-config-ignore');
+   }
+ 
+   /**

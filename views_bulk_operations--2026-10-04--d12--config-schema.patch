@@ -1,0 +1,30 @@
+diff --git a/config/schema/views_bulk_operations.views.schema.yml b/config/schema/views_bulk_operations.views.schema.yml
+index 9a2e752..fb2006f 100644
+--- a/config/schema/views_bulk_operations.views.schema.yml
++++ b/config/schema/views_bulk_operations.views.schema.yml
+@@ -28,17 +28,19 @@ views.field.views_bulk_operations_bulk_form:
+       label: 'Show an "Items selected" details element'
+       constraints:
+         Choice:
+-          - default
+-          - always_show
+-          - always_hide
++          choices:
++            - default
++            - always_show
++            - always_hide
+     show_select_all:
+       type: string
+       label: 'Show a "Select / Deselect all results (all pages)" checkbox'
+       constraints:
+         Choice:
+-          - default
+-          - always_show
+-          - always_hide
++          choices:
++            - default
++            - always_show
++            - always_hide
+     selected_actions:
+       type: sequence
+       label: 'Selected actions data array'

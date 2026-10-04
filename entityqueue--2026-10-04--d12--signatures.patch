@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/Validation/Constraint/QueueSizeConstraintValidator.php b/src/Plugin/Validation/Constraint/QueueSizeConstraintValidator.php
+index e0b8383..5b2d10f 100644
+--- a/src/Plugin/Validation/Constraint/QueueSizeConstraintValidator.php
++++ b/src/Plugin/Validation/Constraint/QueueSizeConstraintValidator.php
+@@ -16,7 +16,7 @@ class QueueSizeConstraintValidator extends ConstraintValidator {
+   /**
+    * {@inheritdoc}
+    */
+-  public function validate($entity, Constraint $constraint) {
++  public function validate(mixed $entity, Constraint $constraint): void {
+     assert($entity instanceof EntitySubqueueInterface);
+     assert($constraint instanceof QueueSizeConstraint);
+ 

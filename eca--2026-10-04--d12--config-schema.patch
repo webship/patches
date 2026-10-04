@@ -1,0 +1,178 @@
+diff --git a/config/schema/eca.schema.yml b/config/schema/eca.schema.yml
+index dad594f..2e1a368 100644
+--- a/config/schema/eca.schema.yml
++++ b/config/schema/eca.schema.yml
+@@ -100,7 +100,8 @@ eca.settings:
+       label: 'Log level'
+       constraints:
+         # @see \Drupal\Core\Logger::getLevels()
+-        Choice: [0, 1, 2, 3, 4, 5, 6, 7]
++        Choice:
++          choices: [0, 1, 2, 3, 4, 5, 6, 7]
+     documentation_domain:
+       type: string
+       label: 'Documentation domain'
+@@ -120,10 +121,11 @@ eca.settings:
+         label: 'Enabled calculation setting'
+         constraints:
+           Choice:
+-            - bundle
+-            - field_storage
+-            - field_config
+-            - new_field_config
++            choices:
++              - bundle
++              - field_storage
++              - field_config
++              - new_field_config
+ 
+ eca.eca.*:
+   type: config_entity
+@@ -215,7 +217,8 @@ eca.eca.*:
+             type: integer
+             label: 'Type'
+             constraints:
+-              Choice: [0]
++              Choice:
++                choices: [0]
+           successors:
+             type: sequence
+             label: 'Successors'
+diff --git a/modules/base/config/schema/eca_base.schema.yml b/modules/base/config/schema/eca_base.schema.yml
+index 7a1f792..2fb6f1e 100644
+--- a/modules/base/config/schema/eca_base.schema.yml
++++ b/modules/base/config/schema/eca_base.schema.yml
+@@ -292,8 +292,9 @@ action.configuration.eca_list_compare:
+       constraints:
+         NotBlank: []
+         Choice:
+-          - array_diff
+-          - array_intersect
++          choices:
++            - array_diff
++            - array_intersect
+     result_token_name:
+       type: eca.token_name.required
+       label: 'Name of result token'
+@@ -382,12 +383,13 @@ action.configuration.eca_list_sort:
+       constraints:
+         NotBlank: []
+         Choice:
+-          - asort
+-          - arsort
+-          - ksort
+-          - krsort
+-          - natsort
+-          - natcasesort
++          choices:
++            - asort
++            - arsort
++            - ksort
++            - krsort
++            - natsort
++            - natcasesort
+     token_name:
+       type: eca.token_name
+       label: 'Name of token'
+diff --git a/modules/config/config/schema/eca_config.schema.yml b/modules/config/config/schema/eca_config.schema.yml
+index d1570ec..4f26c7d 100644
+--- a/modules/config/config/schema/eca_config.schema.yml
++++ b/modules/config/config/schema/eca_config.schema.yml
+@@ -10,9 +10,10 @@ eca.event.plugin.config:delete:
+       label: 'Sync Mode'
+       constraints:
+         Choice:
+-          - ''
+-          - 'yes'
+-          - 'no'
++          choices:
++            - ''
++            - 'yes'
++            - 'no'
+ 
+ eca.event.plugin.config:collection_info:
+   type: eca.event.plugin
+@@ -46,17 +47,19 @@ eca.event.plugin.config:save:
+       label: 'Sync Mode'
+       constraints:
+         Choice:
+-          - ''
+-          - 'yes'
+-          - 'no'
++          choices:
++            - ''
++            - 'yes'
++            - 'no'
+     write_mode:
+       type: string
+       label: 'Write Mode'
+       constraints:
+         Choice:
+-          - ''
+-          - 'new'
+-          - 'update'
++          choices:
++            - ''
++            - 'new'
++            - 'update'
+ 
+ eca.condition.plugin.eca_config_installer_sync_mode:
+   type: eca.condition.plugin
+diff --git a/modules/content/config/schema/eca_content.schema.yml b/modules/content/config/schema/eca_content.schema.yml
+index d010189..f5ec7cb 100644
+--- a/modules/content/config/schema/eca_content.schema.yml
++++ b/modules/content/config/schema/eca_content.schema.yml
+@@ -512,8 +512,9 @@ action.configuration.eca_get_bundle_list:
+       label: 'Mode'
+       constraints:
+         Choice:
+-          - ids
+-          - labels
++          choices:
++            - ids
++            - labels
+ 
+ action.configuration.eca_get_entity_type_list:
+   type: mapping
+@@ -527,8 +528,9 @@ action.configuration.eca_get_entity_type_list:
+       label: 'Mode'
+       constraints:
+         Choice:
+-          - ids
+-          - labels
++          choices:
++            - ids
++            - labels
+ 
+ action.configuration.eca_token_load_entity:
+   type: mapping
+diff --git a/modules/log/config/schema/eca_log.schema.yml b/modules/log/config/schema/eca_log.schema.yml
+index c5b85f2..44fe409 100644
+--- a/modules/log/config/schema/eca_log.schema.yml
++++ b/modules/log/config/schema/eca_log.schema.yml
+@@ -10,7 +10,8 @@ eca.event.plugin.log:log_message:
+       label: 'Minimum severity'
+       constraints:
+         # @see \Drupal\Core\Logger::getLevels()
+-        Choice: [0, 1, 2, 3, 4, 5, 6, 7]
++        Choice:
++          choices: [0, 1, 2, 3, 4, 5, 6, 7]
+ 
+ action.configuration.eca_write_log_message:
+   type: mapping
+diff --git a/modules/render/config/schema/eca_render.schema.yml b/modules/render/config/schema/eca_render.schema.yml
+index a555c28..c99f161 100644
+--- a/modules/render/config/schema/eca_render.schema.yml
++++ b/modules/render/config/schema/eca_render.schema.yml
+@@ -68,8 +68,9 @@ eca.event.plugin.eca_render:extra_field:
+       label: 'Display type'
+       constraints:
+         Choice:
+-          - display
+-          - form
++          choices:
++            - display
++            - form
+         NotBlank: []
+     weight:
+       type: weight

@@ -1,0 +1,45 @@
+diff --git a/src/Attribute/SchemaPropertyType.php b/src/Attribute/SchemaPropertyType.php
+new file mode 100644
+index 0000000..c401f9b
+--- /dev/null
++++ b/src/Attribute/SchemaPropertyType.php
+@@ -0,0 +1,26 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\schema_metatag\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a SchemaPropertyType attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class SchemaPropertyType extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $property_type = NULL,
++    public readonly mixed $sub_properties = NULL,
++    public readonly mixed $tree_parent = NULL,
++    public readonly mixed $tree_depth = NULL,
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/schema_metatag/PropertyTypeManager.php b/src/Plugin/schema_metatag/PropertyTypeManager.php
+index f8bd513..e5b6c27 100644
+--- a/src/Plugin/schema_metatag/PropertyTypeManager.php
++++ b/src/Plugin/schema_metatag/PropertyTypeManager.php
+@@ -32,7 +32,7 @@ public function __construct(
+       $namespaces,
+       $module_handler,
+       'Drupal\schema_metatag\Plugin\schema_metatag\PropertyTypeInterface',
+-      'Drupal\schema_metatag\Annotation\SchemaPropertyType');
++      'Drupal\schema_metatag\Attribute\SchemaPropertyType', 'Drupal\schema_metatag\Annotation\SchemaPropertyType');
+ 
+     $this->alterInfo('schema_metatag_property_type_plugins');
+     $this->setCacheBackend($cache_backend, 'schema_metatag_property_type_plugins');

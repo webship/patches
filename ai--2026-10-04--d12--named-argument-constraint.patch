@@ -1,0 +1,33 @@
+diff --git a/src/Plugin/Validation/Constraint/ComplexToolItemsConstraint.php b/src/Plugin/Validation/Constraint/ComplexToolItemsConstraint.php
+index 9005685..47392d7 100644
+--- a/src/Plugin/Validation/Constraint/ComplexToolItemsConstraint.php
++++ b/src/Plugin/Validation/Constraint/ComplexToolItemsConstraint.php
+@@ -4,6 +4,7 @@ namespace Drupal\ai\Plugin\Validation\Constraint;
+ 
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Validation\Attribute\Constraint;
++use Symfony\Component\Validator\Attribute\HasNamedArguments;
+ use Symfony\Component\Validator\Constraint as SymfonyConstraint;
+ 
+ /**
+@@ -34,15 +35,11 @@ class ComplexToolItemsConstraint extends SymfonyConstraint {
+    */
+   public $message = "The value '%value' has to be an class or array of classes that implements the FunctionCallInterface or the output value.";
+ 
+-  /**
+-   * {@inheritdoc}
+-   */
+-  public function __construct($options = NULL) {
+-    parent::__construct($options);
+-    // Allow for a compact notation where the value is directly provided.
+-    if (isset($options) && !is_array($options) && !($options instanceof \Traversable)) {
+-      $this->value = $options;
+-    }
++  #[HasNamedArguments]
++  public function __construct(mixed $value = NULL, ?string $message = NULL, ?array $groups = NULL, mixed $payload = NULL) {
++    parent::__construct(NULL, $groups, $payload);
++    $this->value = $value;
++    $this->message = $message ?? $this->message;
+   }
+ 
+   /**

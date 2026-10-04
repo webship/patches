@@ -1,0 +1,28 @@
+diff --git a/metatag_custom_tags/config/schema/metatag_custom_tags.metatag_custom_tag.schema.yml b/metatag_custom_tags/config/schema/metatag_custom_tags.metatag_custom_tag.schema.yml
+index 8a5bd78..3135302 100644
+--- a/metatag_custom_tags/config/schema/metatag_custom_tags.metatag_custom_tag.schema.yml
++++ b/metatag_custom_tags/config/schema/metatag_custom_tags.metatag_custom_tag.schema.yml
+@@ -16,16 +16,18 @@ metatag_custom_tags.metatag_custom_tag.*:
+       label: 'Element of the HTML tag. e.g. meta, link, etc.'
+       constraints:
+         Choice:
+-          - meta
+-          - link
++          choices:
++            - meta
++            - link
+     htmlValueAttribute:
+       type: string
+       label: 'The name of the html value attribute. e.g. content, href, charset, etc.'
+       constraints:
+         Choice:
+-          - content
+-          - charset
+-          - href
++          choices:
++            - content
++            - charset
++            - href
+     attributes:
+       type: sequence
+       label: 'Additional attributes'

@@ -1,0 +1,44 @@
+diff --git a/src/Attribute/ConfigFilter.php b/src/Attribute/ConfigFilter.php
+new file mode 100644
+index 0000000..508d31b
+--- /dev/null
++++ b/src/Attribute/ConfigFilter.php
+@@ -0,0 +1,25 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\config_filter\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a ConfigFilter attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class ConfigFilter extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $weight = 0,
++    public readonly mixed $status = TRUE,
++    public readonly mixed $storages = [],
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/Plugin/ConfigFilterPluginManager.php b/src/Plugin/ConfigFilterPluginManager.php
+index e673ef4..50285dc 100644
+--- a/src/Plugin/ConfigFilterPluginManager.php
++++ b/src/Plugin/ConfigFilterPluginManager.php
+@@ -24,7 +24,7 @@ class ConfigFilterPluginManager extends DefaultPluginManager implements ConfigFi
+    *   The module handler to invoke the alter hook with.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/ConfigFilter', $namespaces, $module_handler, 'Drupal\config_filter\Plugin\ConfigFilterInterface', 'Drupal\config_filter\Annotation\ConfigFilter');
++    parent::__construct('Plugin/ConfigFilter', $namespaces, $module_handler, 'Drupal\config_filter\Plugin\ConfigFilterInterface', 'Drupal\config_filter\Attribute\ConfigFilter', 'Drupal\config_filter\Annotation\ConfigFilter');
+ 
+     $this->alterInfo('config_filter_info');
+     $this->setCacheBackend($cache_backend, 'config_filter_plugins');

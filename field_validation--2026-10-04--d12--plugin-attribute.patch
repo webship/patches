@@ -1,0 +1,42 @@
+diff --git a/src/Attribute/FieldValidationRule.php b/src/Attribute/FieldValidationRule.php
+new file mode 100644
+index 0000000..b9ea512
+--- /dev/null
++++ b/src/Attribute/FieldValidationRule.php
+@@ -0,0 +1,23 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\field_validation\Attribute;
++
++use Drupal\Component\Plugin\Attribute\Plugin;
++
++/**
++ * Defines a FieldValidationRule attribute, the Drupal 12 counterpart of the annotation.
++ */
++#[\Attribute(\Attribute::TARGET_CLASS)]
++class FieldValidationRule extends Plugin {
++
++  public function __construct(
++    string $id,
++    public readonly mixed $label = NULL,
++    public readonly mixed $description = '',
++  ) {
++    parent::__construct($id);
++  }
++
++}
+diff --git a/src/FieldValidationRuleManager.php b/src/FieldValidationRuleManager.php
+index 7a0a350..ca16cb8 100644
+--- a/src/FieldValidationRuleManager.php
++++ b/src/FieldValidationRuleManager.php
+@@ -31,7 +31,7 @@ class FieldValidationRuleManager extends DefaultPluginManager {
+    *   The module handler.
+    */
+   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+-    parent::__construct('Plugin/FieldValidationRule', $namespaces, $module_handler, 'Drupal\field_validation\FieldValidationRuleInterface', 'Drupal\field_validation\Annotation\FieldValidationRule');
++    parent::__construct('Plugin/FieldValidationRule', $namespaces, $module_handler, 'Drupal\field_validation\FieldValidationRuleInterface', 'Drupal\field_validation\Attribute\FieldValidationRule', 'Drupal\field_validation\Annotation\FieldValidationRule');
+ 
+     $this->alterInfo('field_validation_rule_info');
+     $this->setCacheBackend($cache_backend, 'field_validation_rule_plugins');

@@ -1,0 +1,26 @@
+diff --git a/src/Plugin/AiFunctionCall/Children/ContentEntityFieldValuesList.php b/src/Plugin/AiFunctionCall/Children/ContentEntityFieldValuesList.php
+index 4f0b436..0900760 100644
+--- a/src/Plugin/AiFunctionCall/Children/ContentEntityFieldValuesList.php
++++ b/src/Plugin/AiFunctionCall/Children/ContentEntityFieldValuesList.php
+@@ -30,7 +30,7 @@ use Drupal\ai\Base\FunctionCallBase;
+       required: TRUE,
+       multiple: TRUE,
+       constraints: [
+-        'ComplexToolItems' => ContentEntityFieldValue::class,
++        'ComplexToolItems' => ['value' => ContentEntityFieldValue::class],
+       ],
+     ),
+   ],
+diff --git a/src/Plugin/AiFunctionCall/ContentEntitySeeder.php b/src/Plugin/AiFunctionCall/ContentEntitySeeder.php
+index 19b4ac2..836b253 100644
+--- a/src/Plugin/AiFunctionCall/ContentEntitySeeder.php
++++ b/src/Plugin/AiFunctionCall/ContentEntitySeeder.php
+@@ -55,7 +55,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+       required: TRUE,
+       multiple: TRUE,
+       constraints: [
+-        'ComplexToolItems' => ContentEntityFieldValuesList::class,
++        'ComplexToolItems' => ['value' => ContentEntityFieldValuesList::class],
+       ],
+     ),
+   ],

@@ -1,0 +1,29 @@
+diff --git a/src/ConfigSplitEntityListBuilder.php b/src/ConfigSplitEntityListBuilder.php
+index 0450111..08cb4bb 100644
+--- a/src/ConfigSplitEntityListBuilder.php
++++ b/src/ConfigSplitEntityListBuilder.php
+@@ -96,9 +96,9 @@ public function buildRow(EntityInterface $entity) {
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDefaultOperations(EntityInterface $entity) {
++  public function getDefaultOperations(EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL) {
+     /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $entity */
+-    $operations = parent::getDefaultOperations($entity);
++    $operations = parent::getDefaultOperations($entity, $cacheability);
+ 
+     // Operations changing the entity.
+     if (!$entity->get('status') && $entity->hasLinkTemplate('enable')) {
+diff --git a/src/EventSubscriber/SplitImportExportSubscriber.php b/src/EventSubscriber/SplitImportExportSubscriber.php
+index 8d2c965..b01d3f3 100644
+--- a/src/EventSubscriber/SplitImportExportSubscriber.php
++++ b/src/EventSubscriber/SplitImportExportSubscriber.php
+@@ -45,7 +45,7 @@ public function __construct(ConfigSplitManager $manager, ConfigFactoryInterface
+   /**
+    * {@inheritdoc}
+    */
+-  public static function getSubscribedEvents() {
++  public static function getSubscribedEvents(): array {
+     // We get the splits priority from the settings.
+     // Unfortunately we can not load the existing splits from the drupal because
+     // the subscribed events is compiled into the container in a compiler pass
