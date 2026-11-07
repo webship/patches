@@ -7,7 +7,9 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
-- Drop or re-roll the patches that stopped applying to the current releases, which broke `composer install` of webship_project, webships_project and website
+## [12.0.10] - 2026-11-07
+
+- Drop or re-roll the patches that stopped applying to the current releases, which broke `composer install` of webship_project, webships_project and website ([#51](https://github.com/webship/patches/pull/51), patch files in [#50](https://github.com/webship/patches/pull/50))
   - Dropped, now in the release: Key 1.23.0 ([#3632542](https://www.drupal.org/i/3632542)), Token 1.18.0 ([#3586686](https://www.drupal.org/i/3586686)), Captcha 2.0.12 ([#3596096](https://www.drupal.org/i/3596096)), Shield 1.11.0 ([#3602958](https://www.drupal.org/i/3602958)), Entityqueue 1.13.0 ([#3597890](https://www.drupal.org/i/3597890)), Metatag 2.2.5 ([#3600244](https://www.drupal.org/i/3600244), [#3398796](https://www.drupal.org/i/3398796)), Better Exposed Filters 7.2.0, UI Patterns 2.0.23 ([#3625036](https://www.drupal.org/i/3625036), [#3589825](https://www.drupal.org/i/3589825)), and the ai_translate 1.4.4 and ai_playwright 1.0.0-beta1 signature and requirements patches
   - Re-rolled: ai 1.5.2 and ai_translate 1.4.4 info files ([#3586520](https://www.drupal.org/i/3586520), [#3585522](https://www.drupal.org/i/3585522)), easy_breadcrumb 2.0.11 ([#3597449](https://www.drupal.org/i/3597449)), ai_playwright 1.0.0-beta1 ([#3609765](https://www.drupal.org/i/3609765)), ui_patterns 2.0.23 RequiredArrayValues constructor ([#3588936](https://www.drupal.org/i/3588936))
 
@@ -75,6 +77,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.10]: https://github.com/webship/patches/compare/12.0.9...12.0.10
 [12.0.9]: https://github.com/webship/patches/compare/12.0.8...12.0.9
 [12.0.8]: https://github.com/webship/patches/compare/12.0.7...12.0.8
 [12.0.7]: https://github.com/webship/patches/compare/12.0.6...12.0.7
