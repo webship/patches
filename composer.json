@@ -281,9 +281,6 @@
             "drupal/openapi_ui_swagger": {
                 "Issue #3601706: Automated Drupal 12 compatibility fixes for openapi_ui_swagger 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_ui_swagger--2026-10-01--3601706--mr-9.patch"
             },
-            "drupal/pathauto": {
-                "Issue #3601975: Drupal 12 compatibility": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/pathauto--2026-10-01--3601975--b97aadf4.patch"
-            },
             "drupal/project_browser": {
                 "Issue #3602187: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/project_browser--2026-10-04--3602187--info-yml.patch"
             },

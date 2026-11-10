@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the Pathauto Drupal 12 compatibility patch for [#3601975](https://www.drupal.org/i/3601975): Pathauto 1.16.0 carries it, and the file no longer applies, which broke `composer install` of webship_project 12.0.x
+
 ## [12.0.10] - 2026-11-07
 
 - Drop or re-roll the patches that stopped applying to the current releases, which broke `composer install` of webship_project, webships_project and website ([#51](https://github.com/webship/patches/pull/51), patch files in [#50](https://github.com/webship/patches/pull/50))
