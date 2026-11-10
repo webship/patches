@@ -67,7 +67,7 @@ function looksLikeDiff(string $body): bool
  */
 function selfHostedPath(string $url): ?string
 {
-    $pattern = '#^https://raw\.githubusercontent\.com/[Vv]ardot/patches/(?:refs/heads/)?patches/(.+)$#';
+    $pattern = '#^https://raw\.githubusercontent\.com/webship/patches/(?:refs/heads/)?patches/(.+)$#';
 
     return preg_match($pattern, $url, $m) === 1 ? $m[1] : null;
 }
