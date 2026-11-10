@@ -1,0 +1,25 @@
+diff --git a/ai_playwright.info.yml b/ai_playwright.info.yml
+index c282293b1af424c479634c738b8eb761a9ad2795..4476178939b4808fdfc8716d1e3bd0adf8eb0638 100644
+--- a/ai_playwright.info.yml
++++ b/ai_playwright.info.yml
+@@ -2,7 +2,7 @@ name: 'AI Playwright'
+ type: module
+ description: 'Gives Drupal AI Agents eyes on a rendered page: a Playwright browser tool that opens a page of this site in headless Chromium and returns a screenshot, title, visible text and console errors, so the Drupal Canvas AI assistant can see and verify what it builds. Config-driven and framework-agnostic.'
+ package: 'AI'
+-core_version_requirement: ^11.2
++core_version_requirement: ^11.2 || ^12
+ dependencies:
+   - ai:ai
+   - ai_agents:ai_agents
+diff --git a/composer.json b/composer.json
+index a508b35d0bb27c1f87786b14bb2d24900a122aa6..e9067d507494a039188bb9138d8c0452da1dbfcd 100644
+--- a/composer.json
++++ b/composer.json
+@@ -28,5 +28,5 @@
+         "php": ">=8.3",
+-        "drupal/core": "^11",
+         "drupal/ai": "^1",
+-        "drupal/ai_agents": "^1"
++        "drupal/ai_agents": "^1",
++        "drupal/core": "^11.0 || ^12"
+     },
