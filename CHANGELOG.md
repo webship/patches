@@ -7,12 +7,14 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
-- Change the AI Playwright Drupal 12 compatibility patch for [#3609765](https://www.drupal.org/i/3609765) to the file re-rolled for ai_playwright 1.0.0-beta2: the 1.0.0-beta1 file no longer applies, which broke `composer install` of webship_project 12.0.x
+## [12.0.11] - 2026-11-10
+
+- Change the AI Playwright Drupal 12 compatibility patch for [#3609765](https://www.drupal.org/i/3609765) to the file re-rolled for ai_playwright 1.0.0-beta2: the 1.0.0-beta1 file no longer applies, which broke `composer install` of webship_project 12.0.x ([#54](https://github.com/webship/patches/pull/54), patch file in [#53](https://github.com/webship/patches/pull/53))
   - The new file keeps `^12` in the info file and in the `drupal/core` constraint of `composer.json`; beta2 already carries the PHPUnit attributes, so those hunks are gone, and the file still applies to 1.0.0-beta1
-- Change the Display Builder `core_version_requirement` patch for [#3620792](https://www.drupal.org/i/3620792) to the file re-rolled for display_builder 1.0.0-beta10: the 2026-10-04 file no longer applies, which broke `composer install` of webship_project 12.0.x
+- Change the Display Builder `core_version_requirement` patch for [#3620792](https://www.drupal.org/i/3620792) to the file re-rolled for display_builder 1.0.0-beta10: the 2026-10-04 file no longer applies, which broke `composer install` of webship_project 12.0.x ([#57](https://github.com/webship/patches/pull/57), patch file in [#55](https://github.com/webship/patches/pull/55))
   - The new file keeps the hunks that still applied and re-rolls those of the entity view and UI submodules, whose `dependencies` changed in 1.0.0-beta10; it still applies to 1.0.0-beta9
-- Remove the Display Builder patch that reads the view displays through `get()` ([#3620792](https://www.drupal.org/i/3620792)): display_builder 1.0.0-beta10 no longer reads the protected `View::$display` ([#3629063](https://www.drupal.org/i/3629063)), and the file no longer applies, which broke `composer install` of webship_project 12.0.x
-- Remove the Pathauto Drupal 12 compatibility patch for [#3601975](https://www.drupal.org/i/3601975): Pathauto 1.16.0 carries it, and the file no longer applies, which broke `composer install` of webship_project 12.0.x
+- Remove the Display Builder patch that reads the view displays through `get()` ([#3620792](https://www.drupal.org/i/3620792)): display_builder 1.0.0-beta10 no longer reads the protected `View::$display` ([#3629063](https://www.drupal.org/i/3629063)), and the file no longer applies, which broke `composer install` of webship_project 12.0.x ([#58](https://github.com/webship/patches/pull/58))
+- Remove the Pathauto Drupal 12 compatibility patch for [#3601975](https://www.drupal.org/i/3601975): Pathauto 1.16.0 carries it, and the file no longer applies, which broke `composer install` of webship_project 12.0.x ([#56](https://github.com/webship/patches/pull/56))
 
 ## [12.0.10] - 2026-11-07
 
@@ -84,6 +86,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.11]: https://github.com/webship/patches/compare/12.0.10...12.0.11
 [12.0.10]: https://github.com/webship/patches/compare/12.0.9...12.0.10
 [12.0.9]: https://github.com/webship/patches/compare/12.0.8...12.0.9
 [12.0.8]: https://github.com/webship/patches/compare/12.0.7...12.0.8
