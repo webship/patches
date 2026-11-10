@@ -63,7 +63,7 @@
                 "Issue #3617097: Automated Drupal 12 compatibility fixes for ai_penpot 1.0.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_penpot--2026-10-01--3617097--mr-5.patch"
             },
             "drupal/ai_playwright": {
-                "Issue #3609765: Automated Drupal 12 compatibility fixes for ai_playwright 1.0.x-dev (re-rolled for 1.0.0-beta1)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_playwright--2026-11-07--3609765--mr-10--1-0-0-beta1.patch"
+                "Issue #3609765: Automated Drupal 12 compatibility fixes for ai_playwright 1.0.x-dev (re-rolled for 1.0.0-beta2)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_playwright--2026-11-10--3609765--mr-10--1-0-0-beta2.patch"
             },
             "drupal/ai_provider_anthropic": {
                 "Issue #3594706: Automated Drupal 12 compatibility fixes for ai_provider_anthropic 1.3.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_provider_anthropic--2026-10-01--3594706--mr-33.patch"
@@ -148,8 +148,7 @@
                 "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/display_builder": {
-                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch",
-                "Drupal 12: do not read the protected View::$display (display_builder_views)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--views-display.patch"
+                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only, re-rolled for 1.0.0-beta10)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-11-10--3620792--mr-460--1-0-0-beta10.patch"
             },
             "drupal/display_builder_ai": {
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder_ai--2026-10-04--d12--signatures.patch"
@@ -280,9 +279,6 @@
             },
             "drupal/openapi_ui_swagger": {
                 "Issue #3601706: Automated Drupal 12 compatibility fixes for openapi_ui_swagger 1.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/openapi_ui_swagger--2026-10-01--3601706--mr-9.patch"
-            },
-            "drupal/pathauto": {
-                "Issue #3601975: Drupal 12 compatibility": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/pathauto--2026-10-01--3601975--b97aadf4.patch"
             },
             "drupal/project_browser": {
                 "Issue #3602187: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/project_browser--2026-10-04--3602187--info-yml.patch"

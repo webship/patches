@@ -7,6 +7,13 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Change the AI Playwright Drupal 12 compatibility patch for [#3609765](https://www.drupal.org/i/3609765) to the file re-rolled for ai_playwright 1.0.0-beta2: the 1.0.0-beta1 file no longer applies, which broke `composer install` of webship_project 12.0.x
+  - The new file keeps `^12` in the info file and in the `drupal/core` constraint of `composer.json`; beta2 already carries the PHPUnit attributes, so those hunks are gone, and the file still applies to 1.0.0-beta1
+- Change the Display Builder `core_version_requirement` patch for [#3620792](https://www.drupal.org/i/3620792) to the file re-rolled for display_builder 1.0.0-beta10: the 2026-10-04 file no longer applies, which broke `composer install` of webship_project 12.0.x
+  - The new file keeps the hunks that still applied and re-rolls those of the entity view and UI submodules, whose `dependencies` changed in 1.0.0-beta10; it still applies to 1.0.0-beta9
+- Remove the Display Builder patch that reads the view displays through `get()` ([#3620792](https://www.drupal.org/i/3620792)): display_builder 1.0.0-beta10 no longer reads the protected `View::$display` ([#3629063](https://www.drupal.org/i/3629063)), and the file no longer applies, which broke `composer install` of webship_project 12.0.x
+- Remove the Pathauto Drupal 12 compatibility patch for [#3601975](https://www.drupal.org/i/3601975): Pathauto 1.16.0 carries it, and the file no longer applies, which broke `composer install` of webship_project 12.0.x
+
 ## [12.0.10] - 2026-11-07
 
 - Drop or re-roll the patches that stopped applying to the current releases, which broke `composer install` of webship_project, webships_project and website ([#51](https://github.com/webship/patches/pull/51), patch files in [#50](https://github.com/webship/patches/pull/50))
