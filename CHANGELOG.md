@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the Shield patch for [#3562392](https://www.drupal.org/i/3562392): Shield 1.9.0 rewrote the settings form, so the file no longer applies to any release Composer now resolves, and Shield 1.11.0 already declares the constructor parameter nullable, which the patch was for; the weekly 11.0.x run had been red on it since 2026-10-26 ([#62](https://github.com/webship/patches/pull/62))
+  - The test project no longer installs `drupal/shield`; the patch file stays on the `patches` branch because released tags still point at it
 - Remove the patches for the Display Builder module (`drupal/display_builder`)
 
 ## [11.0.1] - 2026-09-15

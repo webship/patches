@@ -33,7 +33,6 @@
         "drupal/inline_entity_form": "~3",
         "drupal/recaptcha_v3": "~2.0.0",
         "drupal/redirect": "~1",
-        "drupal/shield": "~1",
         "drupal/views_bulk_edit": "~3",
         "oomphinc/composer-installers-extender": "~2",
         "webship/patches": "11.0.x-dev"
