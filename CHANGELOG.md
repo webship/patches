@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Change the Display Builder `core_version_requirement` patch for [#3620792](https://www.drupal.org/i/3620792) to the file re-rolled for display_builder 1.0.0-beta10: the 2026-10-04 file no longer applies, which broke `composer install` of webship_project 12.0.x
+  - The new file keeps the hunks that still applied and re-rolls those of the entity view and UI submodules, whose `dependencies` changed in 1.0.0-beta10; it still applies to 1.0.0-beta9
 - Remove the Pathauto Drupal 12 compatibility patch for [#3601975](https://www.drupal.org/i/3601975): Pathauto 1.16.0 carries it, and the file no longer applies, which broke `composer install` of webship_project 12.0.x
 
 ## [12.0.10] - 2026-11-07

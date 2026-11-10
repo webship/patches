@@ -148,7 +148,7 @@
                 "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/devel--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/display_builder": {
-                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--info-yml.patch",
+                "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only, re-rolled for 1.0.0-beta10)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-11-10--3620792--mr-460--1-0-0-beta10.patch",
                 "Drupal 12: do not read the protected View::$display (display_builder_views)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-10-04--3620792--views-display.patch"
             },
             "drupal/display_builder_ai": {
