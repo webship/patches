@@ -17,6 +17,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The weekly schedule only fires on the default branch. This job hands the
+  # same run to 12.0.x, so a patch that stops applying there turns up within
+  # a week instead of when a consumer's pipeline resolves the new release.
+  weekly-12-0-x:
+    name: Run the 12.0.x workflow
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch Test patches on 12.0.x
+        run: gh workflow run test-patches.yml --repo "$GITHUB_REPOSITORY" --ref 12.0.x
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   patch-files:
     name: Patch files exist
     runs-on: ubuntu-latest
