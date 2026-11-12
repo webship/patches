@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the three Devel Drupal 12 patches (`RequirementSeverity`, the Attribute classes of the plugin managers, `interact(): void` of the Drush commands): devel 5.6.0-rc1 carries them ([devel #565](https://gitlab.com/drupalspoons/devel/-/work_items/565), commit [`42b1a3a`](https://git.drupalcode.org/project/devel/-/commit/42b1a3a048d08f2c45b20c2f832617b8d2acaa0b)), and none of the three files applied to it, which broke `composer install` of webship_project 12.0.x ([#68](https://github.com/webship/patches/pull/68))
+  - The three files stay on the `patches` branch, because other refs still point at them; they still apply to devel 5.5.0, which devel #565 reports as not Drupal 12 compatible
 - Remove the Autocomplete Deluxe Drupal 12 compatibility patch for [#3591908](https://www.drupal.org/i/3591908): autocomplete_deluxe 2.2.0 carries `^12` in its info file, and the file no longer applies, which turns the `Test patches` run of 12.0.x red ([#67](https://github.com/webship/patches/pull/67))
 
 ## [12.0.11] - 2026-11-10
