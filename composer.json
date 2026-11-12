@@ -86,9 +86,6 @@
             "drupal/antibot": {
                 "Issue #3595688: Automated Drupal 12 compatibility fixes for antibot 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/antibot--2026-10-01--3595688--info-yml.patch"
             },
-            "drupal/autocomplete_deluxe": {
-                "Issue #3591908: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/autocomplete_deluxe--2026-10-04--3591908--info-yml.patch"
-            },
             "drupal/automatic_updates": {
                 "Issue #3595712: Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--3595712--info-yml.patch",
                 "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/automatic_updates--2026-10-04--d12--config-schema.patch",
