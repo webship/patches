@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the Autocomplete Deluxe Drupal 12 compatibility patch for [#3591908](https://www.drupal.org/i/3591908): autocomplete_deluxe 2.2.0 carries `^12` in its info file, and the file no longer applies, which turns the `Test patches` run of 12.0.x red ([#67](https://github.com/webship/patches/pull/67))
+
 ## [12.0.11] - 2026-11-10
 
 - Change the AI Playwright Drupal 12 compatibility patch for [#3609765](https://www.drupal.org/i/3609765) to the file re-rolled for ai_playwright 1.0.0-beta2: the 1.0.0-beta1 file no longer applies, which broke `composer install` of webship_project 12.0.x ([#54](https://github.com/webship/patches/pull/54), patch file in [#53](https://github.com/webship/patches/pull/53))
