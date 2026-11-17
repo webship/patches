@@ -7,6 +7,9 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Remove the AI Logging Drupal 12 compatibility patch: ai_logging 1.3.4 carries `^12` in its info file, and the file no longer applies, which stopped `composer create-project drupal/webship_project:12.0.x-dev`
+  - The file stays on the `patches` branch, as the earlier removals keep theirs
+
 ## [12.0.12] - 2026-11-12
 
 - Remove the three Devel Drupal 12 patches (`RequirementSeverity`, the Attribute classes of the plugin managers, `interact(): void` of the Drush commands): devel 5.6.0-rc1 carries them ([devel #565](https://gitlab.com/drupalspoons/devel/-/work_items/565), commit [`42b1a3a`](https://git.drupalcode.org/project/devel/-/commit/42b1a3a048d08f2c45b20c2f832617b8d2acaa0b)), and none of the three files applied to it, which broke `composer install` of webship_project 12.0.x ([#68](https://github.com/webship/patches/pull/68))
