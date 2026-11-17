@@ -7,8 +7,10 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
-- Remove the AI Logging Drupal 12 compatibility patch: ai_logging 1.3.4 carries `^12` in its info file, and the file no longer applies, which stopped `composer create-project drupal/webship_project:12.0.x-dev`
+- Remove the AI Logging Drupal 12 compatibility patch: ai_logging 1.3.4 carries `^12` in its info file, and the file no longer applies, which stopped `composer create-project drupal/webship_project:12.0.x-dev` ([#71](https://github.com/webship/patches/pull/71))
   - The file stays on the `patches` branch, as the earlier removals keep theirs
+- Change the test project to install Google Tag `~2.0.0`, the range Web SEO declares, instead of `^2.0`: CI installed google_tag 2.1.0, which Webship does not install and to which none of the six Google Tag patches applies, so the `Test patches` run of 12.0.x turned red ([#71](https://github.com/webship/patches/pull/71))
+  - The six Google Tag patches stay: webship_project and website lock google_tag 2.0.9, where all six apply and the info patch still adds `^12`
 
 ## [12.0.12] - 2026-11-12
 
