@@ -9,6 +9,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 - Remove the AI Logging Drupal 12 compatibility patch: ai_logging 1.3.4 carries `^12` in its info file, and the file no longer applies, which stopped `composer create-project drupal/webship_project:12.0.x-dev`
   - The file stays on the `patches` branch, as the earlier removals keep theirs
+- Remove the Google Tag Drupal 12 compatibility patch of the info file for [#3598653](https://www.drupal.org/i/3598653): google_tag 2.1.0 carries `^12` in its info file, and the file no longer applies, which stopped `composer install` of the Webship 12.0.x projects
+  - Its five other patches stay; the file stays on the `patches` branch, as the earlier removals keep theirs
 
 ## [12.0.12] - 2026-11-12
 
