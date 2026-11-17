@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.13] - 2026-11-18
+
 - Remove the AI Logging Drupal 12 compatibility patch: ai_logging 1.3.4 carries `^12` in its info file, and the file no longer applies, which stopped `composer create-project drupal/webship_project:12.0.x-dev` ([#71](https://github.com/webship/patches/pull/71))
   - The file stays on the `patches` branch, as the earlier removals keep theirs
 - Change the test project to install Google Tag `~2.0.0`, the range Web SEO declares, instead of `^2.0`: CI installed google_tag 2.1.0, which Webship does not install and to which none of the six Google Tag patches applies, so the `Test patches` run of 12.0.x turned red ([#71](https://github.com/webship/patches/pull/71))
@@ -97,6 +99,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.13]: https://github.com/webship/patches/compare/12.0.12...12.0.13
 [12.0.12]: https://github.com/webship/patches/compare/12.0.11...12.0.12
 [12.0.11]: https://github.com/webship/patches/compare/12.0.10...12.0.11
 [12.0.10]: https://github.com/webship/patches/compare/12.0.9...12.0.10
