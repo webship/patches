@@ -7,6 +7,13 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.16] - 2026-11-18
+
+- Remove the AI Translate Drupal 12 compatibility patch ([#3585522](https://www.drupal.org/i/3585522), its info file): ai_translate 1.4.5 declares `^12` in both of its info files, and the file no longer applied, which stopped `composer create-project drupal/webship_project:12.0.x-dev` and turned the `Test patches` run of 12.0.x red ([#78](https://github.com/webship/patches/pull/78))
+- Remove the four Embed patches ([#3517882](https://www.drupal.org/i/3517882) MR !26, [#3597602](https://www.drupal.org/i/3597602) MR !27 and its info file, the plugin Attribute file): Embed 1.11 carries the #3517882 fix and Embed 1.12 declares `^11.3 || ^12` with its own Drupal 12 support, so none of the four files applied to 1.12 ([#79](https://github.com/webship/patches/pull/79))
+- Remove the External Links Drupal 12 compatibility patch ([#3604276](https://www.drupal.org/i/3604276), library discovery): extlink 3.0.1 declares `^11.3 || ^12` and carries its own Drupal 12 changes, and the file no longer applied ([#80](https://github.com/webship/patches/pull/80))
+  - The removed files stay on the `patches` branch, as the earlier removals keep theirs
+
 ## [12.0.15] - 2026-11-18
 
 - Remove the three Inline Entity Form Drupal 12 patches ([#3599178](https://www.drupal.org/i/3599178) MR !172, its info file, the method signatures file): inline_entity_form 3.1.0 declares `^12` and carries the signatures, and the files no longer applied, which stopped `composer create-project drupal/webship_project:12.0.x-dev` and turned the `Test patches` run of 12.0.x red ([#76](https://github.com/webship/patches/pull/76))
@@ -108,6 +115,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.16]: https://github.com/webship/patches/compare/12.0.15...12.0.16
 [12.0.15]: https://github.com/webship/patches/compare/12.0.14...12.0.15
 [12.0.14]: https://github.com/webship/patches/compare/12.0.13...12.0.14
 [12.0.13]: https://github.com/webship/patches/compare/12.0.12...12.0.13
