@@ -7,6 +7,11 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [11.0.3] - 2026-11-18
+
+- Remove the Embed patch for [#3517882](https://www.drupal.org/i/3517882) (MR !26): Embed 1.11 and 1.12 carry the fix, and the file no longer applied, which stopped a Composer install with Embed 1.12 ([#82](https://github.com/webship/patches/pull/82))
+  - The file stays on the `patches` branch, as the earlier removals keep theirs
+
 ## [11.0.2] - 2026-11-10
 
 - Remove the Shield patch for [#3562392](https://www.drupal.org/i/3562392): Shield 1.9.0 rewrote the settings form, so the file no longer applies to any release Composer now resolves, and Shield 1.11.0 already declares the constructor parameter nullable, which the patch was for; the weekly 11.0.x run had been red on it since 2026-10-26 ([#62](https://github.com/webship/patches/pull/62))
@@ -20,5 +25,6 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[11.0.3]: https://github.com/webship/patches/compare/11.0.2...11.0.3
 [11.0.2]: https://github.com/webship/patches/compare/11.0.1...11.0.2
 [11.0.1]: https://github.com/webship/patches/compare/11.0.0...11.0.1
