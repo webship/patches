@@ -35,9 +35,6 @@
     "extra": {
         "class": "Webship\\Patches\\Plugin\\PatchesPlugin",
         "patches": {
-            "drupal/embed": {
-                "Issue #3517882: The namespace of EmbedCKEditor5PluginBase does not respect PSR4": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/embed--2026-07-26--3517882--mr-26.patch"
-            },
             "drupal/entity_embed": {
                 "Issue #3070343: Allow to add a Drupal core link with Link Widget for Image entities using Entity Embed Dialog in CKEditor": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3070343-37.patch",
                 "Issue #2679875: Inline Entity Form integration": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--2679875-27.patch",
