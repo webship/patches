@@ -219,10 +219,7 @@
             },
             "drupal/inline_entity_form": {
                 "Issue #2913571: Add a setting to enable/disable inline editing for existing entities": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/inline_entity_form--2026-06-07--2913571--mr-127.patch",
-                "Issue #3136514: IEF complex widget: Re-ordering / weight sometimes not updated": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/inline_entity_form--2026-07-26--3136514--mr-126.patch",
-                "Issue #3599178: Automated Drupal 12 compatibility fixes for inline_entity_form 3.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/inline_entity_form--2026-10-01--3599178--mr-172.patch",
-                "Issue #3599178: Automated Drupal 12 compatibility fixes for inline_entity_form 3.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/inline_entity_form--2026-10-01--3599178--info-yml.patch",
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/inline_entity_form--2026-10-04--d12--signatures.patch"
+                "Issue #3136514: IEF complex widget: Re-ordering / weight sometimes not updated": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/inline_entity_form--2026-07-26--3136514--mr-126.patch"
             },
             "drupal/jsonapi_extras": {
                 "Issue #3591308: Automated Drupal 12 compatibility fixes for jsonapi_extras 3.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/jsonapi_extras--2026-10-01--3591308--info-yml.patch",
