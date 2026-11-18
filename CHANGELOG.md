@@ -7,6 +7,11 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.15] - 2026-11-18
+
+- Remove the three Inline Entity Form Drupal 12 patches ([#3599178](https://www.drupal.org/i/3599178) MR !172, its info file, the method signatures file): inline_entity_form 3.1.0 declares `^12` and carries the signatures, and the files no longer applied, which stopped `composer create-project drupal/webship_project:12.0.x-dev` and turned the `Test patches` run of 12.0.x red ([#76](https://github.com/webship/patches/pull/76))
+  - The two feature patches ([#2913571](https://www.drupal.org/i/2913571), [#3136514](https://www.drupal.org/i/3136514)) still apply to 3.1.0 and stay; the three files stay on the `patches` branch, as the earlier removals keep theirs
+
 ## [12.0.14] - 2026-11-18
 
 - Change the Display Builder Drupal 12 compatibility patch for [#3620792](https://www.drupal.org/i/3620792) to the file that also gives the nested `display_builder_entity_view_lb` module `^12`: without it a Drupal 12 site install stopped at "module 'display_builder_entity_view_lb' is incompatible with this version of Drupal core" ([#74](https://github.com/webship/patches/pull/74), patch file in [#73](https://github.com/webship/patches/pull/73))
@@ -103,6 +108,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.15]: https://github.com/webship/patches/compare/12.0.14...12.0.15
 [12.0.14]: https://github.com/webship/patches/compare/12.0.13...12.0.14
 [12.0.13]: https://github.com/webship/patches/compare/12.0.12...12.0.13
 [12.0.12]: https://github.com/webship/patches/compare/12.0.11...12.0.12
