@@ -7,6 +7,8 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+- Change the Display Builder Drupal 12 compatibility patch for [#3620792](https://www.drupal.org/i/3620792) to the file that also gives the nested `display_builder_entity_view_lb` module `^12`: without it a Drupal 12 site install stopped at "module 'display_builder_entity_view_lb' is incompatible with this version of Drupal core" ([#74](https://github.com/webship/patches/pull/74), patch file in [#73](https://github.com/webship/patches/pull/73))
+
 ## [12.0.13] - 2026-11-18
 
 - Remove the AI Logging Drupal 12 compatibility patch: ai_logging 1.3.4 carries `^12` in its info file, and the file no longer applies, which stopped `composer create-project drupal/webship_project:12.0.x-dev` ([#71](https://github.com/webship/patches/pull/71))
