@@ -7,6 +7,11 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [11.0.4] - 2026-11-22
+
+- Change the two Entity Embed feature patches ([#3070343](https://www.drupal.org/i/3070343), [#2679875](https://www.drupal.org/i/2679875)) to the files re-rolled for Entity Embed 1.8.0, which moved its hooks into a class, and remove the [#3531672](https://www.drupal.org/i/3531672) file 1.8.0 now carries: none of the three applied, which stopped `composer create-project drupal/webship_project:11.0.x-dev` ([#89](https://github.com/webship/patches/pull/89), patch files in [#85](https://github.com/webship/patches/pull/85))
+  - The removed file stays on the `patches` branch, as the earlier removals keep theirs
+
 ## [11.0.3] - 2026-11-18
 
 - Remove the Embed patch for [#3517882](https://www.drupal.org/i/3517882) (MR !26): Embed 1.11 and 1.12 carry the fix, and the file no longer applied, which stopped a Composer install with Embed 1.12 ([#82](https://github.com/webship/patches/pull/82))
@@ -25,6 +30,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[11.0.4]: https://github.com/webship/patches/compare/11.0.3...11.0.4
 [11.0.3]: https://github.com/webship/patches/compare/11.0.2...11.0.3
 [11.0.2]: https://github.com/webship/patches/compare/11.0.1...11.0.2
 [11.0.1]: https://github.com/webship/patches/compare/11.0.0...11.0.1
