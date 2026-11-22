@@ -36,9 +36,8 @@
         "class": "Webship\\Patches\\Plugin\\PatchesPlugin",
         "patches": {
             "drupal/entity_embed": {
-                "Issue #3070343: Allow to add a Drupal core link with Link Widget for Image entities using Entity Embed Dialog in CKEditor": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3070343-37.patch",
-                "Issue #2679875: Inline Entity Form integration": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--2679875-27.patch",
-                "Issue #3531672: Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3531672--mr-62.patch"
+                "Issue #3070343: Allow to add a Drupal core link with Link Widget for Image entities using Entity Embed Dialog in CKEditor (re-rolled for 1.8.0)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-11-22--3070343-37--1-8-0.patch",
+                "Issue #2679875: Inline Entity Form integration (re-rolled for 1.8.0)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-11-22--2679875-27--1-8-0.patch"
             },
             "drupal/gin": {
                 "fix: #3590827 Sticky form actions appear on node revision revert/delete confirm forms (incomplete exclusion pattern)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/gin--2026-07-26--3590827--mr-787.patch"
