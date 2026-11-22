@@ -74,9 +74,6 @@
             "drupal/ai_provider_openai": {
                 "Issue #3606117: Automated Drupal 12 compatibility fixes for ai_provider_openai 1.3.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_provider_openai--2026-10-01--3606117--info-yml.patch"
             },
-            "drupal/ai_validations": {
-                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_validations--2026-10-04--d12--requirement-severity.patch"
-            },
             "drupal/antibot": {
                 "Issue #3595688: Automated Drupal 12 compatibility fixes for antibot 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/antibot--2026-10-01--3595688--info-yml.patch"
             },
