@@ -128,9 +128,6 @@
             "drupal/display_builder": {
                 "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only, re-rolled for 1.0.0-beta10)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-11-18--3620792--mr-460--1-0-0-beta10.patch"
             },
-            "drupal/display_builder_ai": {
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder_ai--2026-10-04--d12--signatures.patch"
-            },
             "drupal/drupical": {
                 "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/drupical--2026-10-04--d12--info-yml.patch"
             },
