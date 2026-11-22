@@ -48,11 +48,6 @@
                 "Issue #3586038: Automated Drupal 12 compatibility fixes for ai_agents 1.4.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_agents--2026-10-01--3586038--info-yml.patch",
                 "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_agents--2026-10-04--d12--signatures.patch"
             },
-            "drupal/ai_content_suggestions": {
-                "Issue #3594629: Automated Drupal 12 compatibility fixes for ai_content_suggestions 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_content_suggestions--2026-10-01--3594629--info-yml.patch",
-                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_content_suggestions--2026-10-04--d12--plugin-attribute.patch",
-                "Drupal 12: config schema constraints as keyed options": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_content_suggestions--2026-10-04--d12--config-schema.patch"
-            },
             "drupal/ai_image_alt_text": {
                 "Issue #3594672: Automated Drupal 12 compatibility fixes for ai_image_alt_text 1.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_image_alt_text--2026-10-01--3594672--mr-30--info-yml--1-0-3.patch"
             },
@@ -73,9 +68,6 @@
             },
             "drupal/ai_provider_openai": {
                 "Issue #3606117: Automated Drupal 12 compatibility fixes for ai_provider_openai 1.3.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_provider_openai--2026-10-01--3606117--info-yml.patch"
-            },
-            "drupal/ai_validations": {
-                "Drupal 12: RequirementSeverity": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/ai_validations--2026-10-04--d12--requirement-severity.patch"
             },
             "drupal/antibot": {
                 "Issue #3595688: Automated Drupal 12 compatibility fixes for antibot 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/antibot--2026-10-01--3595688--info-yml.patch"
@@ -136,9 +128,6 @@
             "drupal/display_builder": {
                 "Issue #3620792: D12: htmx4 compatibility (core_version_requirement only, re-rolled for 1.0.0-beta10)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder--2026-11-18--3620792--mr-460--1-0-0-beta10.patch"
             },
-            "drupal/display_builder_ai": {
-                "Drupal 12: method signatures changed in core and Symfony 8": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/display_builder_ai--2026-10-04--d12--signatures.patch"
-            },
             "drupal/drupical": {
                 "Drupal 12 compatibility (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/drupical--2026-10-04--d12--info-yml.patch"
             },
@@ -155,11 +144,8 @@
                 "Issue #3597543: Automated Drupal 12 compatibility fixes for editor_advanced_link 2.3.x-dev": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/editor_advanced_link--2026-10-01--3597543--mr-56.patch"
             },
             "drupal/entity_embed": {
-                "Issue #3070343: Allow to add a Drupal core link with Link Widget for Image entities using Entity Embed Dialog in CKEditor": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3070343-37.patch",
-                "Issue #2679875: Inline Entity Form integration": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--2679875-27.patch",
-                "Issue #3531672: Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-07-26--3531672--mr-62.patch",
-                "Issue #3610147: Automated Drupal 12 compatibility fixes for entity_embed 2.0.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-10-01--3610147--info-yml.patch",
-                "Drupal 12: Attribute class next to the Annotation for the plugin manager": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-10-04--d12--plugin-attribute.patch"
+                "Issue #3070343: Allow to add a Drupal core link with Link Widget for Image entities using Entity Embed Dialog in CKEditor (re-rolled for 1.8.0)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-11-22--3070343-37--1-8-0.patch",
+                "Issue #2679875: Inline Entity Form integration (re-rolled for 1.8.0)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/entity_embed--2026-11-22--2679875-27--1-8-0.patch"
             },
             "drupal/field_group": {
                 "Issue #3598196: Automated Drupal 12 compatibility fixes for field_group 4.x-dev (core_version_requirement only)": "https://raw.githubusercontent.com/webship/patches/refs/heads/patches/field_group--2026-10-01--3598196--info-yml.patch",
