@@ -7,6 +7,14 @@ Each release lists the commits — merged pull requests and the drupal.org issue
 
 ## [Unreleased]
 
+## [12.0.17] - 2026-11-22
+
+- Remove the AI Validations Drupal 12 patch (`RequirementSeverity`): ai_validations 1.4.1 carries the change, and the file no longer applied, which stopped `composer create-project drupal/webship_project:12.0.x-dev` ([#84](https://github.com/webship/patches/pull/84))
+- Remove the three AI Content Suggestions Drupal 12 patches ([#3594629](https://www.drupal.org/i/3594629) info file, the plugin Attribute file, the config schema file): ai_content_suggestions 1.5.3 declares `^12` and carries its own Drupal 12 changes ([#86](https://github.com/webship/patches/pull/86))
+- Remove the Display Builder AI Drupal 12 patch (method signatures): display_builder_ai 1.0.0-alpha4 declares `^12` and no longer has the files it changed ([#87](https://github.com/webship/patches/pull/87))
+- Change the two Entity Embed feature patches ([#3070343](https://www.drupal.org/i/3070343), [#2679875](https://www.drupal.org/i/2679875)) to the files re-rolled for Entity Embed 1.8.0, which moved its hooks into a class, and remove the three files 1.8.0 now carries ([#3531672](https://www.drupal.org/i/3531672), the [#3610147](https://www.drupal.org/i/3610147) info file, the plugin Attribute file) ([#88](https://github.com/webship/patches/pull/88), patch files in [#85](https://github.com/webship/patches/pull/85))
+  - The removed files stay on the `patches` branch, as the earlier removals keep theirs
+
 ## [12.0.16] - 2026-11-18
 
 - Remove the AI Translate Drupal 12 compatibility patch ([#3585522](https://www.drupal.org/i/3585522), its info file): ai_translate 1.4.5 declares `^12` in both of its info files, and the file no longer applied, which stopped `composer create-project drupal/webship_project:12.0.x-dev` and turned the `Test patches` run of 12.0.x red ([#78](https://github.com/webship/patches/pull/78))
@@ -115,6 +123,7 @@ Each release lists the commits — merged pull requests and the drupal.org issue
   - `drupal/display_builder`: [#3623217](https://www.drupal.org/i/3623217) Render the block label when it is set to show
   - `drupal/recaptcha_v3`: [#3622964](https://www.drupal.org/i/3622964) Add the missing langcode to `recaptcha_v3.settings`
 
+[12.0.17]: https://github.com/webship/patches/compare/12.0.16...12.0.17
 [12.0.16]: https://github.com/webship/patches/compare/12.0.15...12.0.16
 [12.0.15]: https://github.com/webship/patches/compare/12.0.14...12.0.15
 [12.0.14]: https://github.com/webship/patches/compare/12.0.13...12.0.14
